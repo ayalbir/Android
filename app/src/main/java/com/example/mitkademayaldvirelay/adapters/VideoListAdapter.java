@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -50,6 +51,12 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             holder.tvViews.setText(String.valueOf(video.getViews()));
             holder.tvChannel.setText(video.getChannel());
             holder.thumbnail.setImageResource(video.getThumbnail());
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //TODO: intent to the video itself
+                }
+            });
         }
 
     }
