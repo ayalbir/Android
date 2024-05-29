@@ -1,17 +1,15 @@
-package com.example.mitkadenayaldvirelay.adapters;
+package com.example.mitkademayaldvirelay.adapters;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.mitkadenayaldvirelay.R;
-import com.example.mitkadenayaldvirelay.classes.Video;
+import com.example.mitkademayaldvirelay.R;
+import com.example.mitkademayaldvirelay.classes.Video;
 
 import java.util.List;
 

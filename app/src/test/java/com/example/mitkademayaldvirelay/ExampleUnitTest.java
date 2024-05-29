@@ -1,4 +1,4 @@
-package com.example.mitkadenayaldvirelay;
+package com.example.mitkademayaldvirelay;
 
 import org.junit.Test;
 

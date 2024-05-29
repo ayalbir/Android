@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.mitkadenayaldvirelay"
+    namespace = "com.example.mitkademayaldvirelay"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.mitkadenayaldvirelay"
+        applicationId = "com.example.mitkademayaldvirelay"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

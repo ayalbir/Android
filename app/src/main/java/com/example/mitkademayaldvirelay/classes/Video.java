@@ -1,11 +1,6 @@
-package com.example.mitkadenayaldvirelay.classes;
+package com.example.mitkademayaldvirelay.classes;
 
-import android.media.Image;
-import android.provider.ContactsContract;
-import android.provider.MediaStore;
-import android.widget.ImageView;
-
-import com.example.mitkadenayaldvirelay.R;
+import com.example.mitkademayaldvirelay.R;
 
 public class Video {
 

@@ -1,9 +1,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.MitkadenAyalDvirElay" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+    <style name="Base.Theme.MitkademAyalDvirElay" parent="Theme.Material3.DayNight.NoActionBar">
+
     </style>
 
-    <style name="Theme.MitkadenAyalDvirElay" parent="Base.Theme.MitkadenAyalDvirElay" />
+    <style name="Theme.MitkademAyalDvirElay" parent="Base.Theme.MitkademAyalDvirElay" />
 </resources>

@@ -1,12 +1,12 @@
-package com.example.mitkadenayaldvirelay;
+package com.example.mitkademayaldvirelay;
 
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.mitkadenayaldvirelay.adapters.VideoListAdapter;
-import com.example.mitkadenayaldvirelay.classes.Video;
+import com.example.mitkademayaldvirelay.adapters.VideoListAdapter;
+import com.example.mitkademayaldvirelay.classes.Video;
 
 import java.util.ArrayList;
 import java.util.List;
