@@ -19,6 +19,12 @@
             android:name=".VideoPlayerActivity"
             android:exported="false" />
         <activity
+            android:name=".signInScreen2"
+            android:exported="false" />
+        <activity
+            android:name=".signInScreen1"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">

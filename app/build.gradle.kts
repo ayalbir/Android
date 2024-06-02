@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.mitkademayaldvirelay"
+    namespace = "com.example.myyoutube"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.mitkademayaldvirelay"
+        applicationId = "com.example.myyoutube"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -19,7 +19,10 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     compileOptions {
