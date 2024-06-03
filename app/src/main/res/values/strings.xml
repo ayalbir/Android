@@ -1,6 +1,14 @@
 <resources>
-    <string name="app_name">MitkademAyalDvirElay</string>
+    <string name="app_name">Footube</string>
     <string name="username">Username</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="open_nav">Open Navigation Drawer</string>
+    <string name="close_nav">Close Navigation Drawer</string>
+    <string name="logout">Logout</string>
+    <string name="login">Login</string>
+    <string name="ayal_dvir_elay">Ayal, Dvir, Elay</string>
+    <string name="home">Home</string>
+    <string name="footube">FooTube</string>
+
 </resources>
