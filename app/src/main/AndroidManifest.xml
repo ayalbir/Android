@@ -19,6 +19,9 @@
             android:name=".VideoPlayerActivity"
             android:exported="false" />
         <activity
+            android:name=".signInScreen3"
+            android:exported="false" />
+        <activity
             android:name=".signInScreen2"
             android:exported="false" />
         <activity

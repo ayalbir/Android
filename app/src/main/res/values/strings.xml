@@ -42,6 +42,7 @@
     </string-array>
 
     <string-array name="gender_array">
+        <item>gender</item>
         <item>Male</item>
         <item>Female</item>
         <item>Other</item>

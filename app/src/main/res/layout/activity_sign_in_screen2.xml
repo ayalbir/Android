@@ -14,7 +14,7 @@
         android:orientation="horizontal"
         android:gravity="center_vertical">
 
-        <!-- Replace this ImageView with your Google logo -->
+        <!-- Replace this ImageView with Google logo -->
         <ImageView
             android:layout_width="300dp"
             android:layout_height="match_parent"
@@ -91,6 +91,14 @@
         android:text="Why we ask for birthday and gender"
         android:textColor="#0078D7"
         android:layout_marginTop="8dp"/>
+
+    <TextView
+        android:id="@+id/tvErrorMsg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text=""
+        android:textColor="#FF0000"/>
 
     <RelativeLayout
     android:layout_width="match_parent"
