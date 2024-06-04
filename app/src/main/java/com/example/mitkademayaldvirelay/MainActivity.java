@@ -5,12 +5,15 @@ import static com.example.mitkademayaldvirelay.R.layout.activity_main;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.Toast;
 
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -34,6 +37,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawerLayout;
+    private Switch nightSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +68,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             navigationView.setCheckedItem(R.id.nav_home);
         }
 
-
         try {
             JSONObject obj = new JSONObject(loadJSONFromAsset());
             JSONArray jsonArray = obj.getJSONArray("Videos");
@@ -80,6 +83,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             e.printStackTrace();
         }
 
+        // Find the night mode switch
+        MenuItem switchItem = navigationView.getMenu().findItem(R.id.nav_switch_night);
+        nightSwitch = switchItem.getActionView().findViewById(R.id.night_switch);
+
+        // Set the switch listener to toggle night mode
+        nightSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                    Toast.makeText(MainActivity.this, "Night mode enabled", Toast.LENGTH_SHORT).show();
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                    Toast.makeText(MainActivity.this, "Night mode disabled", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     public String loadJSONFromAsset() {
@@ -114,6 +134,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
              Intent intent = new Intent(this, LoginActivity.class);
              startActivity(intent);
              */
+        }
+        else if (id == R.id.nav_logout) {
+            //TODO: log out
+            Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
