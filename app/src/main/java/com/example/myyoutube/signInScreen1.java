@@ -29,8 +29,7 @@ public class signInScreen1 extends AppCompatActivity {
         this.lastName = findViewById(R.id.etLastName);
         this.errorMsg = findViewById(R.id.tvErrorMsg);
         Button button = findViewById(R.id.button);
-        Toast.makeText(signInScreen1.this,"after going to register",
-                Toast.LENGTH_LONG).show();
+
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override

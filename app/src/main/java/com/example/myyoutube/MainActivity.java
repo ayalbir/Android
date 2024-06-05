@@ -22,8 +22,6 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, signInScreen1.class);
-                Toast.makeText(MainActivity.this,"before going to register",
-                        Toast.LENGTH_LONG).show();
                 startActivity(intent);
             }
         });
