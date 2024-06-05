@@ -11,5 +11,11 @@
     <string name="home">Home</string>
     <string name="footube">FooTube</string>
     <string name="night_mode">Night Mode</string>
+    <string name="views">Views:</string>
+    <string name="channel">Channel:</string>
+    <string name="add_a_comment">Add a comment</string>
+    <string name="add_comment">Add Comment</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
 
 </resources>

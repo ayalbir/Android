@@ -6,9 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
+import android.widget.SearchView;
 import android.widget.Switch;
 import android.widget.Toast;
-
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -22,72 +22,123 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mitkademayaldvirelay.adapters.VideoListAdapter;
 import com.example.mitkademayaldvirelay.classes.Video;
-
 import com.google.android.material.navigation.NavigationView;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final int REQUEST_CODE_VIDEO_PLAYER = 1;
+
     private DrawerLayout drawerLayout;
     private Switch nightSwitch;
+    private SearchView searchView;
+    private int currentMenuItemId = R.id.nav_home;
+    private List<Video> videos;
+    private VideoListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(activity_main);
 
-        RecyclerView videoList = findViewById(R.id.videoList);
-        final VideoListAdapter adapter = new VideoListAdapter(this);
-        videoList.setAdapter(adapter);
-        videoList.setLayoutManager(new LinearLayoutManager(this));
+        initUI();
 
-        List<Video> videos = new ArrayList<>();
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setupRecyclerView();
 
+        setupToolbarAndDrawer();
 
-        drawerLayout = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        setupSearchView();
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,R.string.open_nav, R.string.close_nav);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
+        loadVideosFromJSON();
 
+        setupNightModeSwitch();
 
         // Set the initial checked item in the navigation view
         if (savedInstanceState == null) {
+            NavigationView navigationView = findViewById(R.id.nav_view);
             navigationView.setCheckedItem(R.id.nav_home);
         }
+    }
 
-        try {
-            JSONObject obj = new JSONObject(loadJSONFromAsset());
-            JSONArray jsonArray = obj.getJSONArray("Videos");
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                videos.add(new Video(jsonObject.getString("channel"),
-                        jsonObject.getString("title"),
-                        jsonObject.getString("description"),
-                        jsonObject.getInt("duration"), R.drawable.login));
+    private void initUI() {
+        searchView = findViewById(R.id.searchView);
+        drawerLayout = findViewById(R.id.drawer_layout);
+    }
+
+    private void setupRecyclerView() {
+        RecyclerView videoList = findViewById(R.id.videoList);
+        adapter = new VideoListAdapter(this);
+        videoList.setAdapter(adapter);
+        videoList.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    private void setupToolbarAndDrawer() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_nav, R.string.close_nav);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+    }
+
+    private void setupSearchView() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                adapter.filter(query);
+                return false;
             }
-            adapter.setVideos(videos);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
-        // Find the night mode switch
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.filter(newText);
+                return false;
+            }
+        });
+    }
+
+    private void loadVideosFromJSON() {
+        String jsonData = loadJSONFromAsset();
+        if (jsonData != null) {
+            videos = parseVideosFromJSON(jsonData);
+            adapter.setVideos(videos);
+        }
+    }
+
+    private List<Video> parseVideosFromJSON(String jsonData) {
+        Gson gson = new Gson();
+        JsonObject jsonObject = JsonParser.parseString(jsonData).getAsJsonObject();
+        Type videoListType = new TypeToken<ArrayList<Video>>() {}.getType();
+        List<Video> videoList = gson.fromJson(jsonObject.get("Videos"), videoListType);
+        for (Video video : videoList) {
+            if (video.getComments() == null) {
+                video.setComments(new ArrayList<>());
+            }
+        }
+        return videoList;
+    }
+
+    private void setupNightModeSwitch() {
+        NavigationView navigationView = findViewById(R.id.nav_view);
         MenuItem switchItem = navigationView.getMenu().findItem(R.id.nav_switch_night);
         nightSwitch = switchItem.getActionView().findViewById(R.id.night_switch);
 
-        // Set the switch listener to toggle night mode
+        // Initialize switch state
+        int nightMode = AppCompatDelegate.getDefaultNightMode();
+        nightSwitch.setChecked(nightMode == AppCompatDelegate.MODE_NIGHT_YES);
+
         nightSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -102,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    public String loadJSONFromAsset() {
+    private String loadJSONFromAsset() {
         String json = null;
         try {
             InputStream is = getResources().getAssets().open("data.json");
@@ -113,30 +164,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             json = new String(buffer, "UTF-8");
         } catch (IOException ex) {
             ex.printStackTrace();
-            return null;
         }
         return json;
     }
-
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.nav_home) {
-            Toast.makeText(this, "Login selected", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_login) {
-            //TODO:add login activity
-            Toast.makeText(this, "Login selected", Toast.LENGTH_SHORT).show();
-            /*
-             Intent intent = new Intent(this, LoginActivity.class);
-             startActivity(intent);
-             */
+        // Check if the selected item is already the current item
+        if (id == currentMenuItemId) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+            return false;  // Return without taking any action
         }
-        else if (id == R.id.nav_logout) {
-            //TODO: log out
+
+        currentMenuItemId = id;
+
+        if (id == R.id.nav_home) {
+            // Already on Home, no need to start a new activity
+        } else if (id == R.id.nav_login) {
+            // Implement login activity
+            Toast.makeText(this, "Login selected", Toast.LENGTH_SHORT).show();
+            // Intent intent = new Intent(this, LoginActivity.class);
+            // startActivity(intent);
+        } else if (id == R.id.nav_logout) {
+            // Implement logout functionality
             Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
         }
 
@@ -146,15 +198,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed() {
-      if(drawerLayout.isDrawerOpen(GravityCompat.START)){
-          drawerLayout.closeDrawer(GravityCompat.START);
-      }
-      else
-          super.onBackPressed();
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
         super.onPointerCaptureChanged(hasCapture);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_VIDEO_PLAYER && resultCode == RESULT_OK) {
+            Video updatedVideo = (Video) data.getSerializableExtra("updatedVideo");
+            if (updatedVideo != null) {
+                for (int i = 0; i < videos.size(); i++) {
+                    if (videos.get(i).getId() == updatedVideo.getId()) {
+                        videos.set(i, updatedVideo);
+                        adapter.notifyItemChanged(i);
+                        break;
+                    }
+                }
+            }
+        }
     }
 }

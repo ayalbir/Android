@@ -7,11 +7,13 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context=".MainActivity"
+    android:theme="@style/Theme.MitkademAyalDvirElay"
     tools:openDrawer="start">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:theme="@style/Theme.MitkademAyalDvirElay"
         android:orientation="vertical">
 
         <androidx.appcompat.widget.Toolbar
@@ -23,22 +25,32 @@
             android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             android:theme="@style/Theme.MitkademAyalDvirElay" />
 
+        <SearchView
+            android:id="@+id/searchView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/background"
+            android:iconifiedByDefault="true"
+            android:queryHint="Search video" />
+
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/refreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/background"
+            android:theme="@style/Theme.MitkademAyalDvirElay">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/videoList"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@android:color/darker_gray" />
+                android:layout_height="match_parent" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:theme="@style/Theme.MitkademAyalDvirElay" />
     </LinearLayout>
 
     <com.google.android.material.navigation.NavigationView
@@ -46,6 +58,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:theme="@style/Theme.MitkademAyalDvirElay"
         app:headerLayout="@layout/nav_header"
         app:itemIconTint="@color/lavender"
         app:itemTextColor="@color/lavender"

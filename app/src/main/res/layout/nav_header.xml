@@ -2,11 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="176dp"
-    android:background="@drawable/nav_header"
     android:gravity="bottom"
     android:orientation="vertical"
     android:padding="16dp"
-    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+    android:theme="@style/Theme.MitkademAyalDvirElay">
 
 
     <TextView
@@ -15,7 +14,7 @@
         android:layout_margin="16dp"
 
         android:text="@string/footube"
-        android:textColor="@color/white"
+        android:textColor="@color/lavender"
         android:textSize="20sp"
         android:textStyle="bold" />
 
@@ -24,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:text="@string/ayal_dvir_elay"
-        android:textColor="@color/white"
+        android:textColor="@color/lavender"
         android:textSize="14sp">
 
     </TextView>

@@ -1,11 +1,13 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-
-    <style name="Theme.MitkademAyalDvirElay" parent="Theme.MaterialComponents.DayNight.DarkActionBar.Bridge">
-        <!-- Customize your theme here -->
-        <item name="colorPrimary">@color/lavender</item>
-        <item name="colorPrimaryDark">@color/lavender</item>
+<resources>
+    <!-- Base application theme. -->
+    <style name="Theme.MitkademAyalDvirElay" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:textColorPrimary">@color/black</item>
         <item name="android:statusBarColor">@color/lavender</item>
-
     </style>
-
 </resources>
+
