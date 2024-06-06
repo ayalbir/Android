@@ -55,7 +55,7 @@ public class signInScreen3 extends AppCompatActivity {
 
                 if (password.equals(confirmPassword) && password.length() >= 8) {
                     errorMsg.setText("");
-                    Intent intent = new Intent(signInScreen3.this, signInScreen3.class);
+                    Intent intent = new Intent(signInScreen3.this, signInScreen4.class);
                     startActivity(intent);
                 } else {
                     if (!password.equals(confirmPassword)) {
