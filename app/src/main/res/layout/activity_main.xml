@@ -7,20 +7,18 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context=".MainActivity"
-    android:theme="@style/Theme.MitkademAyalDvirElay"
     tools:openDrawer="start">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:theme="@style/Theme.MitkademAyalDvirElay"
         android:orientation="vertical">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/lavender"
+            android:background="@color/custom_red"
             android:elevation="4dp"
             android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             android:theme="@style/Theme.MitkademAyalDvirElay" />
@@ -31,14 +29,16 @@
             android:layout_height="wrap_content"
             android:background="@color/background"
             android:iconifiedByDefault="true"
-            android:queryHint="Search video" />
+            android:queryHint="Search video"
+            android:layout_below="@id/toolbar" />
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/refreshLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/background"
-            android:theme="@style/Theme.MitkademAyalDvirElay">
+            android:layout_above="@id/bottom_navigation"
+            android:layout_below="@id/searchView">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/videoList"
@@ -50,8 +50,18 @@
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/Theme.MitkademAyalDvirElay" />
-    </LinearLayout>
+            android:layout_below="@id/searchView"
+            android:layout_above="@id/bottom_navigation" />
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            app:menu="@menu/bottom_nav_menu"
+            app:backgroundTint="@color/dark_grey" />
+
+    </RelativeLayout>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
@@ -60,12 +70,8 @@
         android:layout_gravity="start"
         android:theme="@style/Theme.MitkademAyalDvirElay"
         app:headerLayout="@layout/nav_header"
-        app:itemIconTint="@color/lavender"
-        app:itemTextColor="@color/lavender"
+        app:itemIconTint="@color/custom_red"
+        app:itemTextColor="@color/custom_red"
         app:menu="@menu/nav_menu" />
 
-
 </androidx.drawerlayout.widget.DrawerLayout>
-
-
-

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -15,10 +16,13 @@ import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
 
-import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mitkademayaldvirelay.classes.Video;
+import com.example.mitkademayaldvirelay.classes.VideoManager;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,14 +32,20 @@ public class VideoPlayerActivity extends AppCompatActivity {
     private Video video;
     private CommentsAdapter commentsAdapter;
     private List<String> commentsList;
-    private static boolean isLiked = false;
+    private ImageButton likeButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_player);
 
-        video = (Video) getIntent().getSerializableExtra("video");
+        int videoId = getIntent().getIntExtra("videoId", -1);
+        video = VideoManager.getVideoManager().getVideoById(videoId);
+        if (video == null) {
+            finish();
+            return;
+        }
+
         String videoPath = "android.resource://" + getPackageName() + "/raw/" + video.getMp4file();
         commentsList = video.getComments();
 
@@ -54,28 +64,25 @@ public class VideoPlayerActivity extends AppCompatActivity {
         videoView.start();
 
         // Set the data to views
+        TextView titleView = findViewById(R.id.tvTitle);
         TextView channelNameView = findViewById(R.id.tvChannelName);
         TextView viewsView = findViewById(R.id.tvViews);
         TextView likesView = findViewById(R.id.tvLikes);
 
+
+        titleView.setText(video.getTitle());
         channelNameView.setText(video.getChannel());
         viewsView.setText("Views: " + video.getViews());
         likesView.setText("Likes: " + video.getLikes());
 
         ImageButton shareBtn = findViewById(R.id.IBShare);
-        ImageButton likeButton = findViewById(R.id.IBLike);
-
-        // Initialize the like button image
-        if (isLiked) {
-            likeButton.setImageResource(R.drawable.liked);
-        } else {
-            likeButton.setImageResource(R.drawable.unliked);
-        }
+        likeButton = findViewById(R.id.IBLike);
+        updateLikeButton(likeButton);
 
         shareBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Sharing functionality
+                // Share button
                 Intent shareIntent = new Intent(Intent.ACTION_SEND);
                 shareIntent.setType("text/plain");
                 shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Check out this video!");
@@ -87,17 +94,17 @@ public class VideoPlayerActivity extends AppCompatActivity {
         likeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isLiked) {
-                    video.decrementLikes();
-                    likeButton.setImageResource(R.drawable.unliked);
-                } else {
+                video.setLiked(!video.isLiked());
+                if (video.isLiked()) {
                     video.incrementLikes();
-                    likeButton.setImageResource(R.drawable.liked);
+                } else {
+                    video.decrementLikes();
                 }
-                isLiked = !isLiked; // Toggle the like state
                 likesView.setText("Likes: " + video.getLikes());
+                updateLikeButton(likeButton);
             }
         });
+
 
         // Initialize comments section
         ListView commentsListView = findViewById(R.id.commentsListView);
@@ -113,16 +120,46 @@ public class VideoPlayerActivity extends AppCompatActivity {
                 commentInput.setText("");
             }
         });
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setBackgroundColor(getResources().getColor(R.color.dark_grey));
+        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+                if (id == R.id.nav_home) {
+                    Intent intent = new Intent(VideoPlayerActivity.this, MainActivity.class);
+                    startActivity(intent);
+                }
+                else if (id == R.id.nav_add_video) {
+                    // Intent intent = new Intent(this, LoginActivity.class);
+                    // startActivity(intent);
+                }else if (id == R.id.nav_login) {
+                    // Implement login activity
+                    // Intent intent = new Intent(this, LoginActivity.class);
+                    // startActivity(intent);
+                }
+                return false;
+            }
+        });
+        // Ensure no item is selected by default
+        bottomNavigationView.getMenu().setGroupCheckable(0, false, true);
     }
 
     @Override
     public void onBackPressed() {
         Intent resultIntent = new Intent();
-        resultIntent.putExtra("updatedVideo", video);
-        setResult(RESULT_OK, resultIntent);
+        setResult(-1, resultIntent);
         super.onBackPressed();
     }
 
+    private void updateLikeButton(ImageButton likeButton) {
+        if (video.isLiked()) {
+            likeButton.setImageResource(R.drawable.liked);
+        } else {
+            likeButton.setImageResource(R.drawable.unliked);
+        }
+    }
     private class CommentsAdapter extends ArrayAdapter<String> {
 
         private Context context;
@@ -134,46 +171,43 @@ public class VideoPlayerActivity extends AppCompatActivity {
             this.comments = comments;
         }
 
+        @NonNull
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.comment_item, parent, false);
             }
 
-            TextView commentView = convertView.findViewById(R.id.tvComment);
+            EditText commentEdit = convertView.findViewById(R.id.etComment);
+            ImageButton saveButton = convertView.findViewById(R.id.btnSave);
             ImageButton editButton = convertView.findViewById(R.id.btnEdit);
             ImageButton deleteButton = convertView.findViewById(R.id.btnDelete);
 
             String comment = getItem(position);
-            commentView.setText(comment);
+            commentEdit.setText(comment);
+            commentEdit.setEnabled(false); // Disable editing
 
-            editButton.setOnClickListener(v -> showEditCommentDialog(position));
+            editButton.setOnClickListener(v -> {
+                commentEdit.setEnabled(true); // Enable editing
+                saveButton.setVisibility(View.VISIBLE); // Show save button
+            });
+
+            saveButton.setOnClickListener(v -> {
+                String editedComment = commentEdit.getText().toString();
+                if (!editedComment.isEmpty()) {
+                    comments.set(position, editedComment);
+                    notifyDataSetChanged();
+                    commentEdit.setEnabled(false); // Disable editing after saving
+                    saveButton.setVisibility(View.GONE); // Hide save button
+                }
+            });
+
             deleteButton.setOnClickListener(v -> {
                 comments.remove(position);
                 notifyDataSetChanged();
             });
 
             return convertView;
-        }
-
-        private void showEditCommentDialog(int position) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle("Edit Comment");
-
-            final EditText input = new EditText(context);
-            input.setText(comments.get(position));
-            builder.setView(input);
-
-            builder.setPositiveButton("OK", (dialog, which) -> {
-                String editedComment = input.getText().toString();
-                if (!editedComment.isEmpty()) {
-                    comments.set(position, editedComment);
-                    notifyDataSetChanged();
-                }
-            });
-            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-
-            builder.show();
         }
     }
 }

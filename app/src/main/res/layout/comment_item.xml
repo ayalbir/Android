@@ -5,25 +5,33 @@
     android:orientation="horizontal"
     android:padding="8dp">
 
-    <TextView
-        android:id="@+id/tvComment"
+    <EditText
+        android:id="@+id/etComment"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Comment"
+        android:hint="@string/comment"
         android:textSize="16sp" />
+
+    <ImageButton
+        android:id="@+id/btnSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/save"
+        android:src="@drawable/done"
+        android:visibility="gone" />
 
     <ImageButton
         android:id="@+id/btnEdit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_edit"
-        android:contentDescription="@string/edit" />
+        android:contentDescription="@string/edit"
+        android:src="@drawable/edit" />
 
     <ImageButton
         android:id="@+id/btnDelete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_delete"
-        android:contentDescription="@string/delete" />
+        android:contentDescription="@string/delete"
+        android:src="@drawable/delete" />
 </LinearLayout>

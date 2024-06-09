@@ -22,6 +22,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mitkademayaldvirelay.adapters.VideoListAdapter;
 import com.example.mitkademayaldvirelay.classes.Video;
+import com.example.mitkademayaldvirelay.classes.VideoManager;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -36,13 +39,10 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private static final int REQUEST_CODE_VIDEO_PLAYER = 1;
-
     private DrawerLayout drawerLayout;
     private Switch nightSwitch;
     private SearchView searchView;
     private int currentMenuItemId = R.id.nav_home;
-    private List<Video> videos;
     private VideoListAdapter adapter;
 
     @Override
@@ -61,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         loadVideosFromJSON();
 
         setupNightModeSwitch();
+
+        setupBottomNavigationView();
 
         // Set the initial checked item in the navigation view
         if (savedInstanceState == null) {
@@ -112,7 +114,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void loadVideosFromJSON() {
         String jsonData = loadJSONFromAsset();
         if (jsonData != null) {
-            videos = parseVideosFromJSON(jsonData);
+            List<Video> videos = parseVideosFromJSON(jsonData);
+            VideoManager.getVideoManager().setVideos(videos);
             adapter.setVideos(videos);
         }
     }
@@ -167,33 +170,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         return json;
     }
+    private void setupBottomNavigationView() {
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setBackgroundColor(getResources().getColor(R.color.dark_grey));
+        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+                if (id == R.id.nav_home) {
+                    // Already on Home, no need to start a new activity
+                }
+                else if (id == R.id.nav_add_video) {
+                    // Implement login activity
+                    // Intent intent = new Intent(this, LoginActivity.class);
+                    // startActivity(intent);
+                }else if (id == R.id.nav_login) {
+                    // Implement login activity
+                    // Intent intent = new Intent(this, LoginActivity.class);
+                    // startActivity(intent);
+                }
+                return false;
+            }
+        });
+    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-
-        // Check if the selected item is already the current item
-        if (id == currentMenuItemId) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return false;  // Return without taking any action
-        }
-
         currentMenuItemId = id;
-
-        if (id == R.id.nav_home) {
-            // Already on Home, no need to start a new activity
-        } else if (id == R.id.nav_login) {
-            // Implement login activity
-            Toast.makeText(this, "Login selected", Toast.LENGTH_SHORT).show();
-            // Intent intent = new Intent(this, LoginActivity.class);
-            // startActivity(intent);
-        } else if (id == R.id.nav_logout) {
-            // Implement logout functionality
-            Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
+        if (id == R.id.nav_close) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+            return false;
         }
-
         drawerLayout.closeDrawer(GravityCompat.START);
-        return true;
+        return false;
     }
 
     @Override
@@ -213,17 +223,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_VIDEO_PLAYER && resultCode == RESULT_OK) {
-            Video updatedVideo = (Video) data.getSerializableExtra("updatedVideo");
-            if (updatedVideo != null) {
-                for (int i = 0; i < videos.size(); i++) {
-                    if (videos.get(i).getId() == updatedVideo.getId()) {
-                        videos.set(i, updatedVideo);
-                        adapter.notifyItemChanged(i);
-                        break;
-                    }
-                }
-            }
+        if (requestCode == 1 && resultCode == -1) {
+            // No need to handle result, as VideoManager is a singleton holding the updated data
+            adapter.notifyDataSetChanged();
         }
     }
 }

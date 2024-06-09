@@ -7,5 +7,6 @@
     <color name="white">#FFFFFF</color>
     <color name="background">@color/white</color>
     <color name="lightLavender">#BFC3EA</color>
-    <color name="lavender">#BFC3EA</color>
+    <color name="custom_red">#D62540</color>
+    <color name="dark_grey">#3A3A3A</color>
 </resources>

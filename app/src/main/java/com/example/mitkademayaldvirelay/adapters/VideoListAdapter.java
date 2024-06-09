@@ -1,4 +1,5 @@
 package com.example.mitkademayaldvirelay.adapters;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -8,11 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.mitkademayaldvirelay.MainActivity;
 import com.example.mitkademayaldvirelay.R;
 import com.example.mitkademayaldvirelay.VideoPlayerActivity;
 import com.example.mitkademayaldvirelay.classes.Video;
@@ -20,14 +20,13 @@ import com.example.mitkademayaldvirelay.classes.Video;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.VideoViewHolder> {
 
-
-
-    class VideoViewHolder extends RecyclerView.ViewHolder{
-        private TextView tvViews, tvTitle, tvChannel;
+    static class VideoViewHolder extends RecyclerView.ViewHolder {
+        private final TextView tvViews, tvTitle, tvChannel;
         private final ImageView thumbnail;
+
+
         private VideoViewHolder(View view) {
             super(view);
             tvTitle = view.findViewById(R.id.tvTitle);
@@ -36,53 +35,53 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             tvChannel = view.findViewById(R.id.tvChannel);
         }
     }
+
     private final LayoutInflater mInflater;
     private final Context mContext;
-    private List<Video> videos;
-    private List<Video> videosFull;
+    private List<Video> videos = new ArrayList<>();
+    private List<Video> videosFull = new ArrayList<>();
 
     public VideoListAdapter(Context context) {
         this.mInflater = LayoutInflater.from(context);
         this.mContext = context;
-        this.videosFull = new ArrayList<>();
     }
 
-
+    @NonNull
     @Override
-    public VideoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.video_layout,parent,false);
+    public VideoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = mInflater.inflate(R.layout.video_layout, parent, false);
         return new VideoViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(VideoViewHolder holder, int position) {
-        if (videos != null) {
+    public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
+        if (videos != null && position < videos.size()) {
             Video video = videos.get(position);
             holder.tvTitle.setText(video.getTitle());
             holder.tvViews.setText(String.valueOf(video.getViews()));
             holder.tvChannel.setText(video.getChannel());
             int imageResId = mContext.getResources().getIdentifier(video.getThumbnail(), "drawable", mContext.getPackageName());
             holder.thumbnail.setImageResource(imageResId);
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    video.incrementViews();
-                    holder.tvViews.setText(String.valueOf(video.getViews()));
+            holder.itemView.setOnClickListener(view -> {
+                video.incrementViews();
+                holder.tvViews.setText(String.valueOf(video.getViews()));
 
-                    // Start the VideoPlayerActivity with the video details
-                    Intent intent = new Intent(mContext, VideoPlayerActivity.class);
-                    intent.putExtra("video", video);
+                // Start the VideoPlayerActivity with the video ID
+                Intent intent = new Intent(mContext, VideoPlayerActivity.class);
+                intent.putExtra("videoId", video.getId());
+                if (mContext instanceof Activity) {
                     ((Activity) mContext).startActivityForResult(intent, 1);
+                } else {
+                    mContext.startActivity(intent);
                 }
             });
         }
-
     }
 
     public void setVideos(List<Video> v) {
-        videos = v;
-        videosFull = new ArrayList<>(v);
-        notifyDataSetChanged();;
+        this.videos = new ArrayList<>(v);
+        this.videosFull = new ArrayList<>(v);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -91,6 +90,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             return videos.size();
         return 0;
     }
+
     public void filter(String text) {
         videos.clear();
         if (text.isEmpty()) {

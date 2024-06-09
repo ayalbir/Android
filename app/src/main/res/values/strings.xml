@@ -3,8 +3,8 @@
     <string name="username">Username</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
-    <string name="open_nav">Open Navigation Drawer</string>
-    <string name="close_nav">Close Navigation Drawer</string>
+    <string name="open_nav">Open Menu</string>
+    <string name="close_nav">Close Menu</string>
     <string name="logout">Logout</string>
     <string name="login">Login</string>
     <string name="ayal_dvir_elay">Ayal, Dvir, Elay</string>
@@ -17,5 +17,9 @@
     <string name="add_comment">Add Comment</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="save">Save\n</string>
+    <string name="comment">Comment</string>
+    <string name="full_screen">Full Screen</string>
+    <string name="add_video">Add Video</string>
 
 </resources>

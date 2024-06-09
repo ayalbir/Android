@@ -6,6 +6,5 @@
     <color name="colorAccent">#03DAC5</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
-    <color name="lavender">#BFC3EA</color>
-    <color name="background">@color/black</color>
+    <color name="background">@color/dark_grey</color>
 </resources>

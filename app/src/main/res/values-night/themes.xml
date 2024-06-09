@@ -5,9 +5,9 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@color/black</item>
+        <item name="android:windowBackground">@color/dark_grey</item>
         <item name="android:textColorPrimary">@color/white</item>
-        <item name="android:statusBarColor">@color/lightLavender</item>
+        <item name="android:statusBarColor">@color/black</item>
     </style>
 </resources>
 
