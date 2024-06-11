@@ -39,6 +39,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    public static final int REQUEST_CODE_ADD_VIDEO = 1;
+    public static final int REQUEST_CODE_EDIT_VIDEO = 2;
     private DrawerLayout drawerLayout;
     private Switch nightSwitch;
     private SearchView searchView;
@@ -181,9 +183,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     // Already on Home, no need to start a new activity
                 }
                 else if (id == R.id.nav_add_video) {
-                    // Implement login activity
-                    // Intent intent = new Intent(this, LoginActivity.class);
-                    // startActivity(intent);
+                    Intent addIntent = new Intent(MainActivity.this, AddEditVideoActivity.class);
+                    startActivityForResult(addIntent, REQUEST_CODE_ADD_VIDEO);
+                    return true;
                 }else if (id == R.id.nav_login) {
                     // Implement login activity
                     // Intent intent = new Intent(this, LoginActivity.class);

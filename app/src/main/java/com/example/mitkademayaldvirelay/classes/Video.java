@@ -16,7 +16,7 @@ public class Video{
     private int duration;
     private String thumbnail;
     private String mp4file;
-    private List<String> comments;
+    private List<Comment> comments;
     private boolean liked;
 
     public boolean isLiked() {
@@ -34,7 +34,7 @@ public class Video{
         this.comments = new ArrayList<>();
     }
 
-    public Video(String channel, String title, String description, int duration, String thumbnail, String mp4file, List<String> comments) {
+    public Video(String channel, String title, String description, int duration, String thumbnail, String mp4file, List<Comment> comments) {
         this.id = ++idCounter;
         this.channel = channel;
         this.title = title;
@@ -48,7 +48,7 @@ public class Video{
         }
     }
 
-    public Video(String channel, String title, String description, int duration, int likes, int views, String thumbnail, String mp4file, List<String> comments) {
+    public Video(String channel, String title, String description, int duration, int likes, int views, String thumbnail, String mp4file, List<Comment> comments) {
         this(channel, title, description, duration, thumbnail, mp4file, comments);
         this.likes = likes;
         this.views = views;
@@ -122,11 +122,11 @@ public class Video{
         this.mp4file = mp4file;
     }
 
-    public List<String> getComments() {
+    public List<Comment> getComments() {
         return comments;
     }
 
-    public void setComments(List<String> comments) {
+    public void setComments(List<Comment> comments) {
         if (comments != null) {
             this.comments = comments;
         } else {
@@ -134,7 +134,7 @@ public class Video{
         }
     }
 
-    public void addComment(String comment) {
+    public void addComment(Comment comment) {
         this.comments.add(comment);
     }
 

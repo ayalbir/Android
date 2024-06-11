@@ -1,5 +1,10 @@
 package com.example.mitkademayaldvirelay.classes;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,5 +38,21 @@ public class VideoManager {
             }
         }
         return null;
+    }
+    public void addVideo(Video video) {
+        videos.add(video);
+    }
+
+    public void updateVideo(Video updatedVideo) {
+        for (int i = 0; i < videos.size(); i++) {
+            if (videos.get(i).getId() == updatedVideo.getId()) {
+                videos.set(i, updatedVideo);
+                return;
+            }
+        }
+    }
+
+    public void removeVideo(Video video) {
+        videos.remove(video);
     }
 }

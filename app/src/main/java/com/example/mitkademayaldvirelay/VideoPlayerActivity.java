@@ -2,6 +2,7 @@ package com.example.mitkademayaldvirelay;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import android.widget.VideoView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.mitkademayaldvirelay.classes.Comment;
 import com.example.mitkademayaldvirelay.classes.Video;
 import com.example.mitkademayaldvirelay.classes.VideoManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -31,7 +33,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
     private Video video;
     private CommentsAdapter commentsAdapter;
-    private List<String> commentsList;
+    private List<Comment> commentsList;
     private ImageButton likeButton;
 
     @Override
@@ -46,15 +48,21 @@ public class VideoPlayerActivity extends AppCompatActivity {
             return;
         }
 
-        String videoPath = "android.resource://" + getPackageName() + "/raw/" + video.getMp4file();
+        Uri videoUri;
+        VideoView videoView = findViewById(R.id.videoView);
+        if (isFileInRaw(video.getMp4file())) {
+            String videoPath = "android.resource://" + getPackageName() + "/raw/" + video.getMp4file();
+            videoUri = Uri.parse(videoPath);
+        }
+        else {
+            videoUri = Uri.parse(video.getMp4file());
+        }
+        videoView.setVideoURI(videoUri);
         commentsList = video.getComments();
 
         if (commentsList == null) {
             commentsList = new ArrayList<>();
         }
-
-        VideoView videoView = findViewById(R.id.videoView);
-        videoView.setVideoURI(Uri.parse(videoPath));
 
         MediaController mediaController = new MediaController(this);
         videoView.setMediaController(mediaController);
@@ -69,7 +77,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
         TextView viewsView = findViewById(R.id.tvViews);
         TextView likesView = findViewById(R.id.tvLikes);
 
-
         titleView.setText(video.getTitle());
         channelNameView.setText(video.getChannel());
         viewsView.setText("Views: " + video.getViews());
@@ -82,11 +89,11 @@ public class VideoPlayerActivity extends AppCompatActivity {
         shareBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Share button
+                // Sharing functionality
                 Intent shareIntent = new Intent(Intent.ACTION_SEND);
                 shareIntent.setType("text/plain");
                 shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Check out this video!");
-                shareIntent.putExtra(Intent.EXTRA_TEXT, videoPath);
+                shareIntent.putExtra(Intent.EXTRA_TEXT, videoUri.toString());
                 startActivity(Intent.createChooser(shareIntent, "Share via"));
             }
         });
@@ -105,7 +112,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
             }
         });
 
-
         // Initialize comments section
         ListView commentsListView = findViewById(R.id.commentsListView);
         commentsAdapter = new CommentsAdapter(this, commentsList);
@@ -115,7 +121,8 @@ public class VideoPlayerActivity extends AppCompatActivity {
             EditText commentInput = findViewById(R.id.etComment);
             String newComment = commentInput.getText().toString();
             if (!newComment.isEmpty()) {
-                video.addComment(newComment);
+                Uri defaultPhotoUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.login);
+                Comment comment = new Comment(newComment, defaultPhotoUri.toString());
                 commentsAdapter.notifyDataSetChanged();
                 commentInput.setText("");
             }
@@ -128,12 +135,14 @@ public class VideoPlayerActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
                 if (id == R.id.nav_home) {
-                    Intent intent = new Intent(VideoPlayerActivity.this, MainActivity.class);
-                    startActivity(intent);
+                    Intent homeIntent = new Intent(VideoPlayerActivity.this, MainActivity.class);
+                    startActivity(homeIntent);
+                    return true;
                 }
                 else if (id == R.id.nav_add_video) {
-                    // Intent intent = new Intent(this, LoginActivity.class);
-                    // startActivity(intent);
+                    Intent addIntent = new Intent(VideoPlayerActivity.this, AddEditVideoActivity.class);
+                    startActivity(addIntent);
+                    return true;
                 }else if (id == R.id.nav_login) {
                     // Implement login activity
                     // Intent intent = new Intent(this, LoginActivity.class);
@@ -142,6 +151,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
                 return false;
             }
         });
+
         // Ensure no item is selected by default
         bottomNavigationView.getMenu().setGroupCheckable(0, false, true);
     }
@@ -149,10 +159,16 @@ public class VideoPlayerActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent resultIntent = new Intent();
-        setResult(-1, resultIntent);
+        resultIntent.putExtra("updatedVideoId", video.getId());
+        setResult(RESULT_OK, resultIntent);
         super.onBackPressed();
     }
 
+    private boolean isFileInRaw(String fileName) {
+        Resources res = getResources();
+        int resourceId = res.getIdentifier(fileName, "raw", getPackageName());
+        return resourceId != 0;
+    }
     private void updateLikeButton(ImageButton likeButton) {
         if (video.isLiked()) {
             likeButton.setImageResource(R.drawable.liked);
@@ -160,12 +176,12 @@ public class VideoPlayerActivity extends AppCompatActivity {
             likeButton.setImageResource(R.drawable.unliked);
         }
     }
-    private class CommentsAdapter extends ArrayAdapter<String> {
+    private class CommentsAdapter extends ArrayAdapter<Comment> {
 
         private Context context;
-        private List<String> comments;
+        private List<Comment> comments;
 
-        public CommentsAdapter(Context context, List<String> comments) {
+        public CommentsAdapter(Context context, List<Comment> comments) {
             super(context, 0, comments);
             this.context = context;
             this.comments = comments;
@@ -179,12 +195,13 @@ public class VideoPlayerActivity extends AppCompatActivity {
             }
 
             EditText commentEdit = convertView.findViewById(R.id.etComment);
-            ImageButton saveButton = convertView.findViewById(R.id.btnSave);
+            ImageButton saveButton = convertView.findViewById(R.id.btnSaveComment);
             ImageButton editButton = convertView.findViewById(R.id.btnEdit);
             ImageButton deleteButton = convertView.findViewById(R.id.btnDelete);
 
-            String comment = getItem(position);
-            commentEdit.setText(comment);
+            Comment comment = getItem(position);
+            assert comment != null;
+            commentEdit.setText(comment.getCommentContent());
             commentEdit.setEnabled(false); // Disable editing
 
             editButton.setOnClickListener(v -> {
@@ -195,7 +212,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
             saveButton.setOnClickListener(v -> {
                 String editedComment = commentEdit.getText().toString();
                 if (!editedComment.isEmpty()) {
-                    comments.set(position, editedComment);
+                    comments.set(position, new Comment(editedComment, comment.getCommentPic()));
                     notifyDataSetChanged();
                     commentEdit.setEnabled(false); // Disable editing after saving
                     saveButton.setVisibility(View.GONE); // Hide save button
