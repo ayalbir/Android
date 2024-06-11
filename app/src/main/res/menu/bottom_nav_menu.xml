@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group >
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/nav_home"
+            android:title="@string/home" />
+        <item
+            android:id="@+id/nav_add_video"
+            android:icon="@drawable/plus"
+            android:title="@string/add_video" />
+        <item
+            android:id="@+id/nav_login"
+            android:icon="@drawable/nav_logout"
+            android:title="@string/login" />
+    </group>
+</menu>

@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.mitkadenayaldvirelay"
+    namespace = "com.example.mitkademayaldvirelay"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.mitkadenayaldvirelay"
+        applicationId = "com.example.mitkademayaldvirelay"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -35,6 +35,7 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.swiperefreshlayout)
+    implementation(libs.gson)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

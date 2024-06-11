@@ -1,0 +1,84 @@
+{
+  "Videos": [
+    {
+      "channel": "Channel 1",
+      "title": "Sample Video 1",
+      "description": "This is a sample video 1.",
+      "duration": 120,
+      "thumbnail": "video1pic",
+      "mp4file": "video1"
+    },
+    {
+      "channel": "Channel 2",
+      "title": "Sample Video 2",
+      "description": "This is a sample video 2.",
+      "duration": 150,
+      "thumbnail": "video2pic",
+      "mp4file": "video2"
+    },
+    {
+      "channel": "Channel 3",
+      "title": "Sample Video 3",
+      "description": "This is a sample video 3.",
+      "duration": 200,
+      "thumbnail": "video3pic",
+      "mp4file": "video3"
+    },
+    {
+      "channel": "Channel 4",
+      "title": "Sample Video 4",
+      "description": "This is a sample video 4.",
+      "duration": 180,
+      "thumbnail": "video4pic",
+      "mp4file": "video4"
+    },
+    {
+      "channel": "Channel 5",
+      "title": "Sample Video 5",
+      "description": "This is a sample video 5.",
+      "duration": 210,
+      "thumbnail": "video5pic",
+      "mp4file": "video5"
+    },
+    {
+      "channel": "Channel 6",
+      "title": "Sample Video 6",
+      "description": "This is a sample video 6.",
+      "duration": 170,
+      "thumbnail": "video6pic",
+      "mp4file": "video6"
+    },
+    {
+      "channel": "Channel 7",
+      "title": "Sample Video 7",
+      "description": "This is a sample video 7.",
+      "duration": 190,
+      "thumbnail": "video7pic",
+      "mp4file": "video7"
+    },
+    {
+      "channel": "Channel 8",
+      "title": "Sample Video 8",
+      "description": "This is a sample video 8.",
+      "duration": 160,
+      "thumbnail": "video8pic",
+      "mp4file": "video8"
+    },
+    {
+      "channel": "Channel 9",
+      "title": "Sample Video 9",
+      "description": "This is a sample video 9.",
+      "duration": 220,
+      "thumbnail": "video9pic",
+      "mp4file": "video9"
+    },
+    {
+      "channel": "Channel 10",
+      "title": "Sample Video 10",
+      "description": "This is a sample video 10.",
+      "duration": 140,
+      "thumbnail": "video10pic",
+      "mp4file": "video10"
+    }
+  ]
+}

@@ -1,6 +1,25 @@
 <resources>
-    <string name="app_name">MitkadenAyalDvirElay</string>
+    <string name="app_name">Footube</string>
     <string name="username">Username</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="open_nav">Open Menu</string>
+    <string name="close_nav">Close Menu</string>
+    <string name="logout">Logout</string>
+    <string name="login">Login</string>
+    <string name="ayal_dvir_elay">Ayal, Dvir, Elay</string>
+    <string name="home">Home</string>
+    <string name="footube">FooTube</string>
+    <string name="night_mode">Night Mode</string>
+    <string name="views">Views:</string>
+    <string name="channel">Channel:</string>
+    <string name="add_a_comment">Add a comment</string>
+    <string name="add_comment">Add Comment</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="save">Save\n</string>
+    <string name="comment">Comment</string>
+    <string name="full_screen">Full Screen</string>
+    <string name="add_video">Add Video</string>
+
 </resources>
