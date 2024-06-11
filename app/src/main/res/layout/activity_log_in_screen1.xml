@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Google Logo -->
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/google"
+        android:layout_gravity="center"/>
+
+    <!-- Sign In Text -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign in"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp" />
+
+    <!-- Subtitle -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="to continue to YouTube"
+        android:textSize="16sp"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp" />
+
+    <!-- Email or Phone Input -->
+    <EditText
+        android:id="@+id/email_or_phone"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginTop="32dp"
+        android:hint="Email"
+        android:inputType="textEmailAddress" />
+
+    <EditText
+        android:id="@+id/et_password"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginTop="32dp"
+        android:hint="password"
+        android:inputType="textPassword" />
+
+    <!-- Forgot Email Link -->
+    <TextView
+        android:id="@+id/tvErrorMsg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text=""
+        android:textColor="#FF0000"/>
+
+    <!-- Guest Mode Info -->
+    <TextView
+        android:layout_width="122dp"
+        android:layout_height="45dp"
+        android:layout_gravity="start"
+        android:layout_marginTop="8dp"
+        android:clickable="true"
+        android:text="Forgot email?"
+        android:textColor="#0000FF" />
+    <CheckBox
+        android:id="@+id/cb_show_password"
+        android:layout_width="157dp"
+        android:layout_height="81dp"
+        android:text="Show password" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Not your computer? Use Guest mode to sign in privately."
+        android:textSize="14sp"
+        android:layout_marginTop="16dp" />
+
+
+    <!-- Create Account and Next Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="32dp">
+
+        <Button
+            android:id="@+id/btn_create"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create account"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btn_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="login"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+</LinearLayout>

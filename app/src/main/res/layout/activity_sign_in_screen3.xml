@@ -52,13 +52,14 @@
         android:hint="Confirm"
         android:inputType="textPassword"
         android:paddingBottom="16dp" />
+
     <TextView
         android:id="@+id/tvErrorMsg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:text=""
-        android:textColor="#FF0000"/>
+        android:textColor="#FF0000" />
 
     <CheckBox
         android:id="@+id/cb_show_password"

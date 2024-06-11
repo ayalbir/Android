@@ -45,10 +45,21 @@
         android:layout_marginBottom="8dp" />
 
     <TextView
-        android:id="@+id/email_confirmation"
+        android:id="@+id/tvErrorMsg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/email_input"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:text=""
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/email_confirmation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvErrorMsg"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp"
         android:text="You’ll need to confirm that this email belongs to you"
