@@ -1,6 +1,4 @@
-package com.example.mitkademayaldvirelay.classes;
-
-import android.widget.ImageView;
+package com.example.myyoutube.classes;
 
 public class Comment {
     private String commentContent;

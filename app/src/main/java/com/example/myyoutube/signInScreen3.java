@@ -30,9 +30,9 @@ public class signInScreen3 extends AppCompatActivity {
         btn_next = findViewById(R.id.btn_next);
         showPasswordCheckBox = findViewById(R.id.cb_show_password);
         errorMsg = findViewById((R.id.tvErrorMsg));
+        String name = getIntent().getStringExtra("name");
 
         btn_next.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
                 errorMsg.setText("");
@@ -44,6 +44,7 @@ public class signInScreen3 extends AppCompatActivity {
                         if (hasLettersAndNumbers(passwordText)) {
                             errorMsg.setText("");
                             Intent intent = new Intent(signInScreen3.this, signInScreen4.class);
+                            intent.putExtra("name", name);
                             intent.putExtra("password", passwordText);
                             startActivity(intent);
                         } else {

@@ -1,35 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="200dp"
+    android:background="#BF4A5C"
+    android:gravity="bottom"
     android:orientation="vertical"
-    android:padding="20dp"
-    android:theme="@style/Theme.MitkademAyalDvirElay">
+    android:padding="16dp"
+    android:theme="@style/Theme.MyYoutube">
 
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="50dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-
-        android:text="@string/footube"
-        android:textColor="@color/custom_red"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="64dp"
+        android:paddingTop="20dp"
+        android:src="@drawable/logolight" />
+    <ImageView
+        android:id="@+id/IVHeaderProfilePic"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:paddingTop="20dp"
+        android:src="@drawable/login" />
 
     <TextView
+        android:id="@+id/TVWelcomeMenu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:text="@string/ayal_dvir_elay"
-        android:textColor="@color/custom_red"
-        android:textSize="14sp">
-
-    </TextView>
-
+        android:paddingTop="8dp"
+        android:text="@string/welcome"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@android:color/white" />
 
 </LinearLayout>

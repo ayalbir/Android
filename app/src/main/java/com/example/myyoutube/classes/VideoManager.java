@@ -1,10 +1,5 @@
-package com.example.mitkademayaldvirelay.classes;
+package com.example.myyoutube.classes;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 

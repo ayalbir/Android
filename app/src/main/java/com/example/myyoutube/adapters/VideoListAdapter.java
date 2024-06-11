@@ -1,4 +1,4 @@
-package com.example.mitkademayaldvirelay.adapters;
+package com.example.myyoutube.adapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -14,12 +14,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.mitkademayaldvirelay.AddEditVideoActivity;
-import com.example.mitkademayaldvirelay.MainActivity;
-import com.example.mitkademayaldvirelay.R;
-import com.example.mitkademayaldvirelay.VideoPlayerActivity;
-import com.example.mitkademayaldvirelay.classes.Video;
-import com.example.mitkademayaldvirelay.classes.VideoManager;
+import com.example.myyoutube.AddEditVideoActivity;
+import com.example.myyoutube.MainActivity;
+import com.example.myyoutube.R;
+import com.example.myyoutube.VideoPlayerActivity;
+import com.example.myyoutube.classes.Video;
+import com.example.myyoutube.classes.VideoManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +50,6 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
     public VideoListAdapter(Context context) {
         this.mInflater = LayoutInflater.from(context);
         this.mContext = context;
-        this.videosFull = new ArrayList<>();
     }
 
     @NonNull
@@ -67,20 +66,13 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             holder.tvTitle.setText(video.getTitle());
             holder.tvViews.setText(String.valueOf(video.getViews()));
             holder.tvChannel.setText(video.getChannel());
-            Uri imageUri = Uri.parse(video.getThumbnail());
-
-            if (imageUri != null) {
-                holder.thumbnail.setImageURI(imageUri);
-            } else {
-                holder.thumbnail.setImageResource(R.drawable.nofile); // Default thumbnail
-            }
-
+            int imageResId = mContext.getResources().getIdentifier(video.getThumbnail(), "drawable", mContext.getPackageName());
+            holder.thumbnail.setImageResource(imageResId);
 
             holder.itemView.setOnClickListener(view -> {
                 video.incrementViews();
                 holder.tvViews.setText(String.valueOf(video.getViews()));
 
-                // Start the VideoPlayerActivity with the video ID
                 Intent intent = new Intent(mContext, VideoPlayerActivity.class);
                 intent.putExtra("videoId", video.getId());
                 ((Activity) mContext).startActivityForResult(intent, 1);
@@ -94,9 +86,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
 
             holder.btnDeleteVideo.setOnClickListener(view -> {
                 VideoManager.getVideoManager().removeVideo(video);
-                videos.remove(position);
-                notifyItemRemoved(position);
-                notifyItemRangeChanged(position, videos.size());
+                removeItem(position);
             });
         }
     }
@@ -107,11 +97,27 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         notifyDataSetChanged();
     }
 
+    public void removeItem(int position) {
+        //videos.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, videos.size());
+    }
+
+
+    public void addItem(Video video) {
+        videos.add(video);
+        videosFull.add(video);
+        notifyItemInserted(videos.size() - 1);
+    }
+
+    public void updateItem(int position, Video video) {
+        videos.set(position, video);
+        videosFull.set(position, video);
+        notifyItemChanged(position);
+    }
     @Override
     public int getItemCount() {
-        if (videos != null)
-            return videos.size();
-        return 0;
+        return videos != null ? videos.size() : 0;
     }
 
     public void filter(String text) {
@@ -127,9 +133,5 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             }
         }
         notifyDataSetChanged();
-    }
-
-    public List<Video> getVideos() {
-        return videos;
     }
 }

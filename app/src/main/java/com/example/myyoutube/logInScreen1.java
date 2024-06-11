@@ -1,9 +1,7 @@
 package com.example.myyoutube;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
@@ -14,6 +12,9 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myyoutube.classes.User;
+import com.example.myyoutube.classes.UserManager;
+
 public class logInScreen1 extends AppCompatActivity {
     private EditText password;
     private EditText email;
@@ -22,7 +23,6 @@ public class logInScreen1 extends AppCompatActivity {
     private CheckBox showPasswordCheckBox;
     private TextView errorMsg;
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,21 +38,18 @@ public class logInScreen1 extends AppCompatActivity {
 
         // Set click listener for login button
         btn_login.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
-                SharedPreferences prefs = getApplicationContext().getSharedPreferences("shared", Context.MODE_PRIVATE);
                 String currentEmail = email.getText().toString().trim();
-                String savedpass = prefs.getString(currentEmail, "");
-                if (!savedpass.equals("")
-                        && savedpass.equals(password.getText().toString())) {
+                User user = UserManager.getUserByEmail(currentEmail);
+
+                if (user != null) {
                     errorMsg.setText("");
-                    SharedPreferences.Editor editor = prefs.edit();
-                    editor.putString("currentEmail", currentEmail);
                     Intent intent = new Intent(logInScreen1.this, MainActivity.class);
+                    intent.putExtra("email", currentEmail);
                     startActivity(intent);
                 } else {
-                    errorMsg.setText("could not find your Foo Tube account.");
+                    errorMsg.setText("Could not find your Foo Tube account.");
                 }
             }
         });

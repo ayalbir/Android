@@ -21,7 +21,7 @@
             android:background="@color/custom_red"
             android:elevation="4dp"
             android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            android:theme="@style/Theme.MitkademAyalDvirElay" />
+            android:theme="@style/Theme.MyYoutube" />
 
         <SearchView
             android:id="@+id/searchView"
@@ -49,7 +49,7 @@
         <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_below="@id/searchView"
             android:layout_above="@id/bottom_navigation" />
 
@@ -60,7 +60,6 @@
             android:layout_alignParentBottom="true"
             app:menu="@menu/bottom_nav_menu"
             app:backgroundTint="@color/dark_grey" />
-
     </RelativeLayout>
 
     <com.google.android.material.navigation.NavigationView
@@ -68,30 +67,10 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:theme="@style/Theme.MitkademAyalDvirElay"
+        android:theme="@style/Theme.MyYoutube"
         app:headerLayout="@layout/nav_header"
         app:itemIconTint="@color/custom_red"
         app:itemTextColor="@color/custom_red"
         app:menu="@menu/nav_menu" />
 
 </androidx.drawerlayout.widget.DrawerLayout>
-
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
-
-    <Button
-        android:id = "@+id/btnRegister"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Register"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>

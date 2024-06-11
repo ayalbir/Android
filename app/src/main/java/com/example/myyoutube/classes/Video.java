@@ -1,6 +1,4 @@
-// /mnt/data/Video.java
-
-package com.example.mitkademayaldvirelay.classes;
+package com.example.myyoutube.classes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +24,6 @@ public class Video{
     public void setLiked(boolean isLiked1) {
         this.liked= isLiked1;
     }
-
-
 
     public Video() {
         this.id = ++idCounter;

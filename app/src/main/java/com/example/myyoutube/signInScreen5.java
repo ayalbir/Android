@@ -1,12 +1,10 @@
 package com.example.myyoutube;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -14,11 +12,15 @@ import android.util.Base64;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import com.example.myyoutube.classes.User;
+import com.example.myyoutube.classes.UserManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,7 +31,6 @@ public class signInScreen5 extends AppCompatActivity {
     private static final int REQUEST_CAMERA = 2;
     private ImageView selectedImageView;
     private Uri imageUri;
-    private SharedPreferences sharedPreferences; //connected
     private boolean isImageSelected = false;  // Track if an image has been selected
     private TextView errorMsg;  // Error message TextView
 
@@ -42,7 +43,6 @@ public class signInScreen5 extends AppCompatActivity {
         Button btnSelectImage = findViewById(R.id.btnSelectImage);
         Button btnLogin = findViewById(R.id.btnLogin);  // New button for login
         errorMsg = findViewById(R.id.tvErrorMsg);  // Initialize the error message TextView
-        sharedPreferences = getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
 
         checkAndRequestPermissions();
 
@@ -54,7 +54,18 @@ public class signInScreen5 extends AppCompatActivity {
         // New listener for the login button
         btnLogin.setOnClickListener(v -> {
             if (isImageSelected) {
+                Toast.makeText(signInScreen5.this, "Loading...", Toast.LENGTH_SHORT).show();
+
+                String email = getIntent().getStringExtra("email");
+                String name = getIntent().getStringExtra("name");
+                String password = getIntent().getStringExtra("password");
+                Bitmap bitmap = ((BitmapDrawable) selectedImageView.getDrawable()).getBitmap();
+                String encodedImage = encodeImage(bitmap);
+
+                UserManager.addUser(new User(email, name, password, encodedImage));
+
                 Intent intent = new Intent(signInScreen5.this, logInScreen1.class);
+                intent.putExtra("email", email);
                 startActivity(intent);
             } else {
                 errorMsg.setText("Please select an image before proceeding to login.");
@@ -108,7 +119,6 @@ public class signInScreen5 extends AppCompatActivity {
                     try {
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
                         selectedImageView.setImageBitmap(bitmap);
-                        saveImageToPreferences(bitmap);
                         isImageSelected = true;
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -117,7 +127,6 @@ public class signInScreen5 extends AppCompatActivity {
             } else if (requestCode == REQUEST_CAMERA) {
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
                 selectedImageView.setImageBitmap(photo);
-                saveImageToPreferences(photo);
                 isImageSelected = true;
             }
         } else {
@@ -125,18 +134,9 @@ public class signInScreen5 extends AppCompatActivity {
         }
     }
 
-    private void saveImageToPreferences(Bitmap bitmap) {
-        Intent recvIntent = getIntent();
-        String email = recvIntent.getStringExtra("email");
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+    private String encodeImage(Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        String encodedImage = Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
-        editor.putString("profile_image_" + email, encodedImage);  // Use unique key for each user
-        editor.apply();
-    }
-
-    private void loadSavedImage() {
-        // This method is now unused but kept for reference
+        return Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
     }
 }

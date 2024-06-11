@@ -1,4 +1,4 @@
-package com.example.mitkademayaldvirelay;
+package com.example.myyoutube;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -20,10 +21,11 @@ import android.widget.VideoView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.mitkademayaldvirelay.classes.Comment;
-import com.example.mitkademayaldvirelay.classes.Video;
-import com.example.mitkademayaldvirelay.classes.VideoManager;
+import com.example.myyoutube.classes.Comment;
+import com.example.myyoutube.classes.Video;
+import com.example.myyoutube.classes.VideoManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 
 import java.util.ArrayList;
@@ -76,7 +78,15 @@ public class VideoPlayerActivity extends AppCompatActivity {
         TextView channelNameView = findViewById(R.id.tvChannelName);
         TextView viewsView = findViewById(R.id.tvViews);
         TextView likesView = findViewById(R.id.tvLikes);
+        FloatingActionButton btnret = findViewById(R.id.FABReturnToMain);
 
+        btnret.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(VideoPlayerActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
         titleView.setText(video.getTitle());
         channelNameView.setText(video.getChannel());
         viewsView.setText("Views: " + video.getViews());
@@ -123,6 +133,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
             if (!newComment.isEmpty()) {
                 Uri defaultPhotoUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.login);
                 Comment comment = new Comment(newComment, defaultPhotoUri.toString());
+                video.addComment(comment);
                 commentsAdapter.notifyDataSetChanged();
                 commentInput.setText("");
             }

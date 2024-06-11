@@ -38,6 +38,7 @@ public class signInScreen1 extends AppCompatActivity {
                 boolean isName = name.length()>0 && name.length()<51;
                 if(isName){
                     Intent intent = new Intent(signInScreen1.this,signInScreen2.class);
+                    intent.putExtra("name", name);
                     startActivity(intent);
                     errorMsg.setText("");
                 }

@@ -7,7 +7,7 @@
     android:layout_marginBottom="6dp"
     android:gravity="start"
     android:orientation="vertical"
-    android:theme="@style/Theme.MitkademAyalDvirElay">
+    android:theme="@style/Theme.MyYoutube">
 
     <View
         android:id="@+id/divider"

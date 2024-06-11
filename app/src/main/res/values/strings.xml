@@ -23,6 +23,8 @@
     <string name="add_video">Add Video</string>
     <string name="month_prompt">Month</string>
     <string name="year_prompt">Year</string>
+    <string name="Hello">Hello\n</string>
+    <string name="welcome">Welcome</string>
 
 
     <string-array name="months_array">

@@ -2,7 +2,7 @@
 <menu
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:theme="@style/Theme.MitkademAyalDvirElay"
+    android:theme="@style/Theme.MyYoutube"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn= "navigation_view">
 

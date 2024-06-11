@@ -34,6 +34,7 @@ public class signInScreen2 extends AppCompatActivity {
         nextButton = findViewById(R.id.button_next);
         errorMsg = findViewById(R.id.tvErrorMsg);
 
+        String name = getIntent().getStringExtra("name");
         ArrayAdapter<CharSequence> monthAdapter = ArrayAdapter.createFromResource(this,
                 R.array.months_array, android.R.layout.simple_spinner_item);
         monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -45,7 +46,6 @@ public class signInScreen2 extends AppCompatActivity {
         genderSpinner.setAdapter(genderAdapter);
 
         nextButton.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
                 errorMsg.setText("");
@@ -70,8 +70,7 @@ public class signInScreen2 extends AppCompatActivity {
 
                     // Check if the date is in the future
                     if (birthDate.isAfter(now)) {
-                        errorMsg.setText("You cannot create a Google Account because" +
-                                " you do not meet the minimum age requirement.");
+                        errorMsg.setText("You cannot create a Google Account because" + " you do not meet the minimum age requirement.");
                         return;
                     }
 
@@ -84,6 +83,7 @@ public class signInScreen2 extends AppCompatActivity {
                     // If no errors, proceed to the next screen
                     errorMsg.setText("");
                     Intent intent = new Intent(signInScreen2.this, signInScreen3.class);
+                    intent.putExtra("name", name);
                     startActivity(intent);
 
                 } catch (Exception e) {
