@@ -29,7 +29,7 @@ public class signInScreen5 extends AppCompatActivity {
     private static final int REQUEST_CAMERA = 2;
     private ImageView selectedImageView;
     private Uri imageUri;
-    private SharedPreferences sharedPreferences;
+    private SharedPreferences sharedPreferences; //connected
     private boolean isImageSelected = false;  // Track if an image has been selected
     private TextView errorMsg;  // Error message TextView
 
