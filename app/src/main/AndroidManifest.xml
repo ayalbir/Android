@@ -13,10 +13,28 @@
         android:theme="@style/Theme.MitkademAyalDvirElay"
         tools:targetApi="31">
         <activity
+            android:name=".signInScreen5"
+            android:exported="false" />
+        <activity
+            android:name=".logInScreen1"
+            android:exported="false" />
+        <activity
+            android:name=".signInScreen4"
+            android:exported="false" />
+        <activity
             android:name=".AddEditVideoActivity"
             android:exported="false" />
         <activity
             android:name=".VideoPlayerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".signInScreen3"
+            android:exported="false" />
+        <activity
+            android:name=".signInScreen2"
+            android:exported="false" />
+        <activity
+            android:name=".signInScreen1"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
