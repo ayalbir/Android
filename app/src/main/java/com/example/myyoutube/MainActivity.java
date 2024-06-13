@@ -56,9 +56,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SearchView searchView;
     private int currentMenuItemId = R.id.nav_home;
     private VideoListAdapter adapter;
-    public boolean userIsConnected;
     public static List<Video> videos;
     public static boolean firstTime = true;
+    private static User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,29 +69,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String email = intent.getStringExtra("email");
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         MenuItem profilePictureItem = bottomNavigationView.getMenu().findItem(R.id.nav_login);
+        profilePictureItem.setIcon(R.drawable.login);
+        profilePictureItem.setTitle("Login");
 
-        if (email != null) {
-            userIsConnected = true;
-            Toast.makeText(this, "Hello " + email, Toast.LENGTH_SHORT).show();
-            User user = UserManager.getUserByEmail(email);
-            if (user != null) {
-                Bitmap bitmap = decodeImage(user.getProfileImage());
+            if (email != null) {
+                currentUser = UserManager.getUserByEmail(email);
+            }
+            if(getCurrentUser() != null) {
+                Bitmap bitmap = decodeImage(currentUser.getProfileImage());
                 NavigationView navigationView = findViewById(R.id.nav_view);
                 ImageView navHeaderImageView = navigationView.getHeaderView(0).findViewById(R.id.IVHeaderProfilePic);
                 TextView navHeaderTextView = navigationView.getHeaderView(0).findViewById(R.id.TVWelcomeMenu);
                 if (bitmap != null) {
                     navHeaderImageView.setImageBitmap(bitmap);
                 }
-                navHeaderTextView.setText("Hello " + user.getUserName());
+                navHeaderTextView.setText("Hello " + currentUser.getUserName());
                 profilePictureItem.setIcon(R.drawable.nav_logout);
                 profilePictureItem.setTitle("Logout");
+
             }
-        }
-        else {
-            userIsConnected = false;
-            profilePictureItem.setIcon(R.drawable.login);
-            profilePictureItem.setTitle("Login");
-        }
+
+
 
         initUI();
         setupRecyclerView();
@@ -172,6 +170,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return videoList;
     }
 
+    public static User getCurrentUser() {
+        return currentUser;
+    }
     private Bitmap decodeImage(String encodedImage) {
         if (encodedImage != null) {
             byte[] decodedBytes = Base64.decode(encodedImage, Base64.DEFAULT);
@@ -225,19 +226,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
                 if (id == R.id.nav_home) {
+                    //do nothing
                 } else if (id == R.id.nav_add_video) {
-                    if(userIsConnected) {
+                    if(getCurrentUser() != null) {
                         Intent addIntent = new Intent(MainActivity.this, AddEditVideoActivity.class);
                         startActivityForResult(addIntent, REQUEST_CODE_ADD_VIDEO);
                     }
                     else {
-                        Intent addIntent = new Intent(MainActivity.this, AddEditVideoActivity.class);
-                        startActivityForResult(addIntent, REQUEST_CODE_ADD_VIDEO);
-                        //TODO
-                        //Toast.makeText(MainActivity.this, "Not registered account can't add videos", Toast.LENGTH_SHORT).show();
+                        Intent addIntent = new Intent(MainActivity.this, logInScreen1.class);
+                        startActivity(addIntent);
                     }
                     return true;
                 } else if (id == R.id.nav_login) {
+                    currentUser = null;
                     Intent intent = new Intent(MainActivity.this, logInScreen1.class);
                     startActivity(intent);
                 }

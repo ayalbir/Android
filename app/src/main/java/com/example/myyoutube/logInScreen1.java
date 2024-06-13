@@ -43,7 +43,7 @@ public class logInScreen1 extends AppCompatActivity {
                 String currentEmail = email.getText().toString().trim();
                 User user = UserManager.getUserByEmail(currentEmail);
 
-                if (user != null) {
+                if (user != null && (password.getText().toString().trim().equals(user.getPassword()))) {
                     errorMsg.setText("");
                     Intent intent = new Intent(logInScreen1.this, MainActivity.class);
                     intent.putExtra("email", currentEmail);

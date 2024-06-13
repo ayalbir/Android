@@ -90,14 +90,18 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             });
 
             holder.btnEditVideo.setOnClickListener(view -> {
-                Intent intent = new Intent(mContext, AddEditVideoActivity.class);
-                intent.putExtra("videoId", video.getId());
-                ((Activity) mContext).startActivityForResult(intent, MainActivity.REQUEST_CODE_EDIT_VIDEO);
+                if(MainActivity.getCurrentUser() != null) {
+                    Intent intent = new Intent(mContext, AddEditVideoActivity.class);
+                    intent.putExtra("videoId", video.getId());
+                    ((Activity) mContext).startActivityForResult(intent, MainActivity.REQUEST_CODE_EDIT_VIDEO);
+                }
             });
 
             holder.btnDeleteVideo.setOnClickListener(view -> {
-                VideoManager.getVideoManager().removeVideo(video);
-                removeItem(position);
+                if(MainActivity.getCurrentUser() != null) {
+                    VideoManager.getVideoManager().removeVideo(video);
+                    removeItem(position);
+                }
             });
         }
     }
