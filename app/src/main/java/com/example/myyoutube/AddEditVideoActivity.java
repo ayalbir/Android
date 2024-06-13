@@ -41,7 +41,6 @@ public class AddEditVideoActivity extends AppCompatActivity {
     private Uri imageUri, videoUri;
     private Video video;
     private boolean isEditMode = false;
-    private Bitmap bit1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +95,6 @@ public class AddEditVideoActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                ivThumbnail.setRotation(90);
             } else if (requestCode == PICK_VIDEO_REQUEST) {
                 videoUri = data.getData();
                 Toast.makeText(this, "Video selected: " + videoUri.toString(), Toast.LENGTH_SHORT).show();
@@ -112,7 +110,6 @@ public class AddEditVideoActivity extends AppCompatActivity {
         String encodedImage = encodeImage(bitmap);
         video.setThumbnail(encodedImage);
 
-        // Encode the video if selected from the gallery
         String encodedVideo = encodeVideo(videoUri);
         video.setMp4file(encodedVideo != null ? encodedVideo : "");
 
@@ -125,7 +122,7 @@ public class AddEditVideoActivity extends AppCompatActivity {
         Intent resultIntent = new Intent();
         resultIntent.putExtra("updatedVideoId", video.getId());
         setResult(RESULT_OK, resultIntent);
-        finish();  // Ensure this is called to close the activity
+        finish();
     }
 
     private void openImageGallery() {

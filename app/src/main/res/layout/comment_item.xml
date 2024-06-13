@@ -1,32 +1,22 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="8dp">
 
-
-    <ImageView
-        android:id="@+id/ivCommentPhoto"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="8dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/login" />
-
     <EditText
         android:id="@+id/etComment"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:hint="@string/comment"
-        android:textSize="16sp" />
+        android:hint="Comment"
+        android:inputType="text" />
 
     <ImageButton
         android:id="@+id/btnSaveComment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/save"
+        android:contentDescription="Save"
         android:src="@drawable/done"
         android:visibility="gone" />
 
@@ -34,13 +24,14 @@
         android:id="@+id/btnEdit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/edit"
+        android:contentDescription="Edit"
         android:src="@drawable/edit" />
 
     <ImageButton
         android:id="@+id/btnDelete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/delete"
+        android:layout_gravity="left"
+        android:contentDescription="Delete"
         android:src="@drawable/delete" />
 </LinearLayout>

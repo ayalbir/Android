@@ -23,7 +23,6 @@ public class signInScreen1 extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //EdgeToEdge.enable(this);
         setContentView(R.layout.activity_sign_in_screen1);
         this.firstName = findViewById(R.id.etFirstName);
         this.lastName = findViewById(R.id.etLastName);

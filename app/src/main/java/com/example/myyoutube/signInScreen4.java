@@ -18,7 +18,7 @@ public class signInScreen4 extends AppCompatActivity {
     private EditText emailInput;
     private Button nextButton;
     private TextView getGmail;
-    private TextView errorMsg;  // Error message TextView
+    private TextView errorMsg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +34,7 @@ public class signInScreen4 extends AppCompatActivity {
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                errorMsg.setText("");  // Clear any previous error messages
+                errorMsg.setText("");
                 String email = emailInput.getText().toString().trim();
                 if (isValidEmail(email)) {
                     String password = getIntent().getStringExtra("password");
@@ -56,7 +56,6 @@ public class signInScreen4 extends AppCompatActivity {
         getGmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Handle the action for getting a Gmail address instead
                 errorMsg.setText("Redirecting to get a Gmail address");
             }
         });

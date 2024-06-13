@@ -69,13 +69,13 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             holder.tvTitle.setText(video.getTitle());
             holder.tvViews.setText(String.valueOf(video.getViews()));
             holder.tvChannel.setText(video.getChannel());
-            // Check if the thumbnail is in the drawable resources
+            // Check if the thumbnail is in the drawable
             int imageResId = mContext.getResources().getIdentifier(video.getThumbnail(), "drawable", mContext.getPackageName());
             if (imageResId != 0) {
                 // Image is in the drawable resources
                 holder.thumbnail.setImageResource(imageResId);
             } else {
-                // Image is from the gallery, decode it from Base64
+                // Image is from the gallery
                 byte[] decodedString = Base64.decode(video.getThumbnail(), Base64.DEFAULT);
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 holder.thumbnail.setImageBitmap(decodedByte);

@@ -103,10 +103,8 @@ public class VideoPlayerActivity extends AppCompatActivity {
         videoView.setMediaController(mediaController);
         mediaController.setAnchorView(videoView);
 
-        // Start the video
         videoView.start();
 
-        // Set the data to views
         TextView titleView = findViewById(R.id.tvTitle);
         TextView channelNameView = findViewById(R.id.tvChannelName);
         TextView viewsView = findViewById(R.id.tvViews);
@@ -152,7 +150,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
             }
         });
 
-        // Initialize comments section
         ListView commentsListView = findViewById(R.id.commentsListView);
         commentsAdapter = new CommentsAdapter(this, commentsList);
         commentsListView.setAdapter(commentsAdapter);
@@ -206,7 +203,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
             }
         });
 
-        // Ensure no item is selected by default
         bottomNavigationView.getMenu().setGroupCheckable(0, false, true);
     }
 
@@ -276,8 +272,8 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
             editButton.setOnClickListener(v -> {
                 if(MainActivity.getCurrentUser() != null) {
-                    commentEdit.setEnabled(true); // Enable editing
-                    saveCommentButton.setVisibility(View.VISIBLE); // Show save button
+                    commentEdit.setEnabled(true);
+                    saveCommentButton.setVisibility(View.VISIBLE);
                 }
                 else {
                     Toast.makeText(VideoPlayerActivity.this, "User not connected", Toast.LENGTH_SHORT).show();
@@ -289,8 +285,8 @@ public class VideoPlayerActivity extends AppCompatActivity {
                 if (!editedComment.isEmpty()) {
                     comments.set(position, new Comment(editedComment, comment.getCommentPic()));
                     notifyDataSetChanged();
-                    commentEdit.setEnabled(false); // Disable editing after saving
-                    saveCommentButton.setVisibility(View.GONE); // Hide save button
+                    commentEdit.setEnabled(false);
+                    saveCommentButton.setVisibility(View.GONE);
                 }
             });
 

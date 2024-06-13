@@ -28,15 +28,13 @@ public class logInScreen1 extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in_screen1);
 
-        // Initialize views
         password = findViewById(R.id.et_password);
         email = findViewById(R.id.email_or_phone);
         btn_login = findViewById(R.id.btn_login);
-        btn_create = findViewById(R.id.btn_create); // Initialize btn_create
+        btn_create = findViewById(R.id.btn_create);
         showPasswordCheckBox = findViewById(R.id.cb_show_password);
         errorMsg = findViewById(R.id.tvErrorMsg);
 
-        // Set click listener for login button
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,7 +52,6 @@ public class logInScreen1 extends AppCompatActivity {
             }
         });
 
-        // Set click listener for create account button
         btn_create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,7 +60,6 @@ public class logInScreen1 extends AppCompatActivity {
             }
         });
 
-        // Show or hide password based on checkbox state
         showPasswordCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 password.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);

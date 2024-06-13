@@ -24,7 +24,6 @@ public class signInScreen3 extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in_screen3);
 
-        // Initialize views
         password = findViewById(R.id.et_password);
         confirm_password = findViewById(R.id.et_confirm_password);
         btn_next = findViewById(R.id.btn_next);
@@ -72,7 +71,6 @@ public class signInScreen3 extends AppCompatActivity {
         });
     }
 
-    // Helper method to check if the password contains both letters and numbers
     private boolean hasLettersAndNumbers(String password) {
         boolean hasLetter = false;
         boolean hasDigit = false;
