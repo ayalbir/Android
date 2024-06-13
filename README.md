@@ -4,5 +4,4 @@ We used the Jira management tool for task allocation and project management, whi
 
 How to run the project:
 
-Web: Start the server using npm start, which will open the video list screen. After that, there will be an option to log in at the top, and if there is no user, to register.
 Android: Run the emulator, which will open the video list screen first. Then, there will be an option to log in at the top, and if there is no user, to register.
