@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     navHeaderImageView.setImageBitmap(bitmap);
                 }
                 navHeaderTextView.setText("Hello " + user.getUserName());
-                profilePictureItem.setIcon(new BitmapDrawable(getResources(), bitmap));
+                profilePictureItem.setIcon(R.drawable.nav_logout);
                 profilePictureItem.setTitle("Logout");
             }
         }
@@ -219,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void setupBottomNavigationView() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setBackgroundColor(getResources().getColor(R.color.dark_grey));
+        bottomNavigationView.setBackgroundColor(getResources().getColor(R.color.custom_red));
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -231,7 +231,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         startActivityForResult(addIntent, REQUEST_CODE_ADD_VIDEO);
                     }
                     else {
-                        Toast.makeText(MainActivity.this, "Not registered account can't add videos", Toast.LENGTH_SHORT).show();
+                        Intent addIntent = new Intent(MainActivity.this, AddEditVideoActivity.class);
+                        startActivityForResult(addIntent, REQUEST_CODE_ADD_VIDEO);
+                        //TODO
+                        //Toast.makeText(MainActivity.this, "Not registered account can't add videos", Toast.LENGTH_SHORT).show();
                     }
                     return true;
                 } else if (id == R.id.nav_login) {

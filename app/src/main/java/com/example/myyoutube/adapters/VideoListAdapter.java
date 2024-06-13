@@ -3,7 +3,10 @@ package com.example.myyoutube.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,9 +69,17 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             holder.tvTitle.setText(video.getTitle());
             holder.tvViews.setText(String.valueOf(video.getViews()));
             holder.tvChannel.setText(video.getChannel());
+            // Check if the thumbnail is in the drawable resources
             int imageResId = mContext.getResources().getIdentifier(video.getThumbnail(), "drawable", mContext.getPackageName());
-            holder.thumbnail.setImageResource(imageResId);
-
+            if (imageResId != 0) {
+                // Image is in the drawable resources
+                holder.thumbnail.setImageResource(imageResId);
+            } else {
+                // Image is from the gallery, decode it from Base64
+                byte[] decodedString = Base64.decode(video.getThumbnail(), Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                holder.thumbnail.setImageBitmap(decodedByte);
+            }
             holder.itemView.setOnClickListener(view -> {
                 video.incrementViews();
                 holder.tvViews.setText(String.valueOf(video.getViews()));
@@ -105,10 +116,13 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
 
 
     public void addItem(Video video) {
-        videos.add(video);
-        videosFull.add(video);
-        notifyItemInserted(videos.size() - 1);
+        if (!videos.contains(video)) {
+            videos.add(video);
+            videosFull.add(video);
+            notifyItemInserted(videos.size() - 1);
+        }
     }
+
 
     public void updateItem(Video updatedVideo) {
         for (int i = 0; i < videos.size(); i++) {

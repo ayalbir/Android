@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
@@ -28,6 +30,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,9 +60,14 @@ public class VideoPlayerActivity extends AppCompatActivity {
         if (isFileInRaw(video.getMp4file())) {
             String videoPath = "android.resource://" + getPackageName() + "/raw/" + video.getMp4file();
             videoUri = Uri.parse(videoPath);
-        }
-        else {
-            videoUri = Uri.parse(video.getMp4file());
+        } else {
+            try {
+                videoUri = decodeBase64ToVideoFile(video.getMp4file());
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Failed to load video", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
         videoView.setVideoURI(videoUri);
         commentsList = video.getComments();
@@ -132,7 +142,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
         });
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setBackgroundColor(getResources().getColor(R.color.dark_grey));
+        bottomNavigationView.setBackgroundColor(getResources().getColor(R.color.custom_red));
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -179,6 +189,15 @@ public class VideoPlayerActivity extends AppCompatActivity {
             likeButton.setImageResource(R.drawable.unliked);
         }
     }
+    private Uri decodeBase64ToVideoFile(String base64Str) throws IOException {
+        byte[] decodedBytes = Base64.decode(base64Str, Base64.DEFAULT);
+        File tempFile = File.createTempFile("tempVideo", ".mp4", getCacheDir());
+        FileOutputStream fos = new FileOutputStream(tempFile);
+        fos.write(decodedBytes);
+        fos.close();
+        return Uri.fromFile(tempFile);
+    }
+
     private class CommentsAdapter extends ArrayAdapter<Comment> {
 
         private Context context;
