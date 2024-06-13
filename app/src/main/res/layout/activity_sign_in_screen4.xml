@@ -84,7 +84,7 @@
         android:layout_below="@id/get_gmail"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
+        android:backgroundTint="@color/custom_red"
         android:text="Next"
-        android:backgroundTint="@android:color/holo_blue_dark"
         android:textColor="@android:color/white" />
 </RelativeLayout>

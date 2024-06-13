@@ -59,7 +59,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             app:menu="@menu/bottom_nav_menu"
-            app:backgroundTint="@color/dark_grey" />
+            app:backgroundTint="@color/custom_red" />
     </RelativeLayout>
 
     <com.google.android.material.navigation.NavigationView

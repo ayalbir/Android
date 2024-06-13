@@ -56,9 +56,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SearchView searchView;
     private int currentMenuItemId = R.id.nav_home;
     private VideoListAdapter adapter;
-    public boolean userIsConnected;
     public static List<Video> videos;
     public static boolean firstTime = true;
+    private static User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,29 +69,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String email = intent.getStringExtra("email");
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         MenuItem profilePictureItem = bottomNavigationView.getMenu().findItem(R.id.nav_login);
+        profilePictureItem.setIcon(R.drawable.login);
+        profilePictureItem.setTitle("Login");
 
-        if (email != null) {
-            userIsConnected = true;
-            Toast.makeText(this, "Hello " + email, Toast.LENGTH_SHORT).show();
-            User user = UserManager.getUserByEmail(email);
-            if (user != null) {
-                Bitmap bitmap = decodeImage(user.getProfileImage());
+            if (email != null) {
+                currentUser = UserManager.getUserByEmail(email);
+            }
+            if(getCurrentUser() != null) {
+                Bitmap bitmap = decodeImage(currentUser.getProfileImage());
                 NavigationView navigationView = findViewById(R.id.nav_view);
                 ImageView navHeaderImageView = navigationView.getHeaderView(0).findViewById(R.id.IVHeaderProfilePic);
                 TextView navHeaderTextView = navigationView.getHeaderView(0).findViewById(R.id.TVWelcomeMenu);
                 if (bitmap != null) {
                     navHeaderImageView.setImageBitmap(bitmap);
                 }
-                navHeaderTextView.setText("Hello " + user.getUserName());
-                profilePictureItem.setIcon(new BitmapDrawable(getResources(), bitmap));
+                navHeaderTextView.setText("Hello " + currentUser.getUserName());
+                profilePictureItem.setIcon(R.drawable.nav_logout);
                 profilePictureItem.setTitle("Logout");
+
             }
-        }
-        else {
-            userIsConnected = false;
-            profilePictureItem.setIcon(R.drawable.login);
-            profilePictureItem.setTitle("Login");
-        }
+
+
 
         initUI();
         setupRecyclerView();
@@ -172,6 +170,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return videoList;
     }
 
+    public static User getCurrentUser() {
+        return currentUser;
+    }
     private Bitmap decodeImage(String encodedImage) {
         if (encodedImage != null) {
             byte[] decodedBytes = Base64.decode(encodedImage, Base64.DEFAULT);
@@ -219,22 +220,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void setupBottomNavigationView() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setBackgroundColor(getResources().getColor(R.color.dark_grey));
+        bottomNavigationView.setBackgroundColor(getResources().getColor(R.color.custom_red));
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
                 if (id == R.id.nav_home) {
+                    //do nothing
                 } else if (id == R.id.nav_add_video) {
-                    if(userIsConnected) {
+                    if(getCurrentUser() != null) {
                         Intent addIntent = new Intent(MainActivity.this, AddEditVideoActivity.class);
                         startActivityForResult(addIntent, REQUEST_CODE_ADD_VIDEO);
                     }
                     else {
-                        Toast.makeText(MainActivity.this, "Not registered account can't add videos", Toast.LENGTH_SHORT).show();
+                        Intent addIntent = new Intent(MainActivity.this, logInScreen1.class);
+                        startActivity(addIntent);
                     }
                     return true;
                 } else if (id == R.id.nav_login) {
+                    currentUser = null;
                     Intent intent = new Intent(MainActivity.this, logInScreen1.class);
                     startActivity(intent);
                 }
@@ -273,13 +277,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            Video video = (Video) data.getSerializableExtra("video");
-            if (video != null) {
-                if (requestCode == REQUEST_CODE_ADD_VIDEO) {
-                    adapter.addItem(video);
-                } else if (requestCode == REQUEST_CODE_EDIT_VIDEO) {
-                    updateVideo(video);
+        if (resultCode == RESULT_OK && data != null) {
+            int updatedVideoId = data.getIntExtra("updatedVideoId", -1);
+            if (updatedVideoId != -1) {
+                Video updatedVideo = VideoManager.getVideoManager().getVideoById(updatedVideoId);
+                if (updatedVideo != null) {
+                    if (requestCode == REQUEST_CODE_ADD_VIDEO) {
+                        adapter.addItem(updatedVideo);
+                    } else if (requestCode == REQUEST_CODE_EDIT_VIDEO) {
+                        updateVideo(updatedVideo);
+                    }
                 }
             }
         }
@@ -289,7 +296,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         for (int i = 0; i < videos.size(); i++) {
             if (videos.get(i).getId() == updatedVideo.getId()) {
                 videos.set(i, updatedVideo);
-                adapter.updateItem(i, updatedVideo);
+                adapter.updateItem(updatedVideo);
                 break;
             }
         }

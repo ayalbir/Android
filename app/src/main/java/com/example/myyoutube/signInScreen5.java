@@ -31,8 +31,8 @@ public class signInScreen5 extends AppCompatActivity {
     private static final int REQUEST_CAMERA = 2;
     private ImageView selectedImageView;
     private Uri imageUri;
-    private boolean isImageSelected = false;  // Track if an image has been selected
-    private TextView errorMsg;  // Error message TextView
+    private boolean isImageSelected = false;
+    private TextView errorMsg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,20 +41,20 @@ public class signInScreen5 extends AppCompatActivity {
 
         selectedImageView = findViewById(R.id.selectedImageView);
         Button btnSelectImage = findViewById(R.id.btnSelectImage);
-        Button btnLogin = findViewById(R.id.btnLogin);  // New button for login
-        errorMsg = findViewById(R.id.tvErrorMsg);  // Initialize the error message TextView
+        Button btnLogin = findViewById(R.id.btnLogin);
+        errorMsg = findViewById(R.id.tvErrorMsg);
 
         checkAndRequestPermissions();
 
         btnSelectImage.setOnClickListener(v -> {
-            errorMsg.setText("");  // Clear the error message when selecting a new image
+            errorMsg.setText("");
             showImagePickerOptions();
         });
 
-        // New listener for the login button
+
         btnLogin.setOnClickListener(v -> {
             if (isImageSelected) {
-                Toast.makeText(signInScreen5.this, "Loading...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(signInScreen5.this, "Logging in...", Toast.LENGTH_SHORT).show();
 
                 String email = getIntent().getStringExtra("email");
                 String name = getIntent().getStringExtra("name");
