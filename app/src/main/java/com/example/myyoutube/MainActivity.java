@@ -273,13 +273,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            Video video = (Video) data.getSerializableExtra("video");
-            if (video != null) {
-                if (requestCode == REQUEST_CODE_ADD_VIDEO) {
-                    adapter.addItem(video);
-                } else if (requestCode == REQUEST_CODE_EDIT_VIDEO) {
-                    updateVideo(video);
+        if (resultCode == RESULT_OK && data != null) {
+            int updatedVideoId = data.getIntExtra("updatedVideoId", -1);
+            if (updatedVideoId != -1) {
+                Video updatedVideo = VideoManager.getVideoManager().getVideoById(updatedVideoId);
+                if (updatedVideo != null) {
+                    if (requestCode == REQUEST_CODE_ADD_VIDEO) {
+                        adapter.addItem(updatedVideo);
+                    } else if (requestCode == REQUEST_CODE_EDIT_VIDEO) {
+                        updateVideo(updatedVideo);
+                    }
                 }
             }
         }
@@ -289,7 +292,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         for (int i = 0; i < videos.size(); i++) {
             if (videos.get(i).getId() == updatedVideo.getId()) {
                 videos.set(i, updatedVideo);
-                adapter.updateItem(i, updatedVideo);
+                adapter.updateItem(updatedVideo);
                 break;
             }
         }

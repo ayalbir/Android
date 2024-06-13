@@ -117,10 +117,6 @@ public class AddEditVideoActivity extends AppCompatActivity {
     }
 
     private void saveVideo() {
-        if (isImageSelected) {
-            Intent intent = new Intent(AddEditVideoActivity.this, MainActivity.class);
-            startActivity(intent);
-        }
         video.setTitle(Objects.requireNonNull(etTitle.getText()).toString());
         video.setDescription(Objects.requireNonNull(etDescription.getText()).toString());
         video.setChannel(Objects.requireNonNull(etChannel.getText()).toString());

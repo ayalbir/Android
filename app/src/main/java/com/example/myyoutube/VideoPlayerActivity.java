@@ -198,7 +198,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
             }
 
             EditText commentEdit = convertView.findViewById(R.id.etComment);
-            ImageButton saveButton = convertView.findViewById(R.id.btnSaveComment);
+            ImageButton saveCommentButton = convertView.findViewById(R.id.btnSaveComment);
             ImageButton editButton = convertView.findViewById(R.id.btnEdit);
             ImageButton deleteButton = convertView.findViewById(R.id.btnDelete);
 
@@ -209,16 +209,16 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
             editButton.setOnClickListener(v -> {
                 commentEdit.setEnabled(true); // Enable editing
-                saveButton.setVisibility(View.VISIBLE); // Show save button
+                saveCommentButton.setVisibility(View.VISIBLE); // Show save button
             });
 
-            saveButton.setOnClickListener(v -> {
+            saveCommentButton.setOnClickListener(v -> {
                 String editedComment = commentEdit.getText().toString();
                 if (!editedComment.isEmpty()) {
                     comments.set(position, new Comment(editedComment, comment.getCommentPic()));
                     notifyDataSetChanged();
                     commentEdit.setEnabled(false); // Disable editing after saving
-                    saveButton.setVisibility(View.GONE); // Hide save button
+                    saveCommentButton.setVisibility(View.GONE); // Hide save button
                 }
             });
 

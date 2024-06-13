@@ -110,10 +110,15 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         notifyItemInserted(videos.size() - 1);
     }
 
-    public void updateItem(int position, Video video) {
-        videos.set(position, video);
-        videosFull.set(position, video);
-        notifyItemChanged(position);
+    public void updateItem(Video updatedVideo) {
+        for (int i = 0; i < videos.size(); i++) {
+            if (videos.get(i).getId() == updatedVideo.getId()) {
+                videos.set(i, updatedVideo);
+                videosFull.set(i, updatedVideo);
+                notifyItemChanged(i);
+                break;
+            }
+        }
     }
     @Override
     public int getItemCount() {
