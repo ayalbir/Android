@@ -78,15 +78,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
         TextView channelNameView = findViewById(R.id.tvChannelName);
         TextView viewsView = findViewById(R.id.tvViews);
         TextView likesView = findViewById(R.id.tvLikes);
-        FloatingActionButton btnret = findViewById(R.id.FABReturnToMain);
 
-        btnret.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(VideoPlayerActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
-        });
         titleView.setText(video.getTitle());
         channelNameView.setText(video.getChannel());
         viewsView.setText("Views: " + video.getViews());

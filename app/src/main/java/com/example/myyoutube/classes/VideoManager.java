@@ -5,7 +5,7 @@ import java.util.List;
 
 public class VideoManager {
     private static VideoManager videoManager;
-    private List<Video> videos;
+    private static List<Video> videos;
 
     private VideoManager() {
         videos = new ArrayList<>();
@@ -34,6 +34,7 @@ public class VideoManager {
         }
         return null;
     }
+
     public void addVideo(Video video) {
         videos.add(video);
     }

@@ -14,7 +14,7 @@ public class Video{
     private int duration;
     private String thumbnail;
     private String mp4file;
-    private List<Comment> comments;
+    private static List<Comment> comments;
     private boolean liked;
 
     public boolean isLiked() {
@@ -118,22 +118,18 @@ public class Video{
         this.mp4file = mp4file;
     }
 
+
     public List<Comment> getComments() {
         return comments;
     }
 
     public void setComments(List<Comment> comments) {
-        if (comments != null) {
-            this.comments = comments;
-        } else {
-            this.comments = new ArrayList<>();
-        }
+        this.comments = comments;
     }
 
     public void addComment(Comment comment) {
         this.comments.add(comment);
     }
-
     public void incrementViews() {
         this.views++;
     }

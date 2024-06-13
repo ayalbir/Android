@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.MenuItem;
@@ -56,7 +57,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private int currentMenuItemId = R.id.nav_home;
     private VideoListAdapter adapter;
     public boolean userIsConnected;
-    List<Video> videos;
+    public static List<Video> videos;
+    public static boolean firstTime = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +67,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         Intent intent = getIntent();
         String email = intent.getStringExtra("email");
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        MenuItem profilePictureItem = bottomNavigationView.getMenu().findItem(R.id.nav_login);
 
         if (email != null) {
             userIsConnected = true;
@@ -79,10 +83,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     navHeaderImageView.setImageBitmap(bitmap);
                 }
                 navHeaderTextView.setText("Hello " + user.getUserName());
+                profilePictureItem.setIcon(new BitmapDrawable(getResources(), bitmap));
+                profilePictureItem.setTitle("Logout");
             }
         }
         else {
             userIsConnected = false;
+            profilePictureItem.setIcon(R.drawable.login);
+            profilePictureItem.setTitle("Login");
         }
 
         initUI();
@@ -92,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         loadVideosFromJSON();
         setupNightModeSwitch();
         setupBottomNavigationView();
+
 
         if (savedInstanceState == null) {
             NavigationView navigationView = findViewById(R.id.nav_view);
@@ -142,7 +151,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void loadVideosFromJSON() {
         String jsonData = loadJSONFromAsset();
         if (jsonData != null) {
-            videos = parseVideosFromJSON(jsonData);
+            if (firstTime)
+                videos = parseVideosFromJSON(jsonData);
+            firstTime = false;
             VideoManager.getVideoManager().setVideos(videos);
             adapter.setVideos(videos);
         }

@@ -6,13 +6,6 @@
     android:theme="@style/Theme.MyYoutube"
     android:layout_height="match_parent">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/FABReturnToMain"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        app:srcCompat="@drawable/back" />
-
     <VideoView
         android:id="@+id/videoView"
         android:layout_width="match_parent"
@@ -27,12 +20,36 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <TextView
-            android:id="@+id/tvTitle"
+        <LinearLayout
+            android:id="@+id/botoomBtnLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:orientation="horizontal"
+            android:gravity="end">
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/IBLike"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:paddingRight="5dp"
+                android:src="@drawable/unliked" />
+
+            <ImageButton
+                android:id="@+id/IBShare"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:src="@drawable/share" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tvViews"
@@ -71,35 +88,6 @@
             android:paddingBottom="5dp"
             android:text="Likes"
             android:textSize="16sp" />
-
-        <LinearLayout
-            android:id="@+id/botoomBtnLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:theme="@style/Theme.MyYoutube">
-
-            <Space
-                android:layout_width="10dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <ImageButton
-                android:id="@+id/IBLike"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:background="@null"
-                android:src="@drawable/unliked" />
-
-            <ImageButton
-                android:id="@+id/IBShare"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:background="@null"
-                android:src="@drawable/share" />
-        </LinearLayout>
 
         <include layout="@layout/comment_section" />
 
