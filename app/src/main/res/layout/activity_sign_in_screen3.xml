@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,10 +13,10 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <!-- Replace this ImageView with Google logo -->
         <ImageView
-            android:layout_width="300dp"
-            android:layout_height="match_parent"
+            android:layout_width="400dp"
+            android:layout_height="150dp"
+            android:background="@null"
             android:src="@drawable/google" />
 
     </LinearLayout>
@@ -24,18 +25,18 @@
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingBottom="16dp"
         android:text="Create a strong password"
         android:textSize="24sp"
-        android:textStyle="bold"
-        android:paddingBottom="16dp" />
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tv_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingBottom="24dp"
         android:text="Create a strong password with a mix of letters, numbers and symbols"
-        android:textSize="16sp"
-        android:paddingBottom="24dp" />
+        android:textSize="16sp" />
 
     <EditText
         android:id="@+id/et_password"
@@ -67,10 +68,17 @@
         android:layout_height="81dp"
         android:text="Show password" />
 
-    <Button
-        android:id="@+id/btn_next"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:text="Next" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="right"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Next" />
+    </LinearLayout>
+
 </LinearLayout>

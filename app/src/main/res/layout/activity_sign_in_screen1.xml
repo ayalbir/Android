@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="end"
     android:orientation="vertical"
     android:padding="16dp">
 
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_gravity="center"
+        android:layout_width="400dp"
+        android:layout_height="150dp"
+        android:background="@null"
         android:src="@drawable/google" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
         android:layout_gravity="center"
+        android:layout_marginBottom="16dp"
         android:text="Create a Google Account"
         android:textColor="@android:color/black"
         android:textSize="24sp" />
@@ -27,8 +27,8 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
         android:layout_gravity="center"
+        android:layout_marginBottom="16dp"
         android:text="Enter your name"
         android:textSize="14sp" />
 
@@ -45,28 +45,28 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:hint="Last name (optional)" />
+
     <TextView
         android:id="@+id/tvErrorMsg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:text=""
-        android:textColor="#FF0000"/>
+        android:textColor="#FF0000" />
 
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:gravity="right"
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
             android:text="Next" />
-
-    </RelativeLayout>
+    </LinearLayout>
 
 
 </LinearLayout>

@@ -7,106 +7,100 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Google Logo -->
     <ImageView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/google"
-        android:layout_gravity="center"/>
+        android:layout_height="75dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@null"
+        android:src="@drawable/google" />
 
-    <!-- Sign In Text -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
         android:text="Sign in"
         android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_gravity="center"
-        android:layout_marginTop="16dp" />
+        android:textStyle="bold" />
 
-    <!-- Subtitle -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
         android:text="to continue to YouTube"
-        android:textSize="16sp"
-        android:layout_gravity="center"
-        android:layout_marginTop="8dp" />
+        android:textSize="16sp" />
 
-    <!-- Email or Phone Input -->
     <EditText
         android:id="@+id/email_or_phone"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_marginTop="32dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
         android:hint="Email"
         android:inputType="textEmailAddress" />
 
     <EditText
         android:id="@+id/et_password"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_marginTop="32dp"
-        android:hint="password"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:hint="Password"
         android:inputType="textPassword" />
 
-    <!-- Forgot Email Link -->
     <TextView
         android:id="@+id/tvErrorMsg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         android:text=""
-        android:textColor="#FF0000"/>
+        android:textColor="#FF0000" />
 
-    <!-- Guest Mode Info -->
     <TextView
-        android:layout_width="122dp"
-        android:layout_height="45dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:layout_marginTop="8dp"
         android:clickable="true"
         android:text="Forgot email?"
         android:textColor="#0000FF" />
+
     <CheckBox
         android:id="@+id/cb_show_password"
-        android:layout_width="157dp"
-        android:layout_height="81dp"
-        android:text="Show password" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show password"
+        android:layout_marginTop="8dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="Not your computer? Use Guest mode to sign in privately."
-        android:textSize="14sp"
-        android:layout_marginTop="16dp" />
+        android:textSize="14sp" />
 
-
-    <!-- Create Account and Next Buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="32dp">
+        android:layout_marginTop="16dp">
 
         <Button
             android:id="@+id/btn_create"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Create account"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:text="Create account" />
 
         <Space
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_width="8dp"
+            android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/btn_login"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="login"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:text="Login" />
     </LinearLayout>
 
 </LinearLayout>
