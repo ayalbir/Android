@@ -1,6 +1,7 @@
 package com.example.myyoutube.adapters;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,7 +34,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
     static class VideoViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvViews, tvTitle, tvChannel;
         private final ImageView thumbnail;
-        private final ImageButton btnEditVideo, btnDeleteVideo;
+        private final ImageButton overflowMenu;
 
         private VideoViewHolder(View view) {
             super(view);
@@ -40,8 +42,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             tvViews = view.findViewById(R.id.tvViews);
             thumbnail = view.findViewById(R.id.ivPic);
             tvChannel = view.findViewById(R.id.tvChannel);
-            btnEditVideo = view.findViewById(R.id.IBEdit);
-            btnDeleteVideo = view.findViewById(R.id.IBDelete);
+            overflowMenu = view.findViewById(R.id.overflowMenu);
         }
     }
 
@@ -69,7 +70,8 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             holder.tvTitle.setText(video.getTitle());
             holder.tvViews.setText(String.valueOf(video.getViews()));
             holder.tvChannel.setText(video.getChannel());
-            // Check if the thumbnail is in the drawable
+
+            // Check if the thumbnail is in the drawable resources
             int imageResId = mContext.getResources().getIdentifier(video.getThumbnail(), "drawable", mContext.getPackageName());
             if (imageResId != 0) {
                 // Image is in the drawable resources
@@ -80,6 +82,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 holder.thumbnail.setImageBitmap(decodedByte);
             }
+
             holder.itemView.setOnClickListener(view -> {
                 video.incrementViews();
                 holder.tvViews.setText(String.valueOf(video.getViews()));
@@ -89,23 +92,36 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
                 ((Activity) mContext).startActivityForResult(intent, 1);
             });
 
-            holder.btnEditVideo.setOnClickListener(view -> {
-                if(MainActivity.getCurrentUser() != null) {
-                    Intent intent = new Intent(mContext, AddEditVideoActivity.class);
-                    intent.putExtra("videoId", video.getId());
-                    ((Activity) mContext).startActivityForResult(intent, MainActivity.REQUEST_CODE_EDIT_VIDEO);
-                }
-            });
-
-            holder.btnDeleteVideo.setOnClickListener(view -> {
-                if(MainActivity.getCurrentUser() != null) {
-                    VideoManager.getVideoManager().removeVideo(video);
-                    removeItem(position);
-                }
-            });
+            holder.overflowMenu.setOnClickListener(view -> showEditDeleteDialog(video, position));
         }
     }
 
+    private void showEditDeleteDialog(Video video, int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle("Select Action");
+        builder.setItems(new CharSequence[]{"Edit", "Delete"}, (dialog, which) -> {
+            switch (which) {
+                case 0: // Edit
+                    if (MainActivity.getCurrentUser() != null) {
+                        Intent intent = new Intent(mContext, AddEditVideoActivity.class);
+                        intent.putExtra("videoId", video.getId());
+                        ((Activity) mContext).startActivityForResult(intent, MainActivity.REQUEST_CODE_EDIT_VIDEO);
+                    } else {
+                        Toast.makeText(mContext, "User not connected", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case 1: // Delete
+                    if (MainActivity.getCurrentUser() != null) {
+                        VideoManager.getVideoManager().removeVideo(video);
+                        removeItem(position);
+                    } else {
+                        Toast.makeText(mContext, "User not connected", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+            }
+        });
+        builder.show();
+    }
     public void setVideos(List<Video> v) {
         videos = v;
         videosFull = new ArrayList<>(v);

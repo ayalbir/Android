@@ -1,5 +1,7 @@
 package com.example.myyoutube;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -155,25 +157,21 @@ public class VideoPlayerActivity extends AppCompatActivity {
         commentsListView.setAdapter(commentsAdapter);
 
         findViewById(R.id.btnAddComment).setOnClickListener(view -> {
-            if(MainActivity.getCurrentUser() != null) {
+            if (MainActivity.getCurrentUser() != null) {
                 EditText commentInput = findViewById(R.id.etComment);
                 String newComment = commentInput.getText().toString();
                 if (!newComment.isEmpty()) {
                     String profileImageBase64 = MainActivity.getCurrentUser().getProfileImage();
-                    byte[] decodedString = Base64.decode(profileImageBase64, Base64.DEFAULT);
-                    Bitmap userProfileBitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                    Uri userProfileUri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), userProfileBitmap, "Title", null));
-                    Comment comment = new Comment(newComment, userProfileUri.toString());
+                    Comment comment = new Comment(newComment, profileImageBase64);
                     video.addComment(comment);
                     commentsAdapter.notifyDataSetChanged();
                     commentInput.setText("");
                 }
-            }
-            else {
+            } else {
                 Toast.makeText(VideoPlayerActivity.this, "User not connected", Toast.LENGTH_SHORT).show();
             }
-
         });
+
 
         bottomNavigationView.setBackgroundColor(getResources().getColor(R.color.custom_red));
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
@@ -253,7 +251,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
             this.comments = comments;
         }
 
-        @NonNull
         @Override
         public View getView(int position, View convertView, @NonNull ViewGroup parent) {
             if (convertView == null) {
@@ -261,43 +258,76 @@ public class VideoPlayerActivity extends AppCompatActivity {
             }
 
             EditText commentEdit = convertView.findViewById(R.id.etComment);
-            ImageButton saveCommentButton = convertView.findViewById(R.id.btnSaveComment);
-            ImageButton editButton = convertView.findViewById(R.id.btnEdit);
-            ImageButton deleteButton = convertView.findViewById(R.id.btnDelete);
+            ImageButton btnMenu = convertView.findViewById(R.id.btnMenu);
+            ImageView ivProfilePic = convertView.findViewById(R.id.ivProfilePic);
 
             Comment comment = getItem(position);
             assert comment != null;
             commentEdit.setText(comment.getCommentContent());
-            commentEdit.setEnabled(false); // Disable editing
+            commentEdit.setEnabled(false);
 
-            editButton.setOnClickListener(v -> {
-                if(MainActivity.getCurrentUser() != null) {
-                    commentEdit.setEnabled(true);
-                    saveCommentButton.setVisibility(View.VISIBLE);
-                }
-                else {
-                    Toast.makeText(VideoPlayerActivity.this, "User not connected", Toast.LENGTH_SHORT).show();
-                }
-            });
+            // Decode and set the profile image
+            String profileImageBase64 = comment.getCommentPic();
+            if (profileImageBase64 != null && !profileImageBase64.isEmpty()) {
+                byte[] decodedString = Base64.decode(profileImageBase64, Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                ivProfilePic.setImageBitmap(decodedByte);
+            } else {
+                ivProfilePic.setImageResource(R.drawable.login);
+            }
 
-            saveCommentButton.setOnClickListener(v -> {
-                String editedComment = commentEdit.getText().toString();
-                if (!editedComment.isEmpty()) {
-                    comments.set(position, new Comment(editedComment, comment.getCommentPic()));
-                    notifyDataSetChanged();
-                    commentEdit.setEnabled(false);
-                    saveCommentButton.setVisibility(View.GONE);
-                }
-            });
-
-            deleteButton.setOnClickListener(v -> {
-                if(MainActivity.getCurrentUser() != null){
-                    comments.remove(position);
-                    notifyDataSetChanged();
+            btnMenu.setOnClickListener(v -> {
+                if (MainActivity.getCurrentUser() != null) {
+                    showEditDeleteDialog(position);
+                } else {
+                    Toast.makeText(getContext(), "User not connected", Toast.LENGTH_SHORT).show();
                 }
             });
 
             return convertView;
+        }
+
+
+        private void showEditDeleteDialog(int position) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("Choose an option")
+                    .setItems(new CharSequence[]{"Edit", "Delete"}, (dialog, which) -> {
+                        if (which == 0) {
+                            showEditCommentDialog(position);
+                        } else if (which == 1) {
+                            deleteComment(position);
+                        }
+                    })
+                    .show();
+        }
+
+        private void showEditCommentDialog(int position) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("Edit Comment");
+
+            View viewInflated = LayoutInflater.from(context).inflate(R.layout.dialog_edit_comment,
+                    (ViewGroup) ((Activity) context).findViewById(android.R.id.content), false);
+            EditText input = viewInflated.findViewById(R.id.input);
+            input.setText(comments.get(position).getCommentContent());
+
+            builder.setView(viewInflated);
+
+            builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                dialog.dismiss();
+                String editedComment = input.getText().toString();
+                if (!editedComment.isEmpty()) {
+                    comments.set(position, new Comment(editedComment, comments.get(position).getCommentPic()));
+                    notifyDataSetChanged();
+                }
+            });
+            builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.cancel());
+
+            builder.show();
+        }
+
+        private void deleteComment(int position) {
+            comments.remove(position);
+            notifyDataSetChanged();
         }
     }
 }

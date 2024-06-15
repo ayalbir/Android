@@ -10,6 +10,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.SearchView;
@@ -22,6 +23,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -69,15 +71,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String email = intent.getStringExtra("email");
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         MenuItem profilePictureItem = bottomNavigationView.getMenu().findItem(R.id.nav_login);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        CardView cardView = navigationView.getHeaderView(0).findViewById(R.id.cardview);
         profilePictureItem.setIcon(R.drawable.login);
         profilePictureItem.setTitle("Login");
+        cardView.setVisibility(View.INVISIBLE);
 
             if (email != null) {
                 currentUser = UserManager.getUserByEmail(email);
             }
             if(getCurrentUser() != null) {
                 Bitmap bitmap = decodeImage(currentUser.getProfileImage());
-                NavigationView navigationView = findViewById(R.id.nav_view);
+                cardView.setVisibility(View.VISIBLE);
                 ImageView navHeaderImageView = navigationView.getHeaderView(0).findViewById(R.id.IVHeaderProfilePic);
                 TextView navHeaderTextView = navigationView.getHeaderView(0).findViewById(R.id.TVWelcomeMenu);
                 if (bitmap != null) {
@@ -101,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
         if (savedInstanceState == null) {
-            NavigationView navigationView = findViewById(R.id.nav_view);
+            navigationView = findViewById(R.id.nav_view);
             navigationView.setCheckedItem(R.id.nav_home);
         }
     }

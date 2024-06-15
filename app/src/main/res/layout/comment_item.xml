@@ -1,37 +1,40 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="8dp">
+    android:padding="5dp">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardview"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="0dp">
+
+        <ImageView
+            android:id="@+id/ivProfilePic"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/login" />
+    </androidx.cardview.widget.CardView>
 
     <EditText
         android:id="@+id/etComment"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:enabled="false"
         android:hint="Comment"
-        android:inputType="text" />
+        android:paddingLeft="10dp" />
 
     <ImageButton
-        android:id="@+id/btnSaveComment"
+        android:id="@+id/btnMenu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="Save"
-        android:src="@drawable/done"
-        android:visibility="gone" />
-
-    <ImageButton
-        android:id="@+id/btnEdit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="Edit"
-        android:src="@drawable/edit" />
-
-    <ImageButton
-        android:id="@+id/btnDelete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:contentDescription="Delete"
-        android:src="@drawable/delete" />
+        android:background="@null"
+        android:contentDescription="Menu"
+        android:padding="10dp"
+        android:src="@drawable/more" />
 </LinearLayout>

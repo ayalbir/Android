@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -37,10 +38,11 @@ public class AddEditVideoActivity extends AppCompatActivity {
 
     private EditText etTitle, etDescription, etChannel;
     private ImageView ivThumbnail;
-    private boolean isImageSelected = false;
     private Uri imageUri, videoUri;
     private Video video;
     private boolean isEditMode = false;
+    private boolean isVideoSelected = false
+            , isImageSelected = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,32 +99,37 @@ public class AddEditVideoActivity extends AppCompatActivity {
                 }
             } else if (requestCode == PICK_VIDEO_REQUEST) {
                 videoUri = data.getData();
-                Toast.makeText(this, "Video selected: " + videoUri.toString(), Toast.LENGTH_SHORT).show();
+                isVideoSelected = true;
             }
         }
     }
 
     private void saveVideo() {
-        video.setTitle(Objects.requireNonNull(etTitle.getText()).toString());
-        video.setDescription(Objects.requireNonNull(etDescription.getText()).toString());
-        video.setChannel(Objects.requireNonNull(etChannel.getText()).toString());
-        Bitmap bitmap = ((BitmapDrawable) ivThumbnail.getDrawable()).getBitmap();
-        String encodedImage = encodeImage(bitmap);
-        video.setThumbnail(encodedImage);
+        if(isImageSelected && isVideoSelected){
+            video.setTitle(Objects.requireNonNull(etTitle.getText()).toString());
+            video.setDescription(Objects.requireNonNull(etDescription.getText()).toString());
+            video.setChannel(Objects.requireNonNull(etChannel.getText()).toString());
+            Bitmap bitmap = ((BitmapDrawable) ivThumbnail.getDrawable()).getBitmap();
+            String encodedImage = encodeImage(bitmap);
+            video.setThumbnail(encodedImage);
 
-        String encodedVideo = encodeVideo(videoUri);
-        video.setMp4file(encodedVideo != null ? encodedVideo : "");
+            String encodedVideo = encodeVideo(videoUri);
+            video.setMp4file(encodedVideo != null ? encodedVideo : "");
 
-        if (isEditMode) {
-            VideoManager.getVideoManager().updateVideo(video);
-        } else {
-            VideoManager.getVideoManager().addVideo(video);
-        }
+            if (isEditMode) {
+                VideoManager.getVideoManager().updateVideo(video);
+            } else {
+                VideoManager.getVideoManager().addVideo(video);
+            }
 
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra("updatedVideoId", video.getId());
-        setResult(RESULT_OK, resultIntent);
-        finish();
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("updatedVideoId", video.getId());
+            setResult(RESULT_OK, resultIntent);
+            finish();
+        } else if (!isImageSelected)
+            Toast.makeText(this, "Please select an image before saving.", Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(this, "Please select a video before saving.", Toast.LENGTH_SHORT).show();
     }
 
     private void openImageGallery() {

@@ -6,12 +6,11 @@
     android:padding="16dp">
 
     <ImageView
-        android:id="@+id/logoImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_gravity="center"
+        android:layout_width="400dp"
+        android:layout_height="150dp"
+        android:background="@null"
         android:src="@drawable/google" />
+
 
     <TextView
         android:id="@+id/textView"
