@@ -35,6 +35,16 @@ public class VideoManager {
         return null;
     }
 
+    public List<Video> getVideosByUserEmail(String userEmail) {
+        List<Video> userVideos = new ArrayList<>();
+        for (Video video : videos) {
+            if (video.getChannelEmail().equals(userEmail)) {
+                userVideos.add(video);
+            }
+        }
+        return userVideos;
+    }
+
     public void addVideo(Video video) {
         videos.add(video);
     }

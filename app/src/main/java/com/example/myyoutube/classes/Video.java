@@ -7,7 +7,7 @@ import java.util.Objects;
 public class Video{
     private static int idCounter = 0;
     private final int id;
-    private String channel;
+    private String channelEmail;
     private int likes;
     private int views;
     private String title;
@@ -31,9 +31,9 @@ public class Video{
         this.comments = new ArrayList<>();
     }
 
-    public Video(String channel, String title, String description, int duration, String thumbnail, String mp4file, List<Comment> comments) {
+    public Video(String channelEmail, String title, String description, int duration, String thumbnail, String mp4file, List<Comment> comments) {
         this.id = ++idCounter;
-        this.channel = channel;
+        this.channelEmail = channelEmail;
         this.title = title;
         this.description = description;
         this.duration = duration;
@@ -45,8 +45,8 @@ public class Video{
         }
     }
 
-    public Video(String channel, String title, String description, int duration, int likes, int views, String thumbnail, String mp4file, List<Comment> comments) {
-        this(channel, title, description, duration, thumbnail, mp4file, comments);
+    public Video(String channelEmail, String title, String description, int duration, int likes, int views, String thumbnail, String mp4file, List<Comment> comments) {
+        this(channelEmail, title, description, duration, thumbnail, mp4file, comments);
         this.likes = likes;
         this.views = views;
     }
@@ -95,12 +95,12 @@ public class Video{
         this.duration = duration;
     }
 
-    public String getChannel() {
-        return channel;
+    public String getChannelEmail() {
+        return channelEmail;
     }
 
-    public void setChannel(String channel) {
-        this.channel = channel;
+    public void setChannelEmail(String channelEmail) {
+        this.channelEmail = channelEmail;
     }
 
     public String getThumbnail() {

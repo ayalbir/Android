@@ -42,6 +42,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
@@ -76,7 +77,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         profilePictureItem.setIcon(R.drawable.login);
         profilePictureItem.setTitle("Login");
         cardView.setVisibility(View.INVISIBLE);
-
             if (email != null) {
                 currentUser = UserManager.getUserByEmail(email);
             }
@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setupRecyclerView();
         setupToolbarAndDrawer();
         setupSearchView();
+        initializeDefaultUsers();
         loadVideosFromJSON();
         setupNightModeSwitch();
         setupBottomNavigationView();
@@ -108,6 +109,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (savedInstanceState == null) {
             navigationView = findViewById(R.id.nav_view);
             navigationView.setCheckedItem(R.id.nav_home);
+        }
+    }
+
+    private void initializeDefaultUsers() {
+        if (UserManager.getUsers().isEmpty()) {
+            User user1 = new User("Elay@gmail.com", "Elay", "12345678p", encodeImageToBase64(R.drawable.person1));
+            User user2 = new User("Ayal@gmail.com", "Ayal", "12345678p", encodeImageToBase64(R.drawable.person2));
+            User user3 = new User("Dvir@gmail.com", "Dvir", "12345678p", encodeImageToBase64(R.drawable.person3));
+
+            UserManager.addUser(user1);
+            UserManager.addUser(user2);
+            UserManager.addUser(user3);
         }
     }
 
@@ -279,6 +292,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
+    private String encodeImageToBase64(int resId) {
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resId);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        return Base64.encodeToString(byteArray, Base64.DEFAULT);
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

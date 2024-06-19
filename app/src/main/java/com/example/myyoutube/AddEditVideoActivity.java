@@ -13,10 +13,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -66,7 +64,7 @@ public class AddEditVideoActivity extends AppCompatActivity {
             if (video != null) {
                 etTitle.setText(video.getTitle());
                 etDescription.setText(video.getDescription());
-                etChannel.setText(video.getChannel());
+                etChannel.setText(video.getChannelEmail());
                 imageUri = Uri.parse(video.getThumbnail());
                 videoUri = Uri.parse(video.getMp4file());
                 ivThumbnail.setImageURI(imageUri);
@@ -108,7 +106,7 @@ public class AddEditVideoActivity extends AppCompatActivity {
         if(isImageSelected && isVideoSelected){
             video.setTitle(Objects.requireNonNull(etTitle.getText()).toString());
             video.setDescription(Objects.requireNonNull(etDescription.getText()).toString());
-            video.setChannel(Objects.requireNonNull(etChannel.getText()).toString());
+            video.setChannelEmail(Objects.requireNonNull(etChannel.getText()).toString());
             Bitmap bitmap = ((BitmapDrawable) ivThumbnail.getDrawable()).getBitmap();
             String encodedImage = encodeImage(bitmap);
             video.setThumbnail(encodedImage);

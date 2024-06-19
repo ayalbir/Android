@@ -7,17 +7,14 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -36,16 +33,15 @@ import com.example.myyoutube.classes.UserManager;
 import com.example.myyoutube.classes.Video;
 import com.example.myyoutube.classes.VideoManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class VideoPlayerActivity extends AppCompatActivity {
 
@@ -113,7 +109,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
         TextView likesView = findViewById(R.id.tvLikes);
 
         titleView.setText(video.getTitle());
-        channelNameView.setText(video.getChannel());
+        channelNameView.setText(Objects.requireNonNull(UserManager.getUserByEmail(video.getChannelEmail())).getUserName());
         viewsView.setText("Views: " + video.getViews());
         likesView.setText("Likes: " + video.getLikes());
 

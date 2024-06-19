@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
+import android.text.Layout;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,19 +22,23 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myyoutube.AddEditVideoActivity;
 import com.example.myyoutube.MainActivity;
 import com.example.myyoutube.R;
+import com.example.myyoutube.UserVideosActivity;
 import com.example.myyoutube.VideoPlayerActivity;
+import com.example.myyoutube.classes.UserManager;
 import com.example.myyoutube.classes.Video;
 import com.example.myyoutube.classes.VideoManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.VideoViewHolder> {
 
     static class VideoViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvViews, tvTitle, tvChannel;
-        private final ImageView thumbnail;
+        private final ImageView thumbnail, ivChannelPhoto;
         private final ImageButton overflowMenu;
+        private final View channelLayout;
 
         private VideoViewHolder(View view) {
             super(view);
@@ -43,6 +47,8 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             thumbnail = view.findViewById(R.id.ivPic);
             tvChannel = view.findViewById(R.id.tvChannel);
             overflowMenu = view.findViewById(R.id.overflowMenu);
+            ivChannelPhoto = view.findViewById(R.id.ivChannelPhoto);
+            channelLayout= view.findViewById(R.id.channelLayout);
         }
     }
 
@@ -69,7 +75,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             Video video = videos.get(position);
             holder.tvTitle.setText(video.getTitle());
             holder.tvViews.setText(String.valueOf(video.getViews()));
-            holder.tvChannel.setText(video.getChannel());
+            holder.tvChannel.setText(Objects.requireNonNull(UserManager.getUserByEmail(video.getChannelEmail())).getUserName());
 
             // Check if the thumbnail is in the drawable resources
             int imageResId = mContext.getResources().getIdentifier(video.getThumbnail(), "drawable", mContext.getPackageName());
@@ -82,7 +88,18 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 holder.thumbnail.setImageBitmap(decodedByte);
             }
+            String profileImageBase64 = UserManager.getUserByEmail(video.getChannelEmail()).getProfileImage();
+            if (profileImageBase64 != null) {
+                byte[] decodedString = Base64.decode(profileImageBase64, Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                holder.ivChannelPhoto.setImageBitmap(decodedByte);
+            }
 
+            holder.channelLayout.setOnClickListener(view -> {
+                Intent intent = new Intent(mContext, UserVideosActivity.class);
+                intent.putExtra("userEmail", video.getChannelEmail());
+                mContext.startActivity(intent);
+            });
             holder.itemView.setOnClickListener(view -> {
                 video.incrementViews();
                 holder.tvViews.setText(String.valueOf(video.getViews()));
@@ -166,7 +183,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         } else {
             text = text.toLowerCase();
             for (Video video : videosFull) {
-                if (video.getTitle().toLowerCase().contains(text) || video.getChannel().toLowerCase().contains(text)) {
+                if (video.getTitle().toLowerCase().contains(text) || video.getChannelEmail().toLowerCase().contains(text)) {
                     videos.add(video);
                 }
             }
