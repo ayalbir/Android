@@ -39,6 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@null"
+            android:contentDescription="@string/menu_for_edit_and_delete"
             android:padding="25dp"
             app:srcCompat="@drawable/more" />
 
@@ -48,10 +49,11 @@
         android:id="@+id/channelLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingHorizontal="10dp"
         android:clickable="true"
-        android:focusable="true">
+        android:focusable="true"
+        android:minHeight="48dp"
+        android:orientation="horizontal"
+        android:paddingHorizontal="10dp">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardview"
@@ -96,7 +98,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="8dp"
-                android:text="|"
+                android:text="@string/divider"
                 android:textColor="@color/black" />
 
             <TextView

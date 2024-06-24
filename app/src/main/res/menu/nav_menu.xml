@@ -19,7 +19,7 @@
             android:icon="@drawable/moon"
             android:title="@string/night_mode"
             app:actionLayout="@layout/switch_item"
-            app:showAsAction="always"></item>
+            app:showAsAction="always" />
     </group>
 
 

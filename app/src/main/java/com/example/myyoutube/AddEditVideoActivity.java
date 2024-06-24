@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.myyoutube.classes.User;
 import com.example.myyoutube.classes.Video;
 import com.example.myyoutube.managers.VideoManager;
 
@@ -33,8 +34,9 @@ public class AddEditVideoActivity extends AppCompatActivity {
     private static final int PICK_VIDEO_REQUEST = 2;
     private static final int REQUEST_CAMERA = 3;
     private static final int PERMISSION_REQUEST_CODE = 4;
+    User curretUser;
 
-    private EditText etTitle, etDescription, etChannel;
+    private EditText etTitle, etDescription;
     private ImageView ivThumbnail;
     private Uri imageUri, videoUri;
     private Video video;
@@ -47,9 +49,9 @@ public class AddEditVideoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_video);
 
+        curretUser = MainActivity.getCurrentUser();
         etTitle = findViewById(R.id.etTitle);
         etDescription = findViewById(R.id.etDescription);
-        etChannel = findViewById(R.id.etChannel);
         Button btnSave = findViewById(R.id.btnSaveEditVideo);
         Button btnSelectImage = findViewById(R.id.btnSelectImage);
         Button btnSelectVideo = findViewById(R.id.btnChooseVid);
@@ -64,7 +66,6 @@ public class AddEditVideoActivity extends AppCompatActivity {
             if (video != null) {
                 etTitle.setText(video.getTitle());
                 etDescription.setText(video.getDescription());
-                etChannel.setText(video.getChannelEmail());
                 imageUri = Uri.parse(video.getThumbnail());
                 videoUri = Uri.parse(video.getMp4file());
                 ivThumbnail.setImageURI(imageUri);
@@ -106,7 +107,7 @@ public class AddEditVideoActivity extends AppCompatActivity {
         if(isImageSelected && isVideoSelected){
             video.setTitle(Objects.requireNonNull(etTitle.getText()).toString());
             video.setDescription(Objects.requireNonNull(etDescription.getText()).toString());
-            video.setChannelEmail(Objects.requireNonNull(etChannel.getText()).toString());
+            video.setChannelEmail(curretUser.getEmail());
             Bitmap bitmap = ((BitmapDrawable) ivThumbnail.getDrawable()).getBitmap();
             String encodedImage = encodeImage(bitmap);
             video.setThumbnail(encodedImage);

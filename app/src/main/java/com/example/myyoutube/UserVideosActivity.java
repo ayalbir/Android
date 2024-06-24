@@ -39,7 +39,7 @@ public class UserVideosActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user_videos);
 
         // Return to main activity on button click
-        findViewById(R.id.imageButton).setOnClickListener(view -> {
+        findViewById(R.id.btnBackFromChannel).setOnClickListener(view -> {
             Intent intent = new Intent(UserVideosActivity.this, MainActivity.class);
             startActivity(intent);
         });

@@ -18,7 +18,7 @@
         android:layout_below="@id/logo"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
-        android:text="Use your existing email"
+        android:text="@string/use_your_existing_email"
         android:textSize="24sp"
         android:textStyle="bold" />
 
@@ -29,7 +29,7 @@
         android:layout_below="@id/title"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp"
-        android:text="Enter the email address you want to use for your Google Account"
+        android:text="@string/enter_the_email_address_you_want_to_use_for_your_google_account"
         android:textSize="16sp" />
 
     <EditText
@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/subtitle"
         android:layout_marginTop="16dp"
-        android:hint="Email address"
+        android:hint="@string/email_address"
         android:inputType="textEmailAddress"
         android:padding="16dp"
         android:layout_centerHorizontal="true"
@@ -62,7 +62,7 @@
         android:layout_below="@id/tvErrorMsg"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp"
-        android:text="You’ll need to confirm that this email belongs to you"
+        android:text="@string/you_ll_need_to_confirm_that_this_email_belongs_to_you"
         android:textSize="14sp" />
 
     <TextView
@@ -73,7 +73,7 @@
         android:layout_marginTop="8dp"
         android:clickable="true"
         android:focusable="true"
-        android:text="Get a Gmail address instead"
+        android:text="@string/get_a_gmail_address_instead"
         android:textColor="@android:color/holo_blue_dark"
         android:textSize="14sp" />
 
@@ -85,6 +85,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
         android:backgroundTint="@color/custom_red"
-        android:text="Next"
+        android:text="@string/next"
         android:textColor="@android:color/white" />
 </RelativeLayout>

@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Channel Header -->
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -20,7 +20,7 @@
             android:padding="16dp">
 
             <ImageButton
-                android:id="@+id/imageButton"
+                android:id="@+id/btnBackFromChannel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@null"
@@ -61,7 +61,7 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Search View -->
+
         <androidx.appcompat.widget.SearchView
             android:id="@+id/searchView"
             android:layout_width="match_parent"
@@ -70,7 +70,7 @@
             android:iconifiedByDefault="false"
             android:layout_margin="8dp"/>
 
-        <!-- Videos List -->
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"

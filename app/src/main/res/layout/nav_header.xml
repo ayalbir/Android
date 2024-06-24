@@ -37,6 +37,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="8dp"
         android:text="@string/welcome"
+        android:textColor="#212121"
         android:textSize="20sp"
         android:textStyle="bold" />
 
