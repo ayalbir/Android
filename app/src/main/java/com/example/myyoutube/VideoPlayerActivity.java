@@ -29,9 +29,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myyoutube.classes.Comment;
 import com.example.myyoutube.classes.User;
-import com.example.myyoutube.classes.UserManager;
+import com.example.myyoutube.managers.UserManager;
 import com.example.myyoutube.classes.Video;
-import com.example.myyoutube.classes.VideoManager;
+import com.example.myyoutube.managers.VideoManager;
+import com.example.myyoutube.login.logInScreen1;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
@@ -62,7 +63,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
         profilePictureItem.setTitle("Login");
 
         currentUser = MainActivity.getCurrentUser();
-        if(currentUser != null) {
+        if (currentUser != null) {
             Bitmap bitmap = decodeImage(currentUser.getProfileImage());
             NavigationView navigationView = findViewById(R.id.nav_view);
             profilePictureItem.setIcon(R.drawable.nav_logout);
@@ -149,16 +150,16 @@ public class VideoPlayerActivity extends AppCompatActivity {
         });
 
         ListView commentsListView = findViewById(R.id.commentsListView);
-        commentsAdapter = new CommentsAdapter(this, commentsList);
+        commentsAdapter = new CommentsAdapter(this, video.getComments());  // Use video's comments
         commentsListView.setAdapter(commentsAdapter);
 
         findViewById(R.id.btnAddComment).setOnClickListener(view -> {
-            if (MainActivity.getCurrentUser() != null) {
+            if (currentUser != null) {
                 EditText commentInput = findViewById(R.id.etComment);
                 String newComment = commentInput.getText().toString();
                 if (!newComment.isEmpty()) {
-                    String profileImageBase64 = MainActivity.getCurrentUser().getProfileImage();
-                    Comment comment = new Comment(newComment, profileImageBase64);
+                    String profileImageBase64 = currentUser.getProfileImage();
+                    Comment comment = new Comment(newComment, profileImageBase64, currentUser.getEmail());
                     video.addComment(comment);
                     commentsAdapter.notifyDataSetChanged();
                     commentInput.setText("");
@@ -178,20 +179,18 @@ public class VideoPlayerActivity extends AppCompatActivity {
                     Intent homeIntent = new Intent(VideoPlayerActivity.this, MainActivity.class);
                     startActivity(homeIntent);
                     return true;
-                }
-                else if (id == R.id.nav_add_video) {
-                    if(MainActivity.getCurrentUser() != null) {
-                        Intent intent = new Intent(VideoPlayerActivity.this, AddEditVideoActivity.class);
-                        startActivity(intent);
+                } else if (id == R.id.nav_add_video) {
+                    Intent intent;
+                    if (currentUser != null) {
+                        intent = new Intent(VideoPlayerActivity.this, AddEditVideoActivity.class);
+                    } else {
+                        intent = new Intent(VideoPlayerActivity.this, logInScreen1.class);
                     }
-                    else {
-                        Intent intent = new Intent(VideoPlayerActivity.this, logInScreen1.class);
-                        startActivity(intent);
-                    }
+                    startActivity(intent);
                     return true;
-                }else if (id == R.id.nav_login) {
-                     Intent intent = new Intent(VideoPlayerActivity.this, logInScreen1.class);
-                     startActivity(intent);
+                } else if (id == R.id.nav_login) {
+                    Intent intent = new Intent(VideoPlayerActivity.this, logInScreen1.class);
+                    startActivity(intent);
                 }
                 return false;
             }
@@ -213,6 +212,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
         int resourceId = res.getIdentifier(fileName, "raw", getPackageName());
         return resourceId != 0;
     }
+
     private void updateLikeButton() {
         if (currentUser != null && currentUser.hasLikedVideo(video.getId())) {
             likeButton.setImageResource(R.drawable.liked);
@@ -220,6 +220,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
             likeButton.setImageResource(R.drawable.unliked);
         }
     }
+
     private Uri decodeBase64ToVideoFile(String base64Str) throws IOException {
         byte[] decodedBytes = Base64.decode(base64Str, Base64.DEFAULT);
         File tempFile = File.createTempFile("tempVideo", ".mp4", getCacheDir());
@@ -236,6 +237,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
         }
         return null;
     }
+
     private class CommentsAdapter extends ArrayAdapter<Comment> {
 
         private Context context;
@@ -273,8 +275,12 @@ public class VideoPlayerActivity extends AppCompatActivity {
             }
 
             btnMenu.setOnClickListener(v -> {
-                if (MainActivity.getCurrentUser() != null) {
-                    showEditDeleteDialog(position);
+                if (currentUser != null) {
+                    if (currentUser.getEmail().equalsIgnoreCase(comment.getCommentPublisher())) {
+                        showEditDeleteDialog(position);
+                    } else {
+                        Toast.makeText(getContext(), "You can only edit or delete your own comments", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     Toast.makeText(getContext(), "User not connected", Toast.LENGTH_SHORT).show();
                 }
@@ -282,7 +288,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
             return convertView;
         }
-
 
         private void showEditDeleteDialog(int position) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -312,7 +317,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
                 dialog.dismiss();
                 String editedComment = input.getText().toString();
                 if (!editedComment.isEmpty()) {
-                    comments.set(position, new Comment(editedComment, comments.get(position).getCommentPic()));
+                    comments.set(position, new Comment(editedComment, comments.get(position).getCommentPic(), currentUser.getEmail()));
                     notifyDataSetChanged();
                 }
             });

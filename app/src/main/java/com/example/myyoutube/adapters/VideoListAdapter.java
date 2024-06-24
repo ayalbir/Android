@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.text.Layout;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,9 +23,10 @@ import com.example.myyoutube.MainActivity;
 import com.example.myyoutube.R;
 import com.example.myyoutube.UserVideosActivity;
 import com.example.myyoutube.VideoPlayerActivity;
-import com.example.myyoutube.classes.UserManager;
+import com.example.myyoutube.classes.User;
+import com.example.myyoutube.managers.UserManager;
 import com.example.myyoutube.classes.Video;
-import com.example.myyoutube.classes.VideoManager;
+import com.example.myyoutube.managers.VideoManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,11 +34,14 @@ import java.util.Objects;
 
 public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.VideoViewHolder> {
 
+    private User currentUser = MainActivity.getCurrentUser();
+
     static class VideoViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvViews, tvTitle, tvChannel;
         private final ImageView thumbnail, ivChannelPhoto;
         private final ImageButton overflowMenu;
         private final View channelLayout;
+
 
         private VideoViewHolder(View view) {
             super(view);
@@ -109,7 +112,18 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
                 ((Activity) mContext).startActivityForResult(intent, 1);
             });
 
-            holder.overflowMenu.setOnClickListener(view -> showEditDeleteDialog(video, position));
+            holder.overflowMenu.setOnClickListener(view -> {
+                if(currentUser != null){
+                    if(currentUser.getEmail().equals(video.getChannelEmail())){
+                        showEditDeleteDialog(video, position);
+                    }
+                    else {
+                        Toast.makeText(holder.itemView.getContext(), "You can only edit or delete your own videos", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else
+                    Toast.makeText(mContext, "User not connected", Toast.LENGTH_SHORT).show();
+            });
         }
     }
 
@@ -119,7 +133,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         builder.setItems(new CharSequence[]{"Edit", "Delete"}, (dialog, which) -> {
             switch (which) {
                 case 0: // Edit
-                    if (MainActivity.getCurrentUser() != null) {
+                    if (currentUser != null) {
                         Intent intent = new Intent(mContext, AddEditVideoActivity.class);
                         intent.putExtra("videoId", video.getId());
                         ((Activity) mContext).startActivityForResult(intent, MainActivity.REQUEST_CODE_EDIT_VIDEO);
@@ -128,7 +142,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
                     }
                     break;
                 case 1: // Delete
-                    if (MainActivity.getCurrentUser() != null) {
+                    if (currentUser != null) {
                         VideoManager.getVideoManager().removeVideo(video);
                         removeItem(position);
                     } else {

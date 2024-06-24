@@ -3,10 +3,8 @@ package com.example.myyoutube;
 import static com.example.myyoutube.R.layout.activity_main;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.MenuItem;
@@ -31,9 +29,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myyoutube.adapters.VideoListAdapter;
 import com.example.myyoutube.classes.User;
-import com.example.myyoutube.classes.UserManager;
+import com.example.myyoutube.managers.UserManager;
 import com.example.myyoutube.classes.Video;
-import com.example.myyoutube.classes.VideoManager;
+import com.example.myyoutube.managers.VideoManager;
+import com.example.myyoutube.login.logInScreen1;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
@@ -89,8 +88,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     navHeaderImageView.setImageBitmap(bitmap);
                 }
                 navHeaderTextView.setText("Hello " + currentUser.getUserName());
-                profilePictureItem.setIcon(R.drawable.nav_logout);
-                profilePictureItem.setTitle("Logout");
+                profilePictureItem.setIcon(R.drawable.settings);
+                profilePictureItem.setTitle("Account");
 
             }
 
@@ -100,10 +99,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setupRecyclerView();
         setupToolbarAndDrawer();
         setupSearchView();
-        initializeDefaultUsers();
         loadVideosFromJSON();
         setupNightModeSwitch();
         setupBottomNavigationView();
+
+
 
 
         if (savedInstanceState == null) {
@@ -167,8 +167,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void loadVideosFromJSON() {
         String jsonData = loadJSONFromAsset();
         if (jsonData != null) {
-            if (firstTime)
+            if (firstTime) {
                 videos = parseVideosFromJSON(jsonData);
+                initializeDefaultUsers();
+            }
             firstTime = false;
             VideoManager.getVideoManager().setVideos(videos);
             adapter.setVideos(videos);
@@ -256,9 +258,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                     return true;
                 } else if (id == R.id.nav_login) {
-                    currentUser = null;
-                    Intent intent = new Intent(MainActivity.this, logInScreen1.class);
-                    startActivity(intent);
+                    if(currentUser != null && currentUser.getEmail() != null) {
+                        Intent intent = new Intent(MainActivity.this, UpdateDeleteUserActivity.class);
+                        intent.putExtra("userEmail", currentUser.getEmail());
+                        startActivity(intent);
+                    }
+                    else{
+                        currentUser = null;
+                        Intent intent = new Intent(MainActivity.this, logInScreen1.class);
+                        startActivity(intent);
+                    }
+
                 }
                 return false;
             }

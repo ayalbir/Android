@@ -1,6 +1,5 @@
-package com.example.myyoutube;
+package com.example.myyoutube.login;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
@@ -11,6 +10,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.myyoutube.R;
 
 public class signInScreen3 extends AppCompatActivity {
     private EditText password;

@@ -1,6 +1,7 @@
 // UserVideosActivity.java
 package com.example.myyoutube;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -16,9 +17,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myyoutube.adapters.VideoListAdapter;
 import com.example.myyoutube.classes.User;
-import com.example.myyoutube.classes.UserManager;
+import com.example.myyoutube.managers.UserManager;
 import com.example.myyoutube.classes.Video;
-import com.example.myyoutube.classes.VideoManager;
+import com.example.myyoutube.managers.VideoManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,12 @@ public class UserVideosActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_videos);
 
+        // Return to main activity on button click
+        findViewById(R.id.imageButton).setOnClickListener(view -> {
+            Intent intent = new Intent(UserVideosActivity.this, MainActivity.class);
+            startActivity(intent);
+        });
+
         initViews();
 
         String userEmail = getIntent().getStringExtra("userEmail");
@@ -47,6 +54,7 @@ public class UserVideosActivity extends AppCompatActivity {
             setupRecyclerView(userVideos);
             setupSearchView();
         }
+
     }
 
     private void initViews() {

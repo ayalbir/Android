@@ -1,4 +1,4 @@
-package com.example.myyoutube;
+package com.example.myyoutube.login;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -10,8 +10,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.myyoutube.classes.User;
-import com.example.myyoutube.classes.UserManager;
+import com.example.myyoutube.R;
+import com.example.myyoutube.managers.UserManager;
 
 public class signInScreen4 extends AppCompatActivity {
 

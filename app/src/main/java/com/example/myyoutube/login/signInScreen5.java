@@ -1,4 +1,4 @@
-package com.example.myyoutube;
+package com.example.myyoutube.login;
 
 import android.Manifest;
 import android.content.Intent;
@@ -19,8 +19,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.myyoutube.R;
 import com.example.myyoutube.classes.User;
-import com.example.myyoutube.classes.UserManager;
+import com.example.myyoutube.managers.UserManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -62,6 +63,7 @@ public class signInScreen5 extends AppCompatActivity {
                 Bitmap bitmap = ((BitmapDrawable) selectedImageView.getDrawable()).getBitmap();
                 String encodedImage = encodeImage(bitmap);
 
+                assert email != null;
                 UserManager.addUser(new User(email, name, password, encodedImage));
 
                 Intent intent = new Intent(signInScreen5.this, logInScreen1.class);

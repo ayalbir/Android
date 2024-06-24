@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Video{
+public class Video {
     private static int idCounter = 0;
     private final int id;
     private String channelEmail;
@@ -15,7 +15,7 @@ public class Video{
     private int duration;
     private String thumbnail;
     private String mp4file;
-    private static List<Comment> comments;
+    private List<Comment> comments;
     private boolean liked;
 
     public boolean isLiked() {
@@ -23,7 +23,7 @@ public class Video{
     }
 
     public void setLiked(boolean isLiked1) {
-        this.liked= isLiked1;
+        this.liked = isLiked1;
     }
 
     public Video() {
@@ -41,7 +41,9 @@ public class Video{
         this.mp4file = mp4file;
         this.liked = false;
         if (comments != null) {
-            this.comments = comments;
+            this.comments = new ArrayList<>(comments);
+        } else {
+            this.comments = new ArrayList<>();
         }
     }
 
@@ -119,7 +121,6 @@ public class Video{
         this.mp4file = mp4file;
     }
 
-
     public List<Comment> getComments() {
         return comments;
     }
@@ -131,6 +132,7 @@ public class Video{
     public void addComment(Comment comment) {
         this.comments.add(comment);
     }
+
     public void incrementViews() {
         this.views++;
     }
@@ -144,6 +146,7 @@ public class Video{
             this.likes--;
         }
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -156,5 +159,4 @@ public class Video{
     public int hashCode() {
         return Objects.hash(id);
     }
-
 }

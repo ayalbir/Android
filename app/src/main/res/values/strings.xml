@@ -25,6 +25,7 @@
     <string name="year_prompt">Year</string>
     <string name="Hello">Hello\n</string>
     <string name="welcome">Welcome</string>
+    <string name="back">back</string>
 
 
     <string-array name="months_array">

@@ -1,6 +1,10 @@
-package com.example.myyoutube.classes;
+package com.example.myyoutube.managers;
+
+import com.example.myyoutube.classes.Comment;
+import com.example.myyoutube.classes.Video;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class VideoManager {
@@ -54,6 +58,36 @@ public class VideoManager {
             if (videos.get(i).getId() == updatedVideo.getId()) {
                 videos.set(i, updatedVideo);
                 return;
+            }
+        }
+    }
+
+    // VideoManager.java
+    public static void updateCommentsEmail(String oldEmail, String newEmail) {
+        for (Video video : videos) { // Assuming videoList is the list of all videos
+            for (Comment comment : video.getComments()) {
+                if (comment.getCommentPublisher().equalsIgnoreCase(oldEmail)) {
+                    comment.setCommentPublisher(newEmail);
+                }
+            }
+        }
+    }
+
+    public static void removeVideosByUser(String email) {
+        Iterator<Video> iterator = videos.iterator();
+        while (iterator.hasNext()) {
+            Video video = iterator.next();
+            if (video.getChannelEmail().equalsIgnoreCase(email)) {
+                iterator.remove();
+            } else {
+                // Remove comments by the user
+                Iterator<Comment> commentIterator = video.getComments().iterator();
+                while (commentIterator.hasNext()) {
+                    Comment comment = commentIterator.next();
+                    if (comment.getCommentPublisher().equalsIgnoreCase(email)) {
+                        commentIterator.remove();
+                    }
+                }
             }
         }
     }

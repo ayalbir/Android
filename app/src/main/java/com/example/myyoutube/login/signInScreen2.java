@@ -1,6 +1,5 @@
-package com.example.myyoutube;
+package com.example.myyoutube.login;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -12,9 +11,9 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myyoutube.R;
+
 import java.time.LocalDate;
-import java.time.Month;
-import java.time.format.DateTimeFormatter;
 
 public class signInScreen2 extends AppCompatActivity {
     private Spinner monthSpinner, genderSpinner;
