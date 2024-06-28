@@ -6,12 +6,11 @@ import java.util.List;
 public class User {
 
     private String email;
-
     private String userName;
     private String password;
     private String profileImage;
-
     private List<Integer> likedVideos;
+    private List<Integer> dislikedVideos;
 
     public User(String email, String userName, String password, String profileImage) {
         this.email = email;
@@ -19,6 +18,7 @@ public class User {
         this.password = password;
         this.profileImage = profileImage;
         this.likedVideos = new ArrayList<>();
+        this.dislikedVideos = new ArrayList<>();
     }
 
     public String getUserName() {
@@ -52,6 +52,7 @@ public class User {
     public void setProfileImage(String profileImage) {
         this.profileImage = profileImage;
     }
+
     public List<Integer> getLikedVideos() {
         return likedVideos;
     }
@@ -59,6 +60,7 @@ public class User {
     public void addLikedVideo(int videoId) {
         if (!likedVideos.contains(videoId)) {
             likedVideos.add(videoId);
+            removeDislikedVideo(videoId);
         }
     }
 
@@ -68,5 +70,24 @@ public class User {
 
     public boolean hasLikedVideo(int videoId) {
         return likedVideos.contains(videoId);
+    }
+
+    public List<Integer> getDislikedVideos() {
+        return dislikedVideos;
+    }
+
+    public void addDislikedVideo(int videoId) {
+        if (!dislikedVideos.contains(videoId)) {
+            dislikedVideos.add(videoId);
+            removeLikedVideo(videoId);
+        }
+    }
+
+    public void removeDislikedVideo(int videoId) {
+        dislikedVideos.remove(Integer.valueOf(videoId));
+    }
+
+    public boolean hasDislikedVideo(int videoId) {
+        return dislikedVideos.contains(videoId);
     }
 }

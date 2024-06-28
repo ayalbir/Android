@@ -70,6 +70,7 @@
     <string name="edit_your_comment">Edit your comment</string>
     <string name="divider">|</string>
     <string name="menu_for_edit_and_delete">Menu for edit and delete</string>
+    <string name="dislikes">Dislikes</string>
 
 
     <string-array name="months_array">

@@ -37,7 +37,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
     private User currentUser = MainActivity.getCurrentUser();
 
     static class VideoViewHolder extends RecyclerView.ViewHolder {
-        private final TextView tvViews, tvTitle, tvChannel;
+        private final TextView tvViews, tvTitle, tvChannel, tvTimeAgo;
         private final ImageView thumbnail, ivChannelPhoto;
         private final ImageButton overflowMenu;
         private final View channelLayout;
@@ -52,6 +52,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             overflowMenu = view.findViewById(R.id.overflowMenu);
             ivChannelPhoto = view.findViewById(R.id.ivChannelPhoto);
             channelLayout= view.findViewById(R.id.channelLayout);
+            tvTimeAgo= view.findViewById(R.id.tvTimeAgo);
         }
     }
 
@@ -79,6 +80,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             holder.tvTitle.setText(video.getTitle());
             holder.tvViews.setText(String.valueOf(video.getViews()));
             holder.tvChannel.setText(Objects.requireNonNull(UserManager.getUserByEmail(video.getChannelEmail())).getUserName());
+            holder.tvTimeAgo.setText(video.getTimeAgo());
 
             // Check if the thumbnail is in the drawable resources
             int imageResId = mContext.getResources().getIdentifier(video.getThumbnail(), "drawable", mContext.getPackageName());

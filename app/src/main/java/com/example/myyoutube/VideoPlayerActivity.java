@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -23,14 +24,18 @@ import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
+import android.widget.ViewSwitcher;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myyoutube.adapters.VideoListAdapter;
 import com.example.myyoutube.classes.Comment;
 import com.example.myyoutube.classes.User;
-import com.example.myyoutube.managers.UserManager;
 import com.example.myyoutube.classes.Video;
+import com.example.myyoutube.managers.UserManager;
 import com.example.myyoutube.managers.VideoManager;
 import com.example.myyoutube.login.logInScreen1;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -49,8 +54,12 @@ public class VideoPlayerActivity extends AppCompatActivity {
     private Video video;
     private CommentsAdapter commentsAdapter;
     private List<Comment> commentsList;
-    private ImageButton likeButton;
+    private VideoListAdapter videoListAdapter;
+    private List<Video> otherVideos;
+    private ImageButton likeButton, dislikeButton;
+    private RecyclerView rvOtherVideos;
     private User currentUser;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,49 +117,74 @@ public class VideoPlayerActivity extends AppCompatActivity {
         TextView channelNameView = findViewById(R.id.tvChannelName);
         TextView viewsView = findViewById(R.id.tvViews);
         TextView likesView = findViewById(R.id.tvLikes);
+        TextView timeAgoView = findViewById(R.id.tvTimeAgo);
+        ImageView IVChannelPic = findViewById(R.id.IVChannelPic);
+        Bitmap channelPicBitmap = decodeImage(UserManager.getUserByEmail(video.getChannelEmail()).getProfileImage());
+        IVChannelPic.setImageBitmap(channelPicBitmap);
+
+        timeAgoView.setText(video.getTimeAgo());
 
         titleView.setText(video.getTitle());
         channelNameView.setText(Objects.requireNonNull(UserManager.getUserByEmail(video.getChannelEmail())).getUserName());
         viewsView.setText("Views: " + video.getViews());
-        likesView.setText("Likes: " + video.getLikes());
+        likesView.setText("" + video.getLikes());
 
         ImageButton shareBtn = findViewById(R.id.IBShare);
         likeButton = findViewById(R.id.IBLike);
-        updateLikeButton();
+        dislikeButton = findViewById(R.id.IBDisLike);
+        updateLikeDislikeButtons();
 
-        shareBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Sharing
-                Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                shareIntent.setType("text/plain");
-                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Check out this video!");
-                shareIntent.putExtra(Intent.EXTRA_TEXT, videoUri.toString());
-                startActivity(Intent.createChooser(shareIntent, "Share via"));
+        shareBtn.setOnClickListener(v -> {
+            // Sharing
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Check out this video!");
+            shareIntent.putExtra(Intent.EXTRA_TEXT, videoUri.toString());
+            startActivity(Intent.createChooser(shareIntent, "Share via"));
+        });
+
+        likeButton.setOnClickListener(v -> {
+            if (currentUser != null) {
+                if (currentUser.hasLikedVideo(video.getId())) {
+                    video.decrementLikes();
+                    currentUser.removeLikedVideo(video.getId());
+                } else {
+                    video.incrementLikes();
+                    video.decrementDislikes();
+                    currentUser.addLikedVideo(video.getId());
+                    if (currentUser.hasDislikedVideo(video.getId())) {
+                        currentUser.removeDislikedVideo(video.getId());
+                    }
+                }
+                likesView.setText("" + video.getLikes());
+                updateLikeDislikeButtons();
+            } else {
+                Toast.makeText(VideoPlayerActivity.this, "User not connected", Toast.LENGTH_SHORT).show();
             }
         });
 
-        likeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (currentUser != null) {
-                    if (currentUser.hasLikedVideo(video.getId())) {
-                        video.decrementLikes();
-                        currentUser.removeLikedVideo(video.getId());
-                    } else {
-                        video.incrementLikes();
-                        currentUser.addLikedVideo(video.getId());
-                    }
-                    likesView.setText("Likes: " + video.getLikes());
-                    updateLikeButton();
+        dislikeButton.setOnClickListener(v -> {
+            if (currentUser != null) {
+                if (currentUser.hasDislikedVideo(video.getId())) {
+                    video.decrementDislikes();
+                    currentUser.removeDislikedVideo(video.getId());
                 } else {
-                    Toast.makeText(VideoPlayerActivity.this, "User not connected", Toast.LENGTH_SHORT).show();
+                    video.incrementDislikes();
+                    video.decrementLikes();
+                    currentUser.addDislikedVideo(video.getId());
+                    if (currentUser.hasLikedVideo(video.getId())) {
+                        currentUser.removeLikedVideo(video.getId());
+                    }
                 }
+                likesView.setText("" + video.getLikes());
+                updateLikeDislikeButtons();
+            } else {
+                Toast.makeText(VideoPlayerActivity.this, "User not connected", Toast.LENGTH_SHORT).show();
             }
         });
 
         ListView commentsListView = findViewById(R.id.commentsListView);
-        commentsAdapter = new CommentsAdapter(this, video.getComments());  // Use video's comments
+        commentsAdapter = new CommentsAdapter(this, video.getComments());
         commentsListView.setAdapter(commentsAdapter);
 
         findViewById(R.id.btnAddComment).setOnClickListener(view -> {
@@ -170,33 +204,49 @@ public class VideoPlayerActivity extends AppCompatActivity {
         });
 
 
+        rvOtherVideos = findViewById(R.id.rvOtherVideos);
+        rvOtherVideos.setLayoutManager(new LinearLayoutManager(this));
+
+        // Fetch and display recommended videos
+        fetchRecommendedVideos();
+
         bottomNavigationView.setBackgroundColor(getResources().getColor(R.color.custom_red));
-        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
-                if (id == R.id.nav_home) {
-                    Intent homeIntent = new Intent(VideoPlayerActivity.this, MainActivity.class);
-                    startActivity(homeIntent);
-                    return true;
-                } else if (id == R.id.nav_add_video) {
-                    Intent intent;
-                    if (currentUser != null) {
-                        intent = new Intent(VideoPlayerActivity.this, AddEditVideoActivity.class);
-                    } else {
-                        intent = new Intent(VideoPlayerActivity.this, logInScreen1.class);
-                    }
-                    startActivity(intent);
-                    return true;
-                } else if (id == R.id.nav_login) {
-                    Intent intent = new Intent(VideoPlayerActivity.this, logInScreen1.class);
-                    startActivity(intent);
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_home) {
+                Intent homeIntent = new Intent(VideoPlayerActivity.this, MainActivity.class);
+                startActivity(homeIntent);
+                return true;
+            } else if (id == R.id.nav_add_video) {
+                Intent intent;
+                if (currentUser != null) {
+                    intent = new Intent(VideoPlayerActivity.this, AddEditVideoActivity.class);
+                } else {
+                    intent = new Intent(VideoPlayerActivity.this, logInScreen1.class);
                 }
-                return false;
+                startActivity(intent);
+                return true;
+            } else if (id == R.id.nav_login) {
+                Intent intent = new Intent(VideoPlayerActivity.this, logInScreen1.class);
+                startActivity(intent);
             }
+            return false;
         });
 
         bottomNavigationView.getMenu().setGroupCheckable(0, false, true);
+    }
+
+    private void fetchRecommendedVideos() {
+        int currentVideoId = getIntent().getIntExtra("videoId", -1);
+        video = VideoManager.getVideoManager().getVideoById(currentVideoId);
+
+        if (video != null) {
+            otherVideos = new ArrayList<>(VideoManager.getVideoManager().getVideos());
+            otherVideos.remove(video);
+            videoListAdapter = new VideoListAdapter(this);
+            videoListAdapter.setVideos(otherVideos);
+            rvOtherVideos.setAdapter(videoListAdapter);
+        }
     }
 
     @Override
@@ -213,11 +263,21 @@ public class VideoPlayerActivity extends AppCompatActivity {
         return resourceId != 0;
     }
 
-    private void updateLikeButton() {
-        if (currentUser != null && currentUser.hasLikedVideo(video.getId())) {
-            likeButton.setImageResource(R.drawable.liked);
+    private void updateLikeDislikeButtons() {
+        if (currentUser != null) {
+            if (currentUser.hasLikedVideo(video.getId())) {
+                likeButton.setImageResource(R.drawable.liked);
+            } else {
+                likeButton.setImageResource(R.drawable.unliked);
+            }
+            if (currentUser.hasDislikedVideo(video.getId())) {
+                dislikeButton.setImageResource(R.drawable.disliked);
+            } else {
+                dislikeButton.setImageResource(R.drawable.undisliked);
+            }
         } else {
             likeButton.setImageResource(R.drawable.unliked);
+            dislikeButton.setImageResource(R.drawable.undisliked);
         }
     }
 

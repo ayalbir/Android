@@ -1,34 +1,50 @@
 package com.example.myyoutube.classes;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class Video {
     private static int idCounter = 0;
     private final int id;
     private String channelEmail;
     private int likes;
+    private int dislikes;
     private int views;
     private String title;
     private String description;
+    private final Date date;
     private int duration;
     private String thumbnail;
     private String mp4file;
     private List<Comment> comments;
     private boolean liked;
+    private boolean disliked;
 
     public boolean isLiked() {
         return this.liked;
     }
 
-    public void setLiked(boolean isLiked1) {
-        this.liked = isLiked1;
+    public void setLiked(boolean isLiked) {
+        this.liked = isLiked;
+    }
+
+    public boolean isDisliked() {
+        return this.disliked;
+    }
+
+    public void setDisliked(boolean isDisliked) {
+        this.disliked = isDisliked;
     }
 
     public Video() {
         this.id = ++idCounter;
         this.comments = new ArrayList<>();
+        this.date = new Date();
     }
 
     public Video(String channelEmail, String title, String description, int duration, String thumbnail, String mp4file, List<Comment> comments) {
@@ -40,6 +56,8 @@ public class Video {
         this.thumbnail = thumbnail;
         this.mp4file = mp4file;
         this.liked = false;
+        this.disliked = false;
+        this.date = new Date();
         if (comments != null) {
             this.comments = new ArrayList<>(comments);
         } else {
@@ -47,9 +65,10 @@ public class Video {
         }
     }
 
-    public Video(String channelEmail, String title, String description, int duration, int likes, int views, String thumbnail, String mp4file, List<Comment> comments) {
+    public Video(String channelEmail, String title, String description, int duration, int likes, int dislikes, int views, String thumbnail, String mp4file, List<Comment> comments) {
         this(channelEmail, title, description, duration, thumbnail, mp4file, comments);
         this.likes = likes;
+        this.dislikes = dislikes;
         this.views = views;
     }
 
@@ -63,6 +82,14 @@ public class Video {
 
     public void setLikes(int likes) {
         this.likes = likes;
+    }
+
+    public int getDislikes() {
+        return dislikes;
+    }
+
+    public void setDislikes(int dislikes) {
+        this.dislikes = dislikes;
     }
 
     public int getViews() {
@@ -147,6 +174,16 @@ public class Video {
         }
     }
 
+    public void incrementDislikes() {
+        this.dislikes++;
+    }
+
+    public void decrementDislikes() {
+        if (this.dislikes > 0) {
+            this.dislikes--;
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -158,5 +195,33 @@ public class Video {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public String getTimeAgo() {
+        long duration = System.currentTimeMillis() - date.getTime();
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(duration);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(duration);
+        long hours = TimeUnit.MILLISECONDS.toHours(duration);
+        long days = TimeUnit.MILLISECONDS.toDays(duration);
+
+        if (seconds < 60) {
+            return seconds + " seconds ago";
+        } else if (minutes < 60) {
+            return minutes + " minutes ago";
+        } else if (hours < 24) {
+            return hours + " hours ago";
+        } else if (days < 7) {
+            return days + " days ago";
+        } else if (days < 30) {
+            return (days / 7) + " weeks ago";
+        } else if (days < 365) {
+            return (days / 30) + " months ago";
+        } else {
+            return (days / 365) + " years ago";
+        }
+    }
+
+    public Date getDate() {
+        return date;
     }
 }
