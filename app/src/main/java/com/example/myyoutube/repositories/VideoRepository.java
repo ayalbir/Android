@@ -1,9 +1,10 @@
 package com.example.myyoutube.repositories;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.room.Room;
 
 import com.example.myyoutube.AppDB;
-import com.example.myyoutube.MyApplication;
+import com.example.myyoutube.Helper;
 import com.example.myyoutube.VideoDao;
 import com.example.myyoutube.api.VideoAPI;
 import com.example.myyoutube.classes.Video;
@@ -12,35 +13,43 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class VideoRepository {
-    private VideoDao videoDao;
+    public static VideoDao videoDao;
     private VideoListData videoListData;
     private VideoAPI videoAPI;
+    private AppDB db;
 
     public VideoRepository() {
-        AppDB db = AppDB.getInstance(MyApplication.context);
-        videoDao = db.videoDao();
+        new Thread(() -> {
+            db = Room.databaseBuilder(Helper.context, AppDB.class, "FootubeDB").
+                    fallbackToDestructiveMigration().build();
+            videoDao = db.videoDao();
+        }).start();
+
+        videoAPI = new VideoAPI();
         videoListData = new VideoListData();
-        videoAPI = new VideoAPI(videoListData, videoDao);
+
     }
 
     class VideoListData extends MutableLiveData<List<Video>> {
-
         public VideoListData() {
             super();
-            setValue(new LinkedList<>());
+            new Thread(() -> {
+                if (videoDao!=null) {
+                    List<Video> posts = videoDao.getAllVideos();
+                    videoListData.postValue(posts);
+                }
+            }).start();
 
         }
 
-        @Override
         protected void onActive() {
             super.onActive();
 
-           new Thread(() -> {
-              videoListData.postValue(videoDao.getAllVideos());
-           }).start();
-
-            videoAPI = new VideoAPI(videoListData, videoDao);
-            videoAPI.getVideos();
+            new Thread(() -> {
+                if (videoDao != null) {
+                    videoListData.postValue(videoDao.getAllVideos());
+                }
+            }).start();
         }
     }
 
@@ -48,19 +57,24 @@ public class VideoRepository {
         return videoListData;
     }
 
-    public void addVideo(final Video video) {
-        videoAPI.createVideo(video);
-    }
-
-    public void updateVideo(final Video video) {
-        videoAPI.updateVideo(video.getId(), video);
-    }
-
-    public void deleteVideo(final Video video) {
-        videoAPI.deleteVideo(video.getId());
-    }
-
-    public void reloadVideos() {
-        videoAPI.getVideos();
+//    public void addVideo(final Video video) {
+//        videoAPI.createVideo(video);
+//    }
+//
+//    public void updateVideo(final Video video) {
+//        videoAPI.updateVideo(video.getId(), video);
+//    }
+//
+//    public void deleteVideo(final Video video) {
+//        videoAPI.deleteVideo(video.getId());
+//    }
+//
+//    public void reloadVideos() {
+//        videoAPI.getVideos(videoListData);
+//    }
+    public LiveData<Video> getVideoById(String id) {
+//        videoAPI.getVideoById(videoListData, id);
+//        return videoListData;
+        return null;
     }
 }

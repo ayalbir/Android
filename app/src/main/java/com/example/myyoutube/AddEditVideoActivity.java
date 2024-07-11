@@ -35,7 +35,6 @@ public class AddEditVideoActivity extends AppCompatActivity {
     private static final int REQUEST_CAMERA = 3;
     private static final int PERMISSION_REQUEST_CODE = 4;
     User curretUser;
-
     private EditText etTitle, etDescription;
     private ImageView ivThumbnail;
     private Uri imageUri, videoUri;
@@ -43,11 +42,13 @@ public class AddEditVideoActivity extends AppCompatActivity {
     private boolean isEditMode = false;
     private boolean isVideoSelected = false
             , isImageSelected = false;
+    VideoManager videoManager = VideoManager.getInstance(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_video);
+
 
         curretUser = MainActivity.getCurrentUser();
         etTitle = findViewById(R.id.etTitle);
@@ -62,12 +63,12 @@ public class AddEditVideoActivity extends AppCompatActivity {
         int videoId = getIntent().getIntExtra("videoId", -1);
         if (videoId != -1) {
             isEditMode = true;
-            video = VideoManager.getVideoManager().getVideoById(videoId);
+            video = videoManager.getVideoById(videoId);
             if (video != null) {
                 etTitle.setText(video.getTitle());
                 etDescription.setText(video.getDescription());
-                imageUri = Uri.parse(video.getThumbnail());
-                videoUri = Uri.parse(video.getMp4file());
+                imageUri = Uri.parse(video.getPic());
+                videoUri = Uri.parse(video.getUrl());
                 ivThumbnail.setImageURI(imageUri);
                 ivThumbnail.setVisibility(View.VISIBLE);
             }
@@ -110,15 +111,15 @@ public class AddEditVideoActivity extends AppCompatActivity {
             video.setChannelEmail(curretUser.getEmail());
             Bitmap bitmap = ((BitmapDrawable) ivThumbnail.getDrawable()).getBitmap();
             String encodedImage = encodeImage(bitmap);
-            video.setThumbnail(encodedImage);
+            video.setPic(encodedImage);
 
             String encodedVideo = encodeVideo(videoUri);
-            video.setMp4file(encodedVideo != null ? encodedVideo : "");
+            video.setUrl(encodedVideo != null ? encodedVideo : "");
 
             if (isEditMode) {
-                VideoManager.getVideoManager().updateVideo(video);
+                videoManager.updateVideo(video);
             } else {
-                VideoManager.getVideoManager().addVideo(video);
+                videoManager.addVideo(video);
             }
 
             Intent resultIntent = new Intent();
@@ -130,6 +131,8 @@ public class AddEditVideoActivity extends AppCompatActivity {
         else
             Toast.makeText(this, "Please select a video before saving.", Toast.LENGTH_SHORT).show();
     }
+
+
 
     private void openImageGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);

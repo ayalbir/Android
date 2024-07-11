@@ -15,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -24,7 +23,6 @@ import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
-import android.widget.ViewSwitcher;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,7 +37,6 @@ import com.example.myyoutube.managers.UserManager;
 import com.example.myyoutube.managers.VideoManager;
 import com.example.myyoutube.login.logInScreen1;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 
 import java.io.File;
@@ -59,6 +56,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
     private ImageButton likeButton, dislikeButton;
     private RecyclerView rvOtherVideos;
     private User currentUser;
+    VideoManager videoManager = VideoManager.getInstance(this);
 
 
     @Override
@@ -73,14 +71,14 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
         currentUser = MainActivity.getCurrentUser();
         if (currentUser != null) {
-            Bitmap bitmap = decodeImage(currentUser.getProfileImage());
+            Bitmap bitmap = VideoManager.decodeImage(currentUser.getProfileImage());
             NavigationView navigationView = findViewById(R.id.nav_view);
             profilePictureItem.setIcon(R.drawable.nav_logout);
             profilePictureItem.setTitle("Logout");
         }
 
         int videoId = getIntent().getIntExtra("videoId", -1);
-        video = VideoManager.getVideoManager().getVideoById(videoId);
+        video = videoManager.getVideoById(videoId);
         if (video == null) {
             finish();
             return;
@@ -88,12 +86,12 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
         Uri videoUri;
         VideoView videoView = findViewById(R.id.videoView);
-        if (isFileInRaw(video.getMp4file())) {
-            String videoPath = "android.resource://" + getPackageName() + "/raw/" + video.getMp4file();
+        if (isFileInRaw(video.getUrl())) {
+            String videoPath = "android.resource://" + getPackageName() + "/raw/" + video.getUrl();
             videoUri = Uri.parse(videoPath);
         } else {
             try {
-                videoUri = decodeBase64ToVideoFile(video.getMp4file());
+                videoUri = decodeBase64ToVideoFile(video.getUrl());
             } catch (IOException e) {
                 e.printStackTrace();
                 Toast.makeText(this, "Failed to load video", Toast.LENGTH_SHORT).show();
@@ -119,7 +117,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
         TextView likesView = findViewById(R.id.tvLikes);
         TextView timeAgoView = findViewById(R.id.tvTimeAgo);
         ImageView IVChannelPic = findViewById(R.id.IVChannelPic);
-        Bitmap channelPicBitmap = decodeImage(UserManager.getUserByEmail(video.getChannelEmail()).getProfileImage());
+        Bitmap channelPicBitmap = VideoManager.decodeImage(UserManager.getUserByEmail(video.getChannelEmail()).getProfileImage());
         IVChannelPic.setImageBitmap(channelPicBitmap);
 
         timeAgoView.setText(video.getTimeAgo());
@@ -238,10 +236,10 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
     private void fetchRecommendedVideos() {
         int currentVideoId = getIntent().getIntExtra("videoId", -1);
-        video = VideoManager.getVideoManager().getVideoById(currentVideoId);
+        video = videoManager.getVideoById(currentVideoId);
 
         if (video != null) {
-            otherVideos = new ArrayList<>(VideoManager.getVideoManager().getVideos());
+            otherVideos = new ArrayList<>(videoManager.getVideos());
             otherVideos.remove(video);
             videoListAdapter = new VideoListAdapter(this);
             videoListAdapter.setVideos(otherVideos);
@@ -290,13 +288,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
         return Uri.fromFile(tempFile);
     }
 
-    private Bitmap decodeImage(String encodedImage) {
-        if (encodedImage != null) {
-            byte[] decodedBytes = Base64.decode(encodedImage, Base64.DEFAULT);
-            return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
-        }
-        return null;
-    }
 
     private class CommentsAdapter extends ArrayAdapter<Comment> {
 

@@ -32,6 +32,7 @@ public class UserVideosActivity extends AppCompatActivity {
     private SearchView searchView;
     private RecyclerView recyclerView;
     private VideoListAdapter adapter;
+    VideoManager videoManager = VideoManager.getInstance(this);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,7 +75,7 @@ public class UserVideosActivity extends AppCompatActivity {
     }
 
     private List<Video> getUserVideos(String email) {
-        List<Video> allVideos = VideoManager.getVideoManager().getVideos();
+        List<Video> allVideos = videoManager.getVideos();
         List<Video> userVideos = new ArrayList<>();
         for (Video video : allVideos) {
             if (video.getChannelEmail().equals(email)) {

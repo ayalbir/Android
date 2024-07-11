@@ -12,6 +12,7 @@ public class VideosViewModel extends ViewModel {
 
     private final VideoRepository mRepository;
     private final LiveData<List<Video>> videos;
+    private LiveData<Video> video;
 
     //TODO: replace getAll with get Top Videos
     public VideosViewModel() {
@@ -23,20 +24,24 @@ public class VideosViewModel extends ViewModel {
         return videos;
     }
 
-    public void add(Video video) {
-        mRepository.addVideo(video);
+    public LiveData<Video> getVideoById(String id) {
+        video = mRepository.getVideoById(id);
+        return video;
     }
-
-    public void delete(Video video) {
-        mRepository.deleteVideo(video);
-    }
-
-    public void update(Video video){
-        mRepository.updateVideo(video);
-    }
-    public void reloadVideos() {
-        mRepository.reloadVideos();
-    }
-
+//    public void add(Video video) {
+//        mRepository.addVideo(video);
+//    }
+//
+//    public void delete(Video video) {
+//        mRepository.deleteVideo(video);
+//    }
+//
+//    public void update(Video video){
+//        mRepository.updateVideo(video);
+//    }
+//    public void reloadVideos() {
+//        mRepository.reloadVideos();
+//    }
+//
 
 }

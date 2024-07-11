@@ -42,7 +42,6 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         private final ImageButton overflowMenu;
         private final View channelLayout;
 
-
         private VideoViewHolder(View view) {
             super(view);
             tvTitle = view.findViewById(R.id.tvTitle);
@@ -82,14 +81,14 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             holder.tvChannel.setText(Objects.requireNonNull(UserManager.getUserByEmail(video.getChannelEmail())).getUserName());
             holder.tvTimeAgo.setText(video.getTimeAgo());
 
-            // Check if the thumbnail is in the drawable resources
-            int imageResId = mContext.getResources().getIdentifier(video.getThumbnail(), "drawable", mContext.getPackageName());
+            // Check if the pic is in the drawable resources
+            int imageResId = mContext.getResources().getIdentifier(video.getPic(), "drawable", mContext.getPackageName());
             if (imageResId != 0) {
                 // Image is in the drawable resources
                 holder.thumbnail.setImageResource(imageResId);
             } else {
                 // Image is from the gallery
-                byte[] decodedString = Base64.decode(video.getThumbnail(), Base64.DEFAULT);
+                byte[] decodedString = Base64.decode(video.getPic(), Base64.DEFAULT);
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 holder.thumbnail.setImageBitmap(decodedByte);
             }
@@ -133,6 +132,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setTitle("Select Action");
         builder.setItems(new CharSequence[]{"Edit", "Delete"}, (dialog, which) -> {
+            VideoManager videoManager = VideoManager.getInstance(mContext);
             switch (which) {
                 case 0: // Edit
                     if (currentUser != null) {
@@ -145,8 +145,9 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
                     break;
                 case 1: // Delete
                     if (currentUser != null) {
-                        VideoManager.getVideoManager().removeVideo(video);
+                        videoManager.removeVideo(video);
                         removeItem(position);
+                        notifyDataSetChanged();
                     } else {
                         Toast.makeText(mContext, "User not connected", Toast.LENGTH_SHORT).show();
                     }

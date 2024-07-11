@@ -1,72 +1,70 @@
 package com.example.myyoutube.classes;
 
-import java.text.SimpleDateFormat;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import com.example.myyoutube.Converters;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+@Entity
 public class Video {
-    private static int idCounter = 0;
-    private final int id;
+    @PrimaryKey(autoGenerate = true)
+    private int id;
     private String channelEmail;
     private int likes;
     private int dislikes;
     private int views;
     private String title;
     private String description;
-    private final Date date;
-    private int duration;
-    private String thumbnail;
-    private String mp4file;
+
+    private String date;
+    private String pic;
+    private String url;
+    @TypeConverters(Converters.class)
     private List<Comment> comments;
     private boolean liked;
     private boolean disliked;
-
-    public boolean isLiked() {
-        return this.liked;
-    }
-
-    public void setLiked(boolean isLiked) {
-        this.liked = isLiked;
-    }
-
-    public boolean isDisliked() {
-        return this.disliked;
-    }
-
-    public void setDisliked(boolean isDisliked) {
-        this.disliked = isDisliked;
-    }
+    @TypeConverters(Converters.class)
+    private List<String> likedBy;
+    @TypeConverters(Converters.class)
+    private List<String> dislikedBy;
 
     public Video() {
-        this.id = ++idCounter;
         this.comments = new ArrayList<>();
-        this.date = new Date();
+        this.date = new Date().toString();
+        this.likedBy = new ArrayList<>();
+        this.dislikedBy = new ArrayList<>();
     }
 
-    public Video(String channelEmail, String title, String description, int duration, String thumbnail, String mp4file, List<Comment> comments) {
-        this.id = ++idCounter;
+    @Ignore
+    public Video(String channelEmail, String title, String description, String pic, String url, List<Comment> comments) {
         this.channelEmail = channelEmail;
         this.title = title;
         this.description = description;
-        this.duration = duration;
-        this.thumbnail = thumbnail;
-        this.mp4file = mp4file;
+        this.pic = pic;
+        this.url = url;
         this.liked = false;
         this.disliked = false;
-        this.date = new Date();
+        this.date = new Date().toString();
         if (comments != null) {
             this.comments = new ArrayList<>(comments);
         } else {
             this.comments = new ArrayList<>();
         }
+        this.likedBy = new ArrayList<>();
+        this.dislikedBy = new ArrayList<>();
     }
 
-    public Video(String channelEmail, String title, String description, int duration, int likes, int dislikes, int views, String thumbnail, String mp4file, List<Comment> comments) {
-        this(channelEmail, title, description, duration, thumbnail, mp4file, comments);
+    @Ignore
+    public Video(String channelEmail, String title, String description, int likes, int dislikes, int views, String pic, String url, List<Comment> comments) {
+        this(channelEmail, title, description, pic, url, comments);
         this.likes = likes;
         this.dislikes = dislikes;
         this.views = views;
@@ -74,6 +72,9 @@ public class Video {
 
     public int getId() {
         return id;
+    }
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getLikes() {
@@ -116,14 +117,6 @@ public class Video {
         this.description = description;
     }
 
-    public int getDuration() {
-        return duration;
-    }
-
-    public void setDuration(int duration) {
-        this.duration = duration;
-    }
-
     public String getChannelEmail() {
         return channelEmail;
     }
@@ -132,20 +125,20 @@ public class Video {
         this.channelEmail = channelEmail;
     }
 
-    public String getThumbnail() {
-        return thumbnail;
+    public String getPic() {
+        return pic;
     }
 
-    public void setThumbnail(String thumbnail) {
-        this.thumbnail = thumbnail;
+    public void setPic(String pic) {
+        this.pic = pic;
     }
 
-    public String getMp4file() {
-        return mp4file;
+    public String getUrl() {
+        return url;
     }
 
-    public void setMp4file(String mp4file) {
-        this.mp4file = mp4file;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public List<Comment> getComments() {
@@ -184,6 +177,44 @@ public class Video {
         }
     }
 
+    public String getDate() {
+        return date;
+    }
+    public void setDate(String date){
+        this.date = date;
+    }
+    public boolean isLiked() {
+        return liked;
+    }
+
+    public void setLiked(boolean liked) {
+        this.liked = liked;
+    }
+
+    public boolean isDisliked() {
+        return disliked;
+    }
+
+    public void setDisliked(boolean disliked) {
+        this.disliked = disliked;
+    }
+
+    public List<String> getLikedBy() {
+        return likedBy;
+    }
+
+    public void setLikedBy(List<String> likedBy) {
+        this.likedBy = likedBy;
+    }
+
+    public List<String> getDislikedBy() {
+        return dislikedBy;
+    }
+
+    public void setDislikedBy(List<String> dislikedBy) {
+        this.dislikedBy = dislikedBy;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -197,8 +228,29 @@ public class Video {
         return Objects.hash(id);
     }
 
+    @Override
+    public String toString() {
+        return "Video{" +
+                "id=" + id +
+                ", channelEmail='" + channelEmail + '\'' +
+                ", likes=" + likes +
+                ", dislikes=" + dislikes +
+                ", views=" + views +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", date='" + date + '\'' +
+                ", pic='" + pic + '\'' +
+                ", url='" + url + '\'' +
+                ", comments=" + comments +
+                ", liked=" + liked +
+                ", disliked=" + disliked +
+                ", likedBy=" + likedBy +
+                ", dislikedBy=" + dislikedBy +
+                '}';
+    }
+
     public String getTimeAgo() {
-        long duration = System.currentTimeMillis() - date.getTime();
+        long duration = System.currentTimeMillis() - new Date(date).getTime();
         long seconds = TimeUnit.MILLISECONDS.toSeconds(duration);
         long minutes = TimeUnit.MILLISECONDS.toMinutes(duration);
         long hours = TimeUnit.MILLISECONDS.toHours(duration);
@@ -219,9 +271,5 @@ public class Video {
         } else {
             return (days / 365) + " years ago";
         }
-    }
-
-    public Date getDate() {
-        return date;
     }
 }
