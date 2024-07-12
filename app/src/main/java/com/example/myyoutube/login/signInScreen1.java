@@ -22,7 +22,7 @@ public class signInScreen1 extends AppCompatActivity {
         this.firstName = findViewById(R.id.etFirstName);
         this.lastName = findViewById(R.id.etLastName);
         this.errorMsg = findViewById(R.id.tvErrorMsg);
-        Button button = findViewById(R.id.button);
+        Button button = findViewById(R.id.btn_nxt);
 
 
         button.setOnClickListener(new View.OnClickListener() {

@@ -42,13 +42,16 @@ public class Converters {
         return gson.toJson(list);
     }
     @TypeConverter
-    public static void deleteImageFromStorage(String filePath) {
+    public static int deleteImageFromStorage(String filePath) {
         if (filePath != null) {
             File file = new File(filePath);
             if (file.exists()) {
-                file.delete();
+                if (file.delete()) {
+                    return 1;
+                }
             }
         }
+        return 0;
     }
     @TypeConverter
     public static String base64ToString(String base64String) {
@@ -60,7 +63,7 @@ public class Converters {
         return saveBitmapToFile(bitmap);
     }
     @TypeConverter
-    private static String saveBitmapToFile(Bitmap bitmap) {
+    public static String saveBitmapToFile(Bitmap bitmap) {
         Context context = Helper.context; // Replace with your application's context
         File filesDir = context.getFilesDir();
         File imageFile = new File(filesDir, System.currentTimeMillis() + ".png");
