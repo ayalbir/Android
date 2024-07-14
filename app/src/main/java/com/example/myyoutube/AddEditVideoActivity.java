@@ -19,14 +19,18 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.example.myyoutube.adapters.VideoListAdapter;
+import com.example.myyoutube.classes.Comment;
 import com.example.myyoutube.classes.User;
 import com.example.myyoutube.classes.Video;
-import com.example.myyoutube.managers.VideoManager;
+import com.example.myyoutube.viewmodels.VideosViewModel;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class AddEditVideoActivity extends AppCompatActivity {
@@ -42,12 +46,13 @@ public class AddEditVideoActivity extends AppCompatActivity {
     private boolean isEditMode = false;
     private boolean isVideoSelected = false
             , isImageSelected = false;
-    VideoManager videoManager = VideoManager.getInstance(this);
+    private VideosViewModel videosViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_video);
+        videosViewModel = new ViewModelProvider(this).get(VideosViewModel.class);
 
 
         curretUser = MainActivity.getCurrentUser();
@@ -63,17 +68,17 @@ public class AddEditVideoActivity extends AppCompatActivity {
         int videoId = getIntent().getIntExtra("videoId", -1);
         if (videoId != -1) {
             isEditMode = true;
-            video = videoManager.getVideoById(videoId);
-            if (video != null) {
-                etTitle.setText(video.getTitle());
-                etDescription.setText(video.getDescription());
-                imageUri = Uri.parse(video.getPic());
-                videoUri = Uri.parse(video.getUrl());
-                ivThumbnail.setImageURI(imageUri);
-                ivThumbnail.setVisibility(View.VISIBLE);
-            }
-        } else {
-            video = new Video();
+            videosViewModel.getVideoById(videoId).observe(this, video -> {
+                if (video != null) {
+                    this.video = video;
+                    etTitle.setText(video.getTitle());
+                    etDescription.setText(video.getDescription());
+                    imageUri = Uri.parse(video.getPic());
+                    videoUri = Uri.parse(video.getUrl());
+                    ivThumbnail.setImageURI(imageUri);
+                    ivThumbnail.setVisibility(View.VISIBLE);
+                }
+            });
         }
 
         btnSelectImage.setOnClickListener(v -> openImageGallery());
@@ -106,9 +111,12 @@ public class AddEditVideoActivity extends AppCompatActivity {
 
     private void saveVideo() {
         if(isImageSelected && isVideoSelected){
+            if(video == null){
+                video = new Video("", "", "", "", "", new ArrayList<Comment>());
+            }
             video.setTitle(Objects.requireNonNull(etTitle.getText()).toString());
             video.setDescription(Objects.requireNonNull(etDescription.getText()).toString());
-            video.setChannelEmail(curretUser.getEmail());
+            video.setEmail(curretUser.getEmail());
             Bitmap bitmap = ((BitmapDrawable) ivThumbnail.getDrawable()).getBitmap();
             String encodedImage = encodeImage(bitmap);
             video.setPic(encodedImage);
@@ -117,9 +125,9 @@ public class AddEditVideoActivity extends AppCompatActivity {
             video.setUrl(encodedVideo != null ? encodedVideo : "");
 
             if (isEditMode) {
-                videoManager.updateVideo(video);
+                videosViewModel.update(video);
             } else {
-                videoManager.addVideo(video);
+                videosViewModel.add(video);
             }
 
             Intent resultIntent = new Intent();

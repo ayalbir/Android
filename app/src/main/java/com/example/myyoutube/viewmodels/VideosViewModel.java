@@ -24,24 +24,26 @@ public class VideosViewModel extends ViewModel {
         return videos;
     }
 
-    public LiveData<Video> getVideoById(String id) {
+    public LiveData<Video> getVideoById(int id) {
         video = mRepository.getVideoById(id);
         return video;
     }
-//    public void add(Video video) {
-//        mRepository.addVideo(video);
-//    }
-//
-//    public void delete(Video video) {
-//        mRepository.deleteVideo(video);
-//    }
-//
-//    public void update(Video video){
-//        mRepository.updateVideo(video);
-//    }
-//    public void reloadVideos() {
-//        mRepository.reloadVideos();
-//    }
-//
+    public void add(Video video) {
+        mRepository.addVideo(video);
+    }
+
+    public void delete(Video video) {
+        mRepository.deleteVideo(video);
+    }
+
+    public void update(Video video){
+        mRepository.updateVideo(video);
+    }
+    public void reloadVideos() {
+        mRepository.reloadVideos();
+    }
+    public LiveData<List<Video>> getVideosByUserEmail(String userEmail) {
+        return mRepository.getVideosByUserEmail(userEmail);
+    }
 
 }

@@ -34,7 +34,6 @@ import com.example.myyoutube.classes.Comment;
 import com.example.myyoutube.classes.User;
 import com.example.myyoutube.classes.Video;
 import com.example.myyoutube.managers.UserManager;
-import com.example.myyoutube.managers.VideoManager;
 import com.example.myyoutube.login.logInScreen1;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
@@ -43,6 +42,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -57,7 +57,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
     private RecyclerView rvOtherVideos;
     private User currentUser;
     VideoManager videoManager = VideoManager.getInstance(this);
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +77,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
         }
 
         int videoId = getIntent().getIntExtra("videoId", -1);
-        video = videoManager.getVideoById(videoId);
+        video = videoManager.getVideoById(videoId).getValue();
         if (video == null) {
             finish();
             return;
@@ -117,13 +116,13 @@ public class VideoPlayerActivity extends AppCompatActivity {
         TextView likesView = findViewById(R.id.tvLikes);
         TextView timeAgoView = findViewById(R.id.tvTimeAgo);
         ImageView IVChannelPic = findViewById(R.id.IVChannelPic);
-        Bitmap channelPicBitmap = VideoManager.decodeImage(UserManager.getUserByEmail(video.getChannelEmail()).getProfileImage());
+        Bitmap channelPicBitmap = VideoManager.decodeImage(UserManager.getUserByEmail(video.getEmail()).getProfileImage());
         IVChannelPic.setImageBitmap(channelPicBitmap);
 
         timeAgoView.setText(video.getTimeAgo());
 
         titleView.setText(video.getTitle());
-        channelNameView.setText(Objects.requireNonNull(UserManager.getUserByEmail(video.getChannelEmail())).getUserName());
+        channelNameView.setText(Objects.requireNonNull(UserManager.getUserByEmail(video.getEmail())).getUserName());
         viewsView.setText("Views: " + video.getViews());
         likesView.setText("" + video.getLikes());
 
@@ -236,10 +235,10 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
     private void fetchRecommendedVideos() {
         int currentVideoId = getIntent().getIntExtra("videoId", -1);
-        video = videoManager.getVideoById(currentVideoId);
+        video = videoManager.getVideoById(currentVideoId).getValue();
 
         if (video != null) {
-            otherVideos = new ArrayList<>(videoManager.getVideos());
+            otherVideos = new ArrayList<>((Collection) videoManager.getVideos());
             otherVideos.remove(video);
             videoListAdapter = new VideoListAdapter(this);
             videoListAdapter.setVideos(otherVideos);

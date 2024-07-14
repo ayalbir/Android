@@ -19,7 +19,6 @@ import com.example.myyoutube.adapters.VideoListAdapter;
 import com.example.myyoutube.classes.User;
 import com.example.myyoutube.managers.UserManager;
 import com.example.myyoutube.classes.Video;
-import com.example.myyoutube.managers.VideoManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,10 +74,10 @@ public class UserVideosActivity extends AppCompatActivity {
     }
 
     private List<Video> getUserVideos(String email) {
-        List<Video> allVideos = videoManager.getVideos();
+        List<Video> allVideos = (List<Video>) videoManager.getVideos();
         List<Video> userVideos = new ArrayList<>();
         for (Video video : allVideos) {
-            if (video.getChannelEmail().equals(email)) {
+            if (video.getEmail().equals(email)) {
                 userVideos.add(video);
             }
         }

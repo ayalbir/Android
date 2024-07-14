@@ -26,7 +26,7 @@ import com.example.myyoutube.VideoPlayerActivity;
 import com.example.myyoutube.classes.User;
 import com.example.myyoutube.managers.UserManager;
 import com.example.myyoutube.classes.Video;
-import com.example.myyoutube.managers.VideoManager;
+import com.example.myyoutube.viewmodels.VideosViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +35,14 @@ import java.util.Objects;
 public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.VideoViewHolder> {
 
     private User currentUser = MainActivity.getCurrentUser();
+    private VideosViewModel videosViewModel;
 
     static class VideoViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvViews, tvTitle, tvChannel, tvTimeAgo;
         private final ImageView thumbnail, ivChannelPhoto;
         private final ImageButton overflowMenu;
         private final View channelLayout;
+
 
         private VideoViewHolder(View view) {
             super(view);
@@ -60,9 +62,10 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
     private List<Video> videos = new ArrayList<>();
     private List<Video> videosFull = new ArrayList<>();
 
-    public VideoListAdapter(Context context) {
+    public VideoListAdapter(Context context, VideosViewModel videosViewModel) {
         this.mInflater = LayoutInflater.from(context);
         this.mContext = context;
+        this.videosViewModel = videosViewModel;
     }
 
     @NonNull
@@ -78,8 +81,9 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             Video video = videos.get(position);
             holder.tvTitle.setText(video.getTitle());
             holder.tvViews.setText(String.valueOf(video.getViews()));
-            holder.tvChannel.setText(Objects.requireNonNull(UserManager.getUserByEmail(video.getChannelEmail())).getUserName());
+            holder.tvChannel.setText(Objects.requireNonNull(UserManager.getUserByEmail(video.getEmail())).getUserName());
             holder.tvTimeAgo.setText(video.getTimeAgo());
+            holder.bind(video, videosViewModel);
 
             // Check if the pic is in the drawable resources
             int imageResId = mContext.getResources().getIdentifier(video.getPic(), "drawable", mContext.getPackageName());
@@ -92,7 +96,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 holder.thumbnail.setImageBitmap(decodedByte);
             }
-            String profileImageBase64 = UserManager.getUserByEmail(video.getChannelEmail()).getProfileImage();
+            String profileImageBase64 = UserManager.getUserByEmail(video.getEmail()).getProfileImage();
             if (profileImageBase64 != null) {
                 byte[] decodedString = Base64.decode(profileImageBase64, Base64.DEFAULT);
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
@@ -101,7 +105,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
 
             holder.channelLayout.setOnClickListener(view -> {
                 Intent intent = new Intent(mContext, UserVideosActivity.class);
-                intent.putExtra("userEmail", video.getChannelEmail());
+                intent.putExtra("userEmail", video.getEmail());
                 mContext.startActivity(intent);
             });
             holder.itemView.setOnClickListener(view -> {
@@ -115,7 +119,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
 
             holder.overflowMenu.setOnClickListener(view -> {
                 if(currentUser != null){
-                    if(currentUser.getEmail().equals(video.getChannelEmail())){
+                    if(currentUser.getEmail().equals(video.getEmail())){
                         showEditDeleteDialog(video, position);
                     }
                     else {
@@ -132,7 +136,6 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setTitle("Select Action");
         builder.setItems(new CharSequence[]{"Edit", "Delete"}, (dialog, which) -> {
-            VideoManager videoManager = VideoManager.getInstance(mContext);
             switch (which) {
                 case 0: // Edit
                     if (currentUser != null) {
@@ -145,7 +148,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
                     break;
                 case 1: // Delete
                     if (currentUser != null) {
-                        videoManager.removeVideo(video);
+                        videosViewModel.delete(video);
                         removeItem(position);
                         notifyDataSetChanged();
                     } else {
@@ -163,11 +166,9 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
     }
 
     public void removeItem(int position) {
-        //videos.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, videos.size());
     }
-
 
     public void addItem(Video video) {
         if (!videos.contains(video)) {
@@ -200,7 +201,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         } else {
             text = text.toLowerCase();
             for (Video video : videosFull) {
-                if (video.getTitle().toLowerCase().contains(text) || video.getChannelEmail().toLowerCase().contains(text)) {
+                if (video.getTitle().toLowerCase().contains(text) || video.getEmail().toLowerCase().contains(text)) {
                     videos.add(video);
                 }
             }

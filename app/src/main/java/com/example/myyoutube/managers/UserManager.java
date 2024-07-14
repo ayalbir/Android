@@ -4,10 +4,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 
+import androidx.lifecycle.LiveData;
+
 import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;
 import com.example.myyoutube.classes.User;
 import com.example.myyoutube.classes.Video;
+import com.example.myyoutube.viewmodels.VideosViewModel;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -15,7 +18,6 @@ import java.util.List;
 
 public class UserManager {
     private static final List<User> users = new ArrayList<>();
-    private static VideoManager videoManager;
     public  static User currentUser;
 
     public static List<User> getUsers() {
@@ -49,29 +51,28 @@ public class UserManager {
             if (user.getEmail().equalsIgnoreCase(oldEmail)) {
                 user.setEmail(newEmail);
                 updateUserVideosChannelEmail(oldEmail, newEmail);
-                VideoManager.updateCommentsEmail(oldEmail, newEmail);
+                videosViewModel.updateCommentsEmail(oldEmail, newEmail);
                 break;
             }
         }
     }
 
-    private static void updateUserVideosChannelEmail(String oldEmail, String newEmail) {
-        for (Video video : videoManager.getVideos()) {
-            if (video.getChannelEmail().equalsIgnoreCase(oldEmail)) {
-                video.setChannelEmail(newEmail);
+    public static void updateUserVideosChannelEmail(String oldEmail, String newEmail) {
+        LiveData<List<Video>> liveDataVideos = videosViewModel.get();
+        liveDataVideos.observeForever(videos -> {
+            for (Video video : videos) {
+                if (video.getEmail().equalsIgnoreCase(oldEmail)) {
+                    video.setEmail(newEmail);
+                    videosViewModel.update(video);
+                }
             }
-        }
-    }
-
-    public static void removeUser(String email) {
-        User user = getUserByEmail(email);
-        removeUser(user);
+        });
     }
 
     public static void removeUser(User user) {
         if (user != null) {
             users.remove(user);
-            videoManager.removeVideosByUser(user.getEmail());
+            videosViewModel.removeVideosByUser(user.getEmail());
         }
     }
     private static String encodeImageToBase64(int resId) {

@@ -19,7 +19,7 @@ public interface VideoDao {
     @Query("SELECT * FROM video WHERE id = :id")
     Video getVideoById(int id);
 
-    @Query("SELECT * FROM video WHERE channelEmail = :email")
+    @Query("SELECT * FROM video WHERE email = :email")
     List<Video> getVideosByUserEmail(String email);
 
     @Insert
@@ -31,6 +31,6 @@ public interface VideoDao {
     @Delete
     void delete(Video... videos);
 
-    @Query("DELETE FROM video WHERE channelEmail = :email")
+    @Query("DELETE FROM video WHERE email = :email")
     void deleteVideosByUserEmail(String email);
 }

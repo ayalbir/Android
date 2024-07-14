@@ -24,7 +24,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -32,18 +31,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
 import com.example.myyoutube.adapters.VideoListAdapter;
-import com.example.myyoutube.api.VideoAPI;
 import com.example.myyoutube.classes.User;
 import com.example.myyoutube.managers.UserManager;
 import com.example.myyoutube.classes.Video;
-import com.example.myyoutube.managers.VideoManager;
 import com.example.myyoutube.login.logInScreen1;
 import com.example.myyoutube.viewmodels.VideosViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 
-import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -60,18 +63,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static List<Video> videos;
     public static boolean firstTime = true;
     private static User currentUser;
-    private VideoManager videoManager;
     private AppDB db;
     private VideoDao videoDao;
     private VideosViewModel videosViewModel;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(activity_main);
-
-        videoManager = VideoManager.getInstance(this);
-            Intent intent = getIntent();
+         videosViewModel = new ViewModelProvider(this).get(VideosViewModel.class);
+        Intent intent = getIntent();
             String email = intent.getStringExtra("email");
             BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
             MenuItem profilePictureItem = bottomNavigationView.getMenu().findItem(R.id.nav_login);
@@ -86,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             if (getCurrentUser() != null) {
                 assert currentUser != null;
-                Bitmap bitmap = VideoManager.decodeImage(currentUser.getProfileImage());
+                Bitmap bitmap = decodeImage(currentUser.getProfileImage());
                 cardView.setVisibility(View.VISIBLE);
                 ImageView navHeaderImageView = navigationView.getHeaderView(0).findViewById(R.id.IVHeaderProfilePic);
                 TextView navHeaderTextView = navigationView.getHeaderView(0).findViewById(R.id.TVWelcomeMenu);
@@ -127,8 +129,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void setupRecyclerViewDB() {
         RecyclerView videoList = findViewById(R.id.videoList);
-        adapter = new VideoListAdapter(this);
-        videosViewModel = new ViewModelProvider(this).get(VideosViewModel.class);
+        adapter = new VideoListAdapter(this,videosViewModel);
+
         videosViewModel.get().observe(this, new Observer<List<Video>>() {
             @Override
             public void onChanged(List<Video> videos) {
@@ -176,14 +178,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void loadVideosFromJSON() {
-        String jsonData = VideoManager.loadJSONFromAsset(this);
+        String jsonData = loadJSONFromAsset();
         if (jsonData != null) {
             if (firstTime) {
-                videos = VideoManager.parseVideosFromJSON(jsonData);
+                videos = parseVideosFromJSON(jsonData);
                 UserManager.initializeDefaultUsers();
             }
-            firstTime = false;
-             videoManager.setVideos(videos);
+             firstTime = false;
              adapter.setVideos(videos);
         }
     }
@@ -251,6 +252,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+    private Bitmap decodeImage(String encodedImage) {
+        if (encodedImage != null) {
+            byte[] decodedBytes = Base64.decode(encodedImage, Base64.DEFAULT);
+            return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+        }
+        return null;
+    }
+
+    private List<Video> parseVideosFromJSON(String jsonData) {
+        Gson gson = new Gson();
+        JsonObject jsonObject = JsonParser.parseString(jsonData).getAsJsonObject();
+        Type videoListType = new TypeToken<ArrayList<Video>>() {}.getType();
+        List<Video> videoList = gson.fromJson(jsonObject.get("Videos"), videoListType);
+        for (Video video : videoList) {
+            if (video.getComments() == null) {
+                video.setComments(new ArrayList<>());
+            }
+        }
+        return videoList;
+    }
+    private String loadJSONFromAsset() {
+        String json = null;
+        try {
+            InputStream is = getResources().getAssets().open("data.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return json;
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
@@ -289,13 +325,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (resultCode == RESULT_OK && data != null) {
             int updatedVideoId = data.getIntExtra("updatedVideoId", -1);
             if (updatedVideoId != -1) {
-                Video updatedVideo = videoManager.getVideoById(updatedVideoId);
+                Video updatedVideo = videosViewModel.getVideoById(updatedVideoId).getValue();
                 if (updatedVideo != null) {
                     if (requestCode == REQUEST_CODE_ADD_VIDEO) {
-                        videoManager.addVideo(updatedVideo);
+                        videosViewModel.add(updatedVideo);
                         adapter.addItem(updatedVideo);
                     } else if (requestCode == REQUEST_CODE_EDIT_VIDEO) {
-                        videoManager.updateVideo(updatedVideo);
+                        videosViewModel.update(updatedVideo);
                         adapter.updateItem(updatedVideo);
                     }
                 }

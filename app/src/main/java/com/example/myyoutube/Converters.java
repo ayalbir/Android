@@ -3,6 +3,7 @@ package com.example.myyoutube;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.util.Base64;
 
 import androidx.room.TypeConverter;
@@ -19,64 +20,81 @@ import java.util.List;
 
 public class Converters {
     @TypeConverter
-    public static List<Comment> fromString(String value) {
+    public static List<Comment> fromStringToComments(String value) {
         Type listType = new TypeToken<List<Comment>>() {}.getType();
         return new Gson().fromJson(value, listType);
     }
 
     @TypeConverter
-    public static String fromList(List<Comment> list) {
+    public static String fromCommentsToString(List<Comment> list) {
         Gson gson = new Gson();
         return gson.toJson(list);
     }
 
     @TypeConverter
-    public static List<String> fromStringList(String value) {
+    public static List<String> fromStringToStringList(String value) {
         Type listType = new TypeToken<List<String>>() {}.getType();
         return new Gson().fromJson(value, listType);
     }
 
     @TypeConverter
-    public static String fromStringList(List<String> list) {
+    public static String fromStringListToString(List<String> list) {
         Gson gson = new Gson();
         return gson.toJson(list);
     }
-    @TypeConverter
-    public static int deleteImageFromStorage(String filePath) {
+
+    // File handling methods
+    public static int deleteFileFromStorage(String filePath) {
         if (filePath != null) {
             File file = new File(filePath);
-            if (file.exists()) {
-                if (file.delete()) {
-                    return 1;
-                }
+            if (file.exists() && file.delete()) {
+                return 1;
             }
         }
         return 0;
     }
-    @TypeConverter
-    public static String base64ToString(String base64String) {
-        if (base64String == null || base64String.isEmpty()) {
+
+    public static String base64ToFilePath(String base64Data, String fileType) {
+        Context context = Helper.context;
+        byte[] bytesData = Base64.decode(base64Data, Base64.DEFAULT);
+        if (bytesData == null) {
             return null;
         }
-        byte[] decodedBytes = Base64.decode(base64String, Base64.DEFAULT);
-        Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
-        return saveBitmapToFile(bitmap);
-    }
-    @TypeConverter
-    public static String saveBitmapToFile(Bitmap bitmap) {
-        Context context = Helper.context; // Replace with your application's context
-        File filesDir = context.getFilesDir();
-        File imageFile = new File(filesDir, System.currentTimeMillis() + ".png");
 
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(imageFile);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-            fos.close();
-            return imageFile.getAbsolutePath();
+        String fileName = fileType + "_" + System.currentTimeMillis() + (fileType.equals("image") ? ".jpg" : ".mp4");
+        return saveBytesToInternalStorage(context, bytesData, fileName, fileType);
+    }
+
+    private static String saveBytesToInternalStorage(Context context, byte[] bytes, String fileName, String fileType) {
+        if (bytes == null) {
+            return null;
+        }
+
+        File directory = context.getExternalFilesDir(fileType.equals("image") ? Environment.DIRECTORY_PICTURES : Environment.DIRECTORY_MOVIES);
+        File file = new File(directory, fileName);
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(bytes);
+            fos.flush();
+            return file.getAbsolutePath();
         } catch (IOException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public static void deleteAllFiles() {
+        deleteAllFilesInDirectory(Helper.context.getExternalFilesDir(Environment.DIRECTORY_PICTURES));
+        deleteAllFilesInDirectory(Helper.context.getExternalFilesDir(Environment.DIRECTORY_MOVIES));
+    }
+
+    private static void deleteAllFilesInDirectory(File directory) {
+        if (directory != null && directory.isDirectory()) {
+            File[] files = directory.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    file.delete();
+                }
+            }
         }
     }
 }

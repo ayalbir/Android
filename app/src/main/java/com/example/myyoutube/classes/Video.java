@@ -1,7 +1,6 @@
 package com.example.myyoutube.classes;
 
 import androidx.room.Entity;
-import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
@@ -14,38 +13,27 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Entity
+@TypeConverters({Converters.class})
 public class Video {
     @PrimaryKey(autoGenerate = true)
     private int id;
-    private String channelEmail;
+    private String email;
     private int likes;
     private int dislikes;
     private int views;
     private String title;
     private String description;
-
     private String date;
     private String pic;
     private String url;
-    @TypeConverters(Converters.class)
     private List<Comment> comments;
     private boolean liked;
     private boolean disliked;
-    @TypeConverters(Converters.class)
     private List<String> likedBy;
-    @TypeConverters(Converters.class)
     private List<String> dislikedBy;
 
-    public Video() {
-        this.comments = new ArrayList<>();
-        this.date = new Date().toString();
-        this.likedBy = new ArrayList<>();
-        this.dislikedBy = new ArrayList<>();
-    }
-
-    @Ignore
-    public Video(String channelEmail, String title, String description, String pic, String url, List<Comment> comments) {
-        this.channelEmail = channelEmail;
+    public Video(String email, String title, String description, String pic, String url, List<Comment> comments) {
+        this.email = email;
         this.title = title;
         this.description = description;
         this.pic = pic;
@@ -60,14 +48,6 @@ public class Video {
         }
         this.likedBy = new ArrayList<>();
         this.dislikedBy = new ArrayList<>();
-    }
-
-    @Ignore
-    public Video(String channelEmail, String title, String description, int likes, int dislikes, int views, String pic, String url, List<Comment> comments) {
-        this(channelEmail, title, description, pic, url, comments);
-        this.likes = likes;
-        this.dislikes = dislikes;
-        this.views = views;
     }
 
     public int getId() {
@@ -117,12 +97,12 @@ public class Video {
         this.description = description;
     }
 
-    public String getChannelEmail() {
-        return channelEmail;
+    public String getEmail() {
+        return email;
     }
 
-    public void setChannelEmail(String channelEmail) {
-        this.channelEmail = channelEmail;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPic() {
@@ -232,7 +212,7 @@ public class Video {
     public String toString() {
         return "Video{" +
                 "id=" + id +
-                ", channelEmail='" + channelEmail + '\'' +
+                ", email='" + email + '\'' +
                 ", likes=" + likes +
                 ", dislikes=" + dislikes +
                 ", views=" + views +
