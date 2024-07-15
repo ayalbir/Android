@@ -1,5 +1,5 @@
 // UserVideosActivity.java
-package com.example.myyoutube;
+package com.example.myyoutube.screens;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,15 +12,17 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myyoutube.R;
 import com.example.myyoutube.adapters.VideoListAdapter;
-import com.example.myyoutube.classes.User;
-import com.example.myyoutube.managers.UserManager;
-import com.example.myyoutube.classes.Video;
+import com.example.myyoutube.entities.User;
+import com.example.myyoutube.entities.Video;
+import com.example.myyoutube.viewmodels.UserManager;
+import com.example.myyoutube.viewmodels.VideosViewModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserVideosActivity extends AppCompatActivity {
@@ -31,27 +33,29 @@ public class UserVideosActivity extends AppCompatActivity {
     private SearchView searchView;
     private RecyclerView recyclerView;
     private VideoListAdapter adapter;
-    VideoManager videoManager = VideoManager.getInstance(this);
+    private VideosViewModel videosViewModel;
 
+    private UserManager userManager;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_videos);
+        videosViewModel = new ViewModelProvider(this).get(VideosViewModel.class);
+        userManager = UserManager.getInstance();
+
 
         // Return to main activity on button click
         findViewById(R.id.btnBackFromChannel).setOnClickListener(view -> {
             Intent intent = new Intent(UserVideosActivity.this, MainActivity.class);
             startActivity(intent);
         });
-
         initViews();
 
         String userEmail = getIntent().getStringExtra("userEmail");
-        User user = UserManager.getUserByEmail(userEmail);
+        User user = userManager.getUserByEmail(userEmail);
         if (user != null) {
             setChannelDetails(user);
-            List<Video> userVideos = getUserVideos(userEmail);
-            setupRecyclerView(userVideos);
+            getUserVideos(userEmail);
             setupSearchView();
         }
 
@@ -69,24 +73,19 @@ public class UserVideosActivity extends AppCompatActivity {
         byte[] decodedString = Base64.decode(user.getProfileImage(), Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         ivChannelHeaderPic.setImageBitmap(decodedByte);
-        tvChannelHeaderName.setText(user.getUserName());
+        tvChannelHeaderName.setText(user.getFirstName());
         tvChannelHeaderEmail.setText(user.getEmail());
     }
 
-    private List<Video> getUserVideos(String email) {
-        List<Video> allVideos = (List<Video>) videoManager.getVideos();
-        List<Video> userVideos = new ArrayList<>();
-        for (Video video : allVideos) {
-            if (video.getEmail().equals(email)) {
-                userVideos.add(video);
-            }
-        }
-        return userVideos;
+    private void getUserVideos(String email) {
+        videosViewModel.getVideosByUserEmail(email).observe(this, userVideos -> {
+            setupRecyclerView(userVideos);
+        });
     }
 
     private void setupRecyclerView(List<Video> userVideos) {
         recyclerView.setFocusable(false);
-        adapter = new VideoListAdapter(this);
+        adapter = new VideoListAdapter(this, videosViewModel);
         adapter.setVideos(userVideos);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

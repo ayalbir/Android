@@ -13,6 +13,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myyoutube.R;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 public class signInScreen3 extends AppCompatActivity {
     private EditText password;
     private EditText confirm_password;
@@ -31,6 +34,9 @@ public class signInScreen3 extends AppCompatActivity {
         showPasswordCheckBox = findViewById(R.id.cb_show_password);
         errorMsg = findViewById((R.id.tvErrorMsg));
         String name = getIntent().getStringExtra("name");
+        String lastName = getIntent().getStringExtra("lastName");
+        String gender = getIntent().getStringExtra("gender");
+
 
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,6 +52,8 @@ public class signInScreen3 extends AppCompatActivity {
                             Intent intent = new Intent(signInScreen3.this, signInScreen4.class);
                             intent.putExtra("name", name);
                             intent.putExtra("password", passwordText);
+                            intent.putExtra("lastName", lastName);
+                            intent.putExtra("gender", gender);
                             startActivity(intent);
                         } else {
                             errorMsg.setText("Your password has to include letters and numbers");

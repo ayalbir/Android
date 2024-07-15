@@ -1,4 +1,4 @@
-package com.example.myyoutube;
+package com.example.myyoutube.screens;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,11 +10,16 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
-import com.example.myyoutube.classes.User;
+import com.example.myyoutube.R;
+import com.example.myyoutube.entities.User;
 import com.example.myyoutube.login.logInScreen1;
-import com.example.myyoutube.managers.UserManager;
-// UpdateUserActivity.java
+import com.example.myyoutube.viewmodels.UserManager;
+import com.example.myyoutube.viewmodels.VideosViewModel;
+
+import java.util.Objects;
+
 
 public class UpdateDeleteUserActivity extends AppCompatActivity {
     private EditText etUserName;
@@ -22,25 +27,26 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
     private EditText etPassword;
     private ImageView ivProfileImage;
     private User currentUser;
-    private String originalEmail;
+    private UserManager userManager;
+    private VideosViewModel videosViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_delete_user);
 
+
+        videosViewModel = new ViewModelProvider(this).get(VideosViewModel.class);
+
         etUserName = findViewById(R.id.etUserName);
         etUserEmail = findViewById(R.id.etUserEmail);
         etPassword = findViewById(R.id.etPassword);
         ivProfileImage = findViewById(R.id.ivProfileImage);
 
-        // Get the current user and populate fields
-        Intent intent = getIntent();
-        originalEmail = intent.getStringExtra("userEmail");
-        currentUser = UserManager.getUserByEmail(originalEmail);
+        currentUser = userManager.getConnectedUser();
 
         if (currentUser != null) {
-            etUserName.setText(currentUser.getUserName());
+            etUserName.setText(currentUser.getFirstName());
             etUserEmail.setText(currentUser.getEmail());
             etPassword.setText(currentUser.getPassword());
             // Decode and set the profile image
@@ -59,11 +65,13 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
         String newUserEmail = etUserEmail.getText().toString();
         String newPassword = etPassword.getText().toString();
 
-        if (!newUserEmail.equalsIgnoreCase(originalEmail)) {
-            UserManager.updateUserEmail(originalEmail, newUserEmail);
+        if (!newUserEmail.equalsIgnoreCase(currentUser.getEmail())) {
+            currentUser.setEmail(newUserEmail);
+            userManager.updateUser(currentUser.getId(), currentUser);
+            videosViewModel.updateCommentsEmail(oldEmail, newUserEmail);
         }
 
-        currentUser.setUserName(newUserName);
+        currentUser.setFirstName(newUserName);
         currentUser.setPassword(newPassword);
 
         Toast.makeText(this, "User updated successfully", Toast.LENGTH_SHORT).show();
@@ -73,7 +81,7 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
     }
 
     private void deleteUser() {
-        UserManager.removeUser(UserManager.getUserByEmail(currentUser.getEmail()));
+        userManager.deleteUser(currentUser.getId());
         Toast.makeText(this, "User deleted successfully", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, logInScreen1.class);
         intent.putExtra("userEmail", "");

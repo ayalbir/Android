@@ -9,27 +9,29 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.myyoutube.R;
-import com.example.myyoutube.managers.UserManager;
-
+import com.example.myyoutube.viewmodels.UserManager;
 public class signInScreen4 extends AppCompatActivity {
 
     private EditText emailInput;
     private Button nextButton;
     private TextView getGmail;
     private TextView errorMsg;
+    private UserManager userManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in_screen4);
-
+        userManager = UserManager.getInstance();
         emailInput = findViewById(R.id.email_input);
         nextButton = findViewById(R.id.next_button);
         getGmail = findViewById(R.id.get_gmail);
         errorMsg = findViewById(R.id.tvErrorMsg);
         String name = getIntent().getStringExtra("name");
+        String lastName = getIntent().getStringExtra("lastName");
+        String gender = getIntent().getStringExtra("gender");
+
 
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -38,7 +40,7 @@ public class signInScreen4 extends AppCompatActivity {
                 String email = emailInput.getText().toString().trim();
                 if (isValidEmail(email)) {
                     String password = getIntent().getStringExtra("password");
-                    if (UserManager.isEmailExist(email)) {
+                    if (userManager.getUserByEmail(email) != null) {
                         errorMsg.setText("Email already exists");
                         return;
                     }
@@ -46,6 +48,8 @@ public class signInScreen4 extends AppCompatActivity {
                     intent.putExtra("name", name);
                     intent.putExtra("email", email);
                     intent.putExtra("password", password);
+                    intent.putExtra("lastName", lastName);
+                    intent.putExtra("gender", gender);
                     startActivity(intent);
                 } else {
                     errorMsg.setText("Invalid email address");

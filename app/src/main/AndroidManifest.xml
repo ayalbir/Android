@@ -15,10 +15,10 @@
         android:theme="@style/Theme.MyYoutube"
         tools:targetApi="31">
         <activity
-            android:name=".UpdateDeleteUserActivity"
+            android:name=".screens.UpdateDeleteUserActivity"
             android:exported="false" />
         <activity
-            android:name=".UserVideosActivity"
+            android:name=".screens.UserVideosActivity"
             android:exported="false" />
         <activity
             android:name=".login.signInScreen5"
@@ -30,10 +30,10 @@
             android:name=".login.signInScreen4"
             android:exported="false" />
         <activity
-            android:name=".AddEditVideoActivity"
+            android:name=".screens.AddEditVideoActivity"
             android:exported="false" />
         <activity
-            android:name=".VideoPlayerActivity"
+            android:name=".screens.VideoPlayerActivity"
             android:exported="false" />
         <activity
             android:name=".login.signInScreen3"
@@ -45,7 +45,7 @@
             android:name=".login.signInScreen1"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".screens.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>

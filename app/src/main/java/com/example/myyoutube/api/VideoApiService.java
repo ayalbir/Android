@@ -2,11 +2,9 @@ package com.example.myyoutube.api;
 
 
 
-import com.example.myyoutube.classes.Video;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -19,7 +17,7 @@ import retrofit2.http.Path;
 
 public interface VideoApiService {
     @GET("videos")
-    Call<ArrayList<JsonObject>> getVideos(@Header("authorization") String token);
+    Call<ArrayList<JsonObject>> getVideos();
 
     @GET("users/{email}/videos")
     Call<ArrayList<JsonObject>> getUserVideos(@Path("email") String email, @Header("authorization") String token);

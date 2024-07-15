@@ -6,8 +6,8 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.myyoutube.Converters;
 import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;
-import com.example.myyoutube.classes.Comment;
-import com.example.myyoutube.classes.Video;
+import com.example.myyoutube.entities.Comment;
+import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.repositories.VideoRepository;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -36,8 +36,8 @@ public class VideoAPI {
         webServiceAPI = retrofit.create(VideoApiService.class);
     }
 
-    public void getVideos(String token, MutableLiveData<List<Video>> allVideos) {
-        Call<ArrayList<JsonObject>> call = webServiceAPI.getVideos("Bearer " + token);
+    public void getVideos(MutableLiveData<List<Video>> allVideos) {
+        Call<ArrayList<JsonObject>> call = webServiceAPI.getVideos();
         call.enqueue(new Callback<ArrayList<JsonObject>>() {
             @Override
             public void onResponse(Call<ArrayList<JsonObject>> call, Response<ArrayList<JsonObject>> response) {
@@ -63,7 +63,7 @@ public class VideoAPI {
 
                             Video video = new Video(channelEmail, title, description, pic, url, new ArrayList<Comment>());
                             video.setId(videoId);
-                            video.setDate(date);
+                            video.setCreatedAt(date);
 
                             // Set likedBy and dislikedBy if they exist
                             if (jsonVideo.has("likedBy")) {
@@ -101,9 +101,8 @@ public class VideoAPI {
         });
     }
 
-    public void addVideo(Video videoToAdd, MutableLiveData<List<Video>> allVideos) {
+    public void addVideo(Video videoToAdd, MutableLiveData<List<Video>> allVideos, String token) {
         try {
-            String token = videoToAdd.getEmail();
             JSONObject requestBodyJson = new JSONObject();
             requestBodyJson.put("email", videoToAdd.getEmail());
             requestBodyJson.put("description", videoToAdd.getDescription());
@@ -120,7 +119,7 @@ public class VideoAPI {
                         JsonObject jsonObject = response.body();
                         if (jsonObject != null && jsonObject.has("insertedId")) {
                             new Thread(() -> VideoRepository.videoDao.insert(videoToAdd)).start();
-                            getVideos(token, allVideos);
+                            getVideos(allVideos);
                         } else {
                             Toast.makeText(Helper.context, "Video cannot be uploaded due to validation failure.", Toast.LENGTH_SHORT).show();
                         }
@@ -137,13 +136,12 @@ public class VideoAPI {
         }
     }
 
-    public void editVideo(Video videoToEdit, MutableLiveData<List<Video>> allVideos) {
-        String token = videoToEdit.getEmail();
+    public void editVideo(Video videoToEdit, MutableLiveData<List<Video>> allVideos, String token) {
         JSONObject requestBodyJson = new JSONObject();
         try {
             requestBodyJson.put("id", videoToEdit.getId());
             requestBodyJson.put("email", videoToEdit.getEmail());
-            requestBodyJson.put("createdAt", videoToEdit.getDate());
+            requestBodyJson.put("createdAt", videoToEdit.getCreatedAt());
             requestBodyJson.put("description", videoToEdit.getDescription());
             requestBodyJson.put("pic", videoToEdit.getPic());
             requestBodyJson.put("title", videoToEdit.getTitle());
@@ -161,7 +159,7 @@ public class VideoAPI {
                     JsonObject jsonObject = response.body();
                     if (jsonObject != null && jsonObject.has("modifiedCount")) {
                         new Thread(() -> VideoRepository.videoDao.update(videoToEdit)).start();
-                        getVideos(token, allVideos);
+                        getVideos(allVideos);
                         Toast.makeText(Helper.context, "Video updated", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(Helper.context, "Video cannot be updated due to validation failure.", Toast.LENGTH_SHORT).show();
@@ -176,10 +174,9 @@ public class VideoAPI {
         });
     }
 
-    public void deleteVideo(Video videoToRemove, MutableLiveData<List<Video>> allVideos) {
+    public void deleteVideo(Video videoToRemove, MutableLiveData<List<Video>> allVideos, String token) {
         String channelEmail = videoToRemove.getEmail();
         int id = videoToRemove.getId();
-        String token = videoToRemove.getEmail();
         Call<JsonObject> call = webServiceAPI.deleteVideo(channelEmail, id, "Bearer " + token);
         call.enqueue(new Callback<JsonObject>() {
             @Override
@@ -189,7 +186,7 @@ public class VideoAPI {
                     if (jsonObject != null && jsonObject.has("deletedCount")) {
                         Converters.deleteFileFromStorage(videoToRemove.getPic());
                         new Thread(() -> VideoRepository.videoDao.delete(videoToRemove)).start();
-                        getVideos(token, allVideos);
+                        getVideos(allVideos);
                         Toast.makeText(Helper.context, "Video deleted", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -201,4 +198,5 @@ public class VideoAPI {
             }
         });
     }
+
 }

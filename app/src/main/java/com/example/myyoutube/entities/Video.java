@@ -1,4 +1,4 @@
-package com.example.myyoutube.classes;
+package com.example.myyoutube.entities;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -23,12 +23,10 @@ public class Video {
     private int views;
     private String title;
     private String description;
-    private String date;
+    private String createdAt;
     private String pic;
     private String url;
     private List<Comment> comments;
-    private boolean liked;
-    private boolean disliked;
     private List<String> likedBy;
     private List<String> dislikedBy;
 
@@ -38,9 +36,7 @@ public class Video {
         this.description = description;
         this.pic = pic;
         this.url = url;
-        this.liked = false;
-        this.disliked = false;
-        this.date = new Date().toString();
+        this.createdAt = new Date().toString();
         if (comments != null) {
             this.comments = new ArrayList<>(comments);
         } else {
@@ -157,26 +153,11 @@ public class Video {
         }
     }
 
-    public String getDate() {
-        return date;
+    public String getCreatedAt() {
+        return createdAt;
     }
-    public void setDate(String date){
-        this.date = date;
-    }
-    public boolean isLiked() {
-        return liked;
-    }
-
-    public void setLiked(boolean liked) {
-        this.liked = liked;
-    }
-
-    public boolean isDisliked() {
-        return disliked;
-    }
-
-    public void setDisliked(boolean disliked) {
-        this.disliked = disliked;
+    public void setCreatedAt(String createdAt){
+        this.createdAt = createdAt;
     }
 
     public List<String> getLikedBy() {
@@ -218,19 +199,17 @@ public class Video {
                 ", views=" + views +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
-                ", date='" + date + '\'' +
+                ", createdAt='" + createdAt + '\'' +
                 ", pic='" + pic + '\'' +
                 ", url='" + url + '\'' +
                 ", comments=" + comments +
-                ", liked=" + liked +
-                ", disliked=" + disliked +
                 ", likedBy=" + likedBy +
                 ", dislikedBy=" + dislikedBy +
                 '}';
     }
 
     public String getTimeAgo() {
-        long duration = System.currentTimeMillis() - new Date(date).getTime();
+        long duration = System.currentTimeMillis() - new Date(createdAt).getTime();
         long seconds = TimeUnit.MILLISECONDS.toSeconds(duration);
         long minutes = TimeUnit.MILLISECONDS.toMinutes(duration);
         long hours = TimeUnit.MILLISECONDS.toHours(duration);

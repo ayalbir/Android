@@ -7,6 +7,9 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.widget.Button;
@@ -18,13 +21,21 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;
-import com.example.myyoutube.classes.User;
-import com.example.myyoutube.managers.UserManager;
+import com.example.myyoutube.entities.User;
+import com.example.myyoutube.viewmodels.UserManager;
+
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
+import okhttp3.internal.http2.Header;
 
 public class signInScreen5 extends AppCompatActivity {
 
@@ -34,12 +45,13 @@ public class signInScreen5 extends AppCompatActivity {
     private Uri imageUri;
     private boolean isImageSelected = false;
     private TextView errorMsg;
+    private UserManager userManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in_screen5);
-
+        userManager = UserManager.getInstance();
         selectedImageView = findViewById(R.id.selectedImageView);
         Button btnSelectImage = findViewById(R.id.btnSelectImage);
         Button btnLogin = findViewById(R.id.btnLogin);
@@ -60,12 +72,13 @@ public class signInScreen5 extends AppCompatActivity {
                 String email = getIntent().getStringExtra("email");
                 String name = getIntent().getStringExtra("name");
                 String password = getIntent().getStringExtra("password");
+                String lastName = getIntent().getStringExtra("lastName");
+                String gender = getIntent().getStringExtra("gender");
+
                 Bitmap bitmap = ((BitmapDrawable) selectedImageView.getDrawable()).getBitmap();
                 String encodedImage = encodeImage(bitmap);
-
                 assert email != null;
-                UserManager.addUser(new User(email, name, password, encodedImage));
-
+                userManager.createUser(new User(email, password, name, lastName, UserManager.getTempDate(),gender, encodedImage));
                 Intent intent = new Intent(signInScreen5.this, logInScreen1.class);
                 intent.putExtra("email", email);
                 startActivity(intent);

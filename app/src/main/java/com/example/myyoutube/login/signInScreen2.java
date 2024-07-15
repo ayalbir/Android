@@ -11,9 +11,13 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;
+import com.example.myyoutube.viewmodels.UserManager;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.Locale;
 
 public class signInScreen2 extends AppCompatActivity {
     //running
@@ -35,6 +39,7 @@ public class signInScreen2 extends AppCompatActivity {
         errorMsg = findViewById(R.id.tvErrorMsg);
 
         String name = getIntent().getStringExtra("name");
+        String lastName = getIntent().getStringExtra("lastName");
         ArrayAdapter<CharSequence> monthAdapter = ArrayAdapter.createFromResource(this,
                 R.array.months_array, android.R.layout.simple_spinner_item);
         monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -64,18 +69,19 @@ public class signInScreen2 extends AppCompatActivity {
                     int day = Integer.parseInt(dayEditText.getText().toString());
                     int month = monthSpinner.getSelectedItemPosition();
 
-                    // Check if the date is valid
+                    // Check if the createdAt is valid
                     LocalDate birthDate = LocalDate.of(year, month, day);
                     LocalDate now = LocalDate.now();
 
-                    // Check if the date is in the future
+                    // Check if the createdAt is in the future
                     if (birthDate.isAfter(now)) {
                         errorMsg.setText("You cannot create a Google Account because" + " you do not meet the minimum age requirement.");
                         return;
                     }
 
-                    // Check if the date is more than 130 years ago
-                    if (year < now.minusYears(130).getYear()) {
+                    // Check if the createdAt is more than 130 years ago
+                    int d =  now.minusYears(130).getYear();
+                    if (year < d) {
                         errorMsg.setText("Please check your date of birth again.");
                         return;
                     }
@@ -84,6 +90,9 @@ public class signInScreen2 extends AppCompatActivity {
                     errorMsg.setText("");
                     Intent intent = new Intent(signInScreen2.this, signInScreen3.class);
                     intent.putExtra("name", name);
+                    intent.putExtra("lastName", lastName);
+                    intent.putExtra("gender", name);
+                    UserManager.setTempDate(birthDate);
                     startActivity(intent);
 
                 } catch (Exception e) {

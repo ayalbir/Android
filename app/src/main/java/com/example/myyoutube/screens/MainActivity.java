@@ -1,4 +1,4 @@
-package com.example.myyoutube;
+package com.example.myyoutube.screens;
 
 import static com.example.myyoutube.R.layout.activity_main;
 
@@ -30,11 +30,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
+import com.example.myyoutube.AppDB;
+import com.example.myyoutube.R;
+import com.example.myyoutube.dao.VideoDao;
 import com.example.myyoutube.adapters.VideoListAdapter;
-import com.example.myyoutube.classes.User;
-import com.example.myyoutube.managers.UserManager;
-import com.example.myyoutube.classes.Video;
+import com.example.myyoutube.entities.User;
+import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.login.logInScreen1;
+import com.example.myyoutube.viewmodels.UserManager;
 import com.example.myyoutube.viewmodels.VideosViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
@@ -63,18 +66,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static List<Video> videos;
     public static boolean firstTime = true;
     private static User currentUser;
-    private AppDB db;
     private VideoDao videoDao;
     private VideosViewModel videosViewModel;
+    private UserManager userManager = UserManager.getInstance();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(activity_main);
-         videosViewModel = new ViewModelProvider(this).get(VideosViewModel.class);
-        Intent intent = getIntent();
-            String email = intent.getStringExtra("email");
+            videosViewModel = new ViewModelProvider(this).get(VideosViewModel.class);
             BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
             MenuItem profilePictureItem = bottomNavigationView.getMenu().findItem(R.id.nav_login);
             NavigationView navigationView = findViewById(R.id.nav_view);
@@ -82,9 +83,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             profilePictureItem.setIcon(R.drawable.login);
             profilePictureItem.setTitle("Login");
             cardView.setVisibility(View.INVISIBLE);
-            if (email != null) {
-                currentUser = UserManager.getUserByEmail(email);
-                UserManager.currentUser = currentUser;
+            if (userManager.getConnectedUser() != null) {
+                currentUser = userManager.getConnectedUser();
             }
             if (getCurrentUser() != null) {
                 assert currentUser != null;
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (bitmap != null) {
                     navHeaderImageView.setImageBitmap(bitmap);
                 }
-                navHeaderTextView.setText("Hello " + currentUser.getUserName());
+                navHeaderTextView.setText("Hello " + currentUser.getFirstName());
                 profilePictureItem.setIcon(R.drawable.settings);
                 profilePictureItem.setTitle("Account");
 
@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         videoList.setAdapter(adapter);
         videoList.setLayoutManager(new LinearLayoutManager(this));
 
-        db = Room.databaseBuilder(getApplicationContext(),
+        AppDB db = Room.databaseBuilder(getApplicationContext(),
                         AppDB.class, "VideoDB")
                 .allowMainThreadQueries()
                 .build();
@@ -182,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (jsonData != null) {
             if (firstTime) {
                 videos = parseVideosFromJSON(jsonData);
-                UserManager.initializeDefaultUsers();
+                //UserViewModel.initializeDefaultUsers();
             }
              firstTime = false;
              adapter.setVideos(videos);
@@ -308,7 +308,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onResume() {
         super.onResume();
         videos.clear();
-        videos.addAll(videoDao.getAllVideos());
+       // videos.addAll(videoDao.getAllVideos());
         adapter.notifyDataSetChanged();
     }
 

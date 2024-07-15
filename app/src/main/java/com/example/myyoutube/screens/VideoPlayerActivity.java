@@ -1,4 +1,4 @@
-package com.example.myyoutube;
+package com.example.myyoutube.screens;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -26,15 +26,19 @@ import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myyoutube.R;
 import com.example.myyoutube.adapters.VideoListAdapter;
-import com.example.myyoutube.classes.Comment;
-import com.example.myyoutube.classes.User;
-import com.example.myyoutube.classes.Video;
-import com.example.myyoutube.managers.UserManager;
+import com.example.myyoutube.entities.Comment;
+import com.example.myyoutube.entities.User;
+import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.login.logInScreen1;
+import com.example.myyoutube.viewmodels.CommentViewModel;
+import com.example.myyoutube.viewmodels.UserManager;
+import com.example.myyoutube.viewmodels.VideosViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
@@ -56,12 +60,20 @@ public class VideoPlayerActivity extends AppCompatActivity {
     private ImageButton likeButton, dislikeButton;
     private RecyclerView rvOtherVideos;
     private User currentUser;
-    VideoManager videoManager = VideoManager.getInstance(this);
+    private VideosViewModel videosViewModel;
+    private UserManager userManager = UserManager.getInstance();
+    private CommentViewModel commentViewModel;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_player);
+
+        videosViewModel = new ViewModelProvider(this).get(VideosViewModel.class);
+        commentViewModel = new ViewModelProvider(this).get(CommentViewModel.class);
+
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         MenuItem profilePictureItem = bottomNavigationView.getMenu().findItem(R.id.nav_login);
@@ -70,18 +82,23 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
         currentUser = MainActivity.getCurrentUser();
         if (currentUser != null) {
-            Bitmap bitmap = VideoManager.decodeImage(currentUser.getProfileImage());
+            Bitmap bitmap = decodeImage(currentUser.getProfileImage());
             NavigationView navigationView = findViewById(R.id.nav_view);
             profilePictureItem.setIcon(R.drawable.nav_logout);
             profilePictureItem.setTitle("Logout");
         }
 
         int videoId = getIntent().getIntExtra("videoId", -1);
-        video = videoManager.getVideoById(videoId).getValue();
+        video = videosViewModel.getVideoById(videoId).getValue();
         if (video == null) {
             finish();
             return;
         }
+        commentViewModel.fetchCommentsByVideoId(videoId);
+        commentViewModel.getCommentsLiveData().observe(this, comments -> {
+            commentsList = comments;
+            commentsAdapter.notifyDataSetChanged();
+        });
 
         Uri videoUri;
         VideoView videoView = findViewById(R.id.videoView);
@@ -98,7 +115,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
             }
         }
         videoView.setVideoURI(videoUri);
-        commentsList = video.getComments();
+        // commentsList = video.getComments();
 
         if (commentsList == null) {
             commentsList = new ArrayList<>();
@@ -116,13 +133,13 @@ public class VideoPlayerActivity extends AppCompatActivity {
         TextView likesView = findViewById(R.id.tvLikes);
         TextView timeAgoView = findViewById(R.id.tvTimeAgo);
         ImageView IVChannelPic = findViewById(R.id.IVChannelPic);
-        Bitmap channelPicBitmap = VideoManager.decodeImage(UserManager.getUserByEmail(video.getEmail()).getProfileImage());
+        Bitmap channelPicBitmap = decodeImage(userManager.getUserByEmail(video.getEmail()).getProfileImage());
         IVChannelPic.setImageBitmap(channelPicBitmap);
 
         timeAgoView.setText(video.getTimeAgo());
 
         titleView.setText(video.getTitle());
-        channelNameView.setText(Objects.requireNonNull(UserManager.getUserByEmail(video.getEmail())).getUserName());
+        channelNameView.setText(Objects.requireNonNull(userManager.getUserByEmail(video.getEmail())).getFirstName());
         viewsView.setText("Views: " + video.getViews());
         likesView.setText("" + video.getLikes());
 
@@ -142,15 +159,15 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
         likeButton.setOnClickListener(v -> {
             if (currentUser != null) {
-                if (currentUser.hasLikedVideo(video.getId())) {
+                if (video.getLikedBy().contains(currentUser.getEmail())) {
                     video.decrementLikes();
-                    currentUser.removeLikedVideo(video.getId());
+                    video.getLikedBy().remove(currentUser.getEmail());
                 } else {
                     video.incrementLikes();
                     video.decrementDislikes();
-                    currentUser.addLikedVideo(video.getId());
-                    if (currentUser.hasDislikedVideo(video.getId())) {
-                        currentUser.removeDislikedVideo(video.getId());
+                    video.getLikedBy().add(currentUser.getEmail());
+                    if (video.getDislikedBy().contains(currentUser.getEmail())) {
+                        video.getDislikedBy().remove(currentUser.getEmail());
                     }
                 }
                 likesView.setText("" + video.getLikes());
@@ -162,15 +179,15 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
         dislikeButton.setOnClickListener(v -> {
             if (currentUser != null) {
-                if (currentUser.hasDislikedVideo(video.getId())) {
+                if (video.getDislikedBy().contains(currentUser.getEmail())) {
                     video.decrementDislikes();
-                    currentUser.removeDislikedVideo(video.getId());
+                    video.getDislikedBy().remove(currentUser.getEmail());
                 } else {
                     video.incrementDislikes();
                     video.decrementLikes();
-                    currentUser.addDislikedVideo(video.getId());
-                    if (currentUser.hasLikedVideo(video.getId())) {
-                        currentUser.removeLikedVideo(video.getId());
+                    video.getDislikedBy().add(currentUser.getEmail());
+                    if (video.getLikedBy().contains(currentUser.getEmail())) {
+                        video.getLikedBy().remove(currentUser.getEmail());
                     }
                 }
                 likesView.setText("" + video.getLikes());
@@ -190,8 +207,8 @@ public class VideoPlayerActivity extends AppCompatActivity {
                 String newComment = commentInput.getText().toString();
                 if (!newComment.isEmpty()) {
                     String profileImageBase64 = currentUser.getProfileImage();
-                    Comment comment = new Comment(newComment, profileImageBase64, currentUser.getEmail());
-                    video.addComment(comment);
+                    Comment comment = new Comment("", newComment, profileImageBase64, currentUser.getEmail());
+                    commentViewModel.addComment(comment);
                     commentsAdapter.notifyDataSetChanged();
                     commentInput.setText("");
                 }
@@ -235,17 +252,24 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
     private void fetchRecommendedVideos() {
         int currentVideoId = getIntent().getIntExtra("videoId", -1);
-        video = videoManager.getVideoById(currentVideoId).getValue();
+        video = videosViewModel.getVideoById(currentVideoId).getValue();
 
         if (video != null) {
-            otherVideos = new ArrayList<>((Collection) videoManager.getVideos());
+            otherVideos = new ArrayList<>((Collection) videosViewModel.get());
             otherVideos.remove(video);
-            videoListAdapter = new VideoListAdapter(this);
+            videoListAdapter = new VideoListAdapter(this, videosViewModel);
             videoListAdapter.setVideos(otherVideos);
             rvOtherVideos.setAdapter(videoListAdapter);
         }
     }
 
+    private Bitmap decodeImage(String encodedImage) {
+        if (encodedImage != null) {
+            byte[] decodedBytes = Base64.decode(encodedImage, Base64.DEFAULT);
+            return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+        }
+        return null;
+    }
     @Override
     public void onBackPressed() {
         Intent resultIntent = new Intent();
@@ -262,12 +286,12 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
     private void updateLikeDislikeButtons() {
         if (currentUser != null) {
-            if (currentUser.hasLikedVideo(video.getId())) {
+            if (video.getLikedBy().contains(currentUser.getEmail())) {
                 likeButton.setImageResource(R.drawable.liked);
             } else {
                 likeButton.setImageResource(R.drawable.unliked);
             }
-            if (currentUser.hasDislikedVideo(video.getId())) {
+            if (video.getDislikedBy().contains(currentUser.getEmail())) {
                 dislikeButton.setImageResource(R.drawable.disliked);
             } else {
                 dislikeButton.setImageResource(R.drawable.undisliked);
@@ -311,11 +335,11 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
             Comment comment = getItem(position);
             assert comment != null;
-            commentEdit.setText(comment.getCommentContent());
+            commentEdit.setText(comment.getText());
             commentEdit.setEnabled(false);
 
             // Decode and set the profile image
-            String profileImageBase64 = comment.getCommentPic();
+            String profileImageBase64 = comment.getProfilePicture();
             if (profileImageBase64 != null && !profileImageBase64.isEmpty()) {
                 byte[] decodedString = Base64.decode(profileImageBase64, Base64.DEFAULT);
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
@@ -326,7 +350,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
             btnMenu.setOnClickListener(v -> {
                 if (currentUser != null) {
-                    if (currentUser.getEmail().equalsIgnoreCase(comment.getCommentPublisher())) {
+                    if (currentUser.getEmail().equalsIgnoreCase(comment.getEmail())) {
                         showEditDeleteDialog(position);
                     } else {
                         Toast.makeText(getContext(), "You can only edit or delete your own comments", Toast.LENGTH_SHORT).show();
@@ -346,8 +370,8 @@ public class VideoPlayerActivity extends AppCompatActivity {
                         if (which == 0) {
                             showEditCommentDialog(position);
                         } else if (which == 1) {
-                            deleteComment(position);
-                        }
+                            Comment comment = comments.get(position);
+                            commentViewModel.deleteComment(comment);                        }
                     })
                     .show();
         }
@@ -359,7 +383,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
             View viewInflated = LayoutInflater.from(context).inflate(R.layout.dialog_edit_comment,
                     (ViewGroup) ((Activity) context).findViewById(android.R.id.content), false);
             EditText input = viewInflated.findViewById(R.id.input);
-            input.setText(comments.get(position).getCommentContent());
+            input.setText(comments.get(position).getText());
 
             builder.setView(viewInflated);
 
@@ -367,18 +391,15 @@ public class VideoPlayerActivity extends AppCompatActivity {
                 dialog.dismiss();
                 String editedComment = input.getText().toString();
                 if (!editedComment.isEmpty()) {
-                    comments.set(position, new Comment(editedComment, comments.get(position).getCommentPic(), currentUser.getEmail()));
+                    Comment comment = comments.get(position);
+                    comment.setText(editedComment);
+                    commentViewModel.updateComment(comment);
                     notifyDataSetChanged();
                 }
             });
             builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.cancel());
 
             builder.show();
-        }
-
-        private void deleteComment(int position) {
-            comments.remove(position);
-            notifyDataSetChanged();
         }
     }
 }

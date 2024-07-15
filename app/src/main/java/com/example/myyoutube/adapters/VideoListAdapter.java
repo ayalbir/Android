@@ -18,14 +18,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myyoutube.AddEditVideoActivity;
-import com.example.myyoutube.MainActivity;
+import com.example.myyoutube.screens.AddEditVideoActivity;
+import com.example.myyoutube.screens.MainActivity;
 import com.example.myyoutube.R;
-import com.example.myyoutube.UserVideosActivity;
-import com.example.myyoutube.VideoPlayerActivity;
-import com.example.myyoutube.classes.User;
-import com.example.myyoutube.managers.UserManager;
-import com.example.myyoutube.classes.Video;
+import com.example.myyoutube.screens.UserVideosActivity;
+import com.example.myyoutube.screens.VideoPlayerActivity;
+import com.example.myyoutube.entities.User;
+import com.example.myyoutube.entities.Video;
+import com.example.myyoutube.viewmodels.UserManager;
 import com.example.myyoutube.viewmodels.VideosViewModel;
 
 import java.util.ArrayList;
@@ -36,13 +36,14 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
 
     private User currentUser = MainActivity.getCurrentUser();
     private VideosViewModel videosViewModel;
+    private UserManager userManager = UserManager.getInstance();
+
 
     static class VideoViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvViews, tvTitle, tvChannel, tvTimeAgo;
         private final ImageView thumbnail, ivChannelPhoto;
         private final ImageButton overflowMenu;
         private final View channelLayout;
-
 
         private VideoViewHolder(View view) {
             super(view);
@@ -59,7 +60,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
 
     private final LayoutInflater mInflater;
     private final Context mContext;
-    private List<Video> videos = new ArrayList<>();
+    private List<Video> videos;
     private List<Video> videosFull = new ArrayList<>();
 
     public VideoListAdapter(Context context, VideosViewModel videosViewModel) {
@@ -81,9 +82,8 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             Video video = videos.get(position);
             holder.tvTitle.setText(video.getTitle());
             holder.tvViews.setText(String.valueOf(video.getViews()));
-            holder.tvChannel.setText(Objects.requireNonNull(UserManager.getUserByEmail(video.getEmail())).getUserName());
+            holder.tvChannel.setText(Objects.requireNonNull(userManager.getUserByEmail(video.getEmail())).getFirstName());
             holder.tvTimeAgo.setText(video.getTimeAgo());
-            holder.bind(video, videosViewModel);
 
             // Check if the pic is in the drawable resources
             int imageResId = mContext.getResources().getIdentifier(video.getPic(), "drawable", mContext.getPackageName());
@@ -96,7 +96,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 holder.thumbnail.setImageBitmap(decodedByte);
             }
-            String profileImageBase64 = UserManager.getUserByEmail(video.getEmail()).getProfileImage();
+            String profileImageBase64 = userManager.getUserByEmail(video.getEmail()).getProfileImage();
             if (profileImageBase64 != null) {
                 byte[] decodedString = Base64.decode(profileImageBase64, Base64.DEFAULT);
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
@@ -129,6 +129,9 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
                 else
                     Toast.makeText(mContext, "User not connected", Toast.LENGTH_SHORT).show();
             });
+        }
+        else {
+            videos = new ArrayList<>();
         }
     }
 
@@ -177,7 +180,6 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             notifyItemInserted(videos.size() - 1);
         }
     }
-
 
     public void updateItem(Video updatedVideo) {
         for (int i = 0; i < videos.size(); i++) {

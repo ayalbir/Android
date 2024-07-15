@@ -29,10 +29,13 @@ public class signInScreen1 extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String name = firstName.getText().toString();
+                String familyName = firstName.getText().toString();
+
                 boolean isName = name.length()>0 && name.length()<51;
                 if(isName){
                     Intent intent = new Intent(signInScreen1.this,signInScreen2.class);
                     intent.putExtra("name", name);
+                    intent.putExtra("lastName", familyName);
                     startActivity(intent);
                     errorMsg.setText("");
                 }

@@ -1,14 +1,12 @@
 package com.example.myyoutube;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.util.Base64;
 
 import androidx.room.TypeConverter;
 
-import com.example.myyoutube.classes.Comment;
+import com.example.myyoutube.entities.Comment;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 

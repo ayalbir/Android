@@ -6,9 +6,9 @@ import androidx.room.Room;
 
 import com.example.myyoutube.AppDB;
 import com.example.myyoutube.Helper;
-import com.example.myyoutube.VideoDao;
+import com.example.myyoutube.dao.VideoDao;
 import com.example.myyoutube.api.VideoAPI;
-import com.example.myyoutube.classes.Video;
+import com.example.myyoutube.entities.Video;
 
 import java.util.List;
 
@@ -21,7 +21,8 @@ public class VideoRepository {
     public VideoRepository() {
         new Thread(() -> {
             db = Room.databaseBuilder(Helper.context, AppDB.class, "FootubeDB")
-                    .fallbackToDestructiveMigration().build();
+                    .fallbackToDestructiveMigration()
+                    .build();
             videoDao = db.videoDao();
             videoListData = new VideoListData();
         }).start();
@@ -51,37 +52,23 @@ public class VideoRepository {
         return videoListData;
     }
 
-    public void addVideo(final Video video) {
-        videoAPI.addVideo(video, new MutableLiveData<>());
+    public void addVideo(final Video video, String token) {
+        videoAPI.addVideo(video, videoListData, token);
     }
 
-    public void updateVideo(final Video video) {
-        videoAPI.editVideo(video, new MutableLiveData<>());
+    public void updateVideo(final Video video, String token) {
+        videoAPI.editVideo(video, videoListData, token);
     }
 
-    public void deleteVideo(final Video video) {
-        videoAPI.deleteVideo(video, new MutableLiveData<>());
+    public void deleteVideo(final Video video, String token) {
+        videoAPI.deleteVideo(video, videoListData, token);
     }
 
     public void reloadVideos() {
-        //videoAPI.getVideos(Helper.getToken(), videoListData);
+        videoAPI.getVideos(videoListData);
     }
 
-    public LiveData<Video> getVideoById(int id) {
-        MutableLiveData<Video> videoData = new MutableLiveData<>();
-        new Thread(() -> {
-            Video video = videoDao.getVideoById(id);
-            videoData.postValue(video);
-        }).start();
-        return videoData;
-    }
-
-    public LiveData<List<Video>> getVideosByUserEmail(String userEmail) {
-        MutableLiveData<List<Video>> videosByUserEmail = new MutableLiveData<>();
-        new Thread(() -> {
-            List<Video> videos = videoDao.getVideosByUserEmail(userEmail);
-            videosByUserEmail.postValue(videos);
-        }).start();
-        return videosByUserEmail;
+    public LiveData<Video> getVideoById(int videoId) {
+        return videoDao.getVideoById(videoId);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.myyoutube;
+package com.example.myyoutube.screens;
 
 import android.Manifest;
 import android.content.Intent;
@@ -21,10 +21,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.myyoutube.adapters.VideoListAdapter;
-import com.example.myyoutube.classes.Comment;
-import com.example.myyoutube.classes.User;
-import com.example.myyoutube.classes.Video;
+import com.example.myyoutube.R;
+import com.example.myyoutube.entities.Comment;
+import com.example.myyoutube.entities.User;
+import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.viewmodels.VideosViewModel;
 
 import java.io.ByteArrayOutputStream;
@@ -53,7 +53,6 @@ public class AddEditVideoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_video);
         videosViewModel = new ViewModelProvider(this).get(VideosViewModel.class);
-
 
         curretUser = MainActivity.getCurrentUser();
         etTitle = findViewById(R.id.etTitle);
