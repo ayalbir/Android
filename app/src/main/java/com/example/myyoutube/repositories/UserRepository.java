@@ -39,16 +39,17 @@ public class UserRepository {
     }
 
     public User getUserByEmail(String email) {
-        userAPI.getUserByEmail(email, userLiveData);
-        return userLiveData.getValue();
+        userAPI.getUserByEmail(email,userLiveData);
+        User user = userLiveData.getValue();
+        return user;
     }
 
-    public void updateUser(int id, User user, String token) {
-        userAPI.updateUser(id, user, token, messageLiveData);
+    public void updateUser(String email, User user, String token) {
+        userAPI.updateUser(email, user, token, messageLiveData);
     }
 
-    public void deleteUser(int id, String token) {
-        userAPI.deleteUser(id, token, messageLiveData);
+    public void deleteUser(String email, String token) {
+        userAPI.deleteUser(email, token, messageLiveData);
     }
 
     public void getAllUsers(String token) {

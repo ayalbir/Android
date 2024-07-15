@@ -16,18 +16,18 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface VideoApiService {
-    @GET("videos")
+    @GET("api/videos")
     Call<ArrayList<JsonObject>> getVideos();
 
     @GET("users/{email}/videos")
     Call<ArrayList<JsonObject>> getUserVideos(@Path("email") String email, @Header("authorization") String token);
 
-    @POST("users/{email}/videos")
+    @POST("api/users/{email}/videos")
     Call<JsonObject> createVideo(@Path("email") String email, @Body Object jsonVideo, @Header("authorization") String token);
 
-    @PUT("users/{email}/videos/{vid}")
+    @PUT("api/users/{email}/videos/{vid}")
     Call<JsonObject> updateVideo(@Path("email") String email, @Path("vid") int videoId, @Body Object jsonVideo, @Header("authorization") String token);
 
-    @DELETE("users/{email}/videos/{vid}")
+    @DELETE("api/users/{email}/videos/{vid}")
     Call<JsonObject> deleteVideo(@Path("email") String email, @Path("vid") int videoId, @Header("authorization") String token);
 }

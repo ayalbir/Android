@@ -27,7 +27,7 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
     private EditText etPassword;
     private ImageView ivProfileImage;
     private User currentUser;
-    private UserManager userManager;
+    private UserManager userManager = UserManager.getInstance();
     private VideosViewModel videosViewModel;
 
     @Override
@@ -67,8 +67,8 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
 
         if (!newUserEmail.equalsIgnoreCase(currentUser.getEmail())) {
             currentUser.setEmail(newUserEmail);
-            userManager.updateUser(currentUser.getId(), currentUser);
-            videosViewModel.updateCommentsEmail(oldEmail, newUserEmail);
+            userManager.updateUser(currentUser.getEmail(), currentUser);
+//            videosViewModel.updateCommentsEmail(oldEmail, newUserEmail);
         }
 
         currentUser.setFirstName(newUserName);
@@ -81,7 +81,7 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
     }
 
     private void deleteUser() {
-        userManager.deleteUser(currentUser.getId());
+        userManager.deleteUser(currentUser.getEmail());
         Toast.makeText(this, "User deleted successfully", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, logInScreen1.class);
         intent.putExtra("userEmail", "");

@@ -25,7 +25,6 @@ public class logInScreen1 extends AppCompatActivity {
     private Button btn_create;
     private CheckBox showPasswordCheckBox;
     private TextView errorMsg;
-
     private UserManager userManager;
 
     @Override

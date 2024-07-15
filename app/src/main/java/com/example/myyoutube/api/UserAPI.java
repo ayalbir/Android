@@ -11,13 +11,19 @@ import com.example.myyoutube.TokenService;
 import com.example.myyoutube.entities.User;
 import com.example.myyoutube.repositories.UserRepository;
 import com.example.myyoutube.repositories.VideoRepository;
+import com.example.myyoutube.viewmodels.UserManager;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -29,7 +35,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class UserAPI {
     Retrofit retrofit;
     UserAPIService userServiceAPI;
-
 
     public UserAPI() {
         retrofit = new Retrofit.Builder()
@@ -105,28 +110,43 @@ public class UserAPI {
             }
         });
     }
-
-    public void getUserById(int id, String token, MutableLiveData<User> userLiveData) {
-        Call<User> call = userServiceAPI.getUserById(id,token);
-        call.enqueue(new Callback<User>() {
+    public void getUserByEmail(String email, MutableLiveData<User> userLiveData) {
+        Call<JsonObject> call = userServiceAPI.getUserByEmail(email);
+        call.enqueue(new Callback<JsonObject>() {
             @Override
-            public void onResponse(Call<User> call, Response<User> response) {
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
-                    userLiveData.postValue(response.body());
+                    JsonObject jsonObject = response.body();
+                    if (jsonObject != null) {
+                        String email = jsonObject.get("email").getAsString();
+                        String password = jsonObject.get("password").getAsString();
+                        String firstName = jsonObject.get("firstName").getAsString();
+                        String familyName = jsonObject.get("familyName").getAsString();
+                        String birthdate = jsonObject.get("birthdate").getAsString();
+                        String gender = jsonObject.get("gender").getAsString();
+                        String profileImageBase64 = jsonObject.get("profileImage").getAsString();
+                        String profileImage = profileImageBase64.substring(profileImageBase64.indexOf(',') + 1);
+
+
+                        User user = new User(email, password, firstName, familyName, UserManager.getTempDate(), gender, profileImage);
+                        userLiveData.postValue(user);
+                    } else {
+                        Toast.makeText(Helper.context, "Failed to fetch user data", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     Toast.makeText(Helper.context, "Failed to fetch user data", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<User> call, Throwable t) {
+            public void onFailure(Call<JsonObject> call, Throwable t) {
                 Log.e("UserAPI", t.getLocalizedMessage());
                 Toast.makeText(Helper.context, "Network error", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    public void updateUser(int id, User user, String token, MutableLiveData<String> messageLiveData) {
+    public void updateUser(String email, User user, String token, MutableLiveData<String> messageLiveData) {
         JSONObject requestBodyJson = new JSONObject();
         try {
             requestBodyJson.put("email", user.getEmail());
@@ -140,7 +160,7 @@ public class UserAPI {
             e.printStackTrace();
         }
 
-        Call<JsonObject> call = userServiceAPI.updateUser(id, (JsonObject) JsonParser.parseString(requestBodyJson.toString()), "Bearer " + token);
+        Call<JsonObject> call = userServiceAPI.updateUser(email, (JsonObject) JsonParser.parseString(requestBodyJson.toString()), "Bearer " + token);
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -159,8 +179,8 @@ public class UserAPI {
         });
     }
 
-    public void deleteUser(int id, String token, MutableLiveData<String> messageLiveData) {
-        Call<JsonObject> call = userServiceAPI.deleteUser(id, "Bearer " + token);
+    public void deleteUser(String email, String token, MutableLiveData<String> messageLiveData) {
+        Call<JsonObject> call = userServiceAPI.deleteUser(email, "Bearer " + token);
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {

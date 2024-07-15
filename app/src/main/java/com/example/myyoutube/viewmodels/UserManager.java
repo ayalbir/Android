@@ -7,6 +7,7 @@ import com.example.myyoutube.TokenService;
 import com.example.myyoutube.entities.User;
 import com.example.myyoutube.repositories.UserRepository;
 
+import java.io.StringReader;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -15,7 +16,6 @@ public class UserManager {
     private final UserRepository userRepository;
     private User connectedUser;
     private VideosViewModel videosViewModel;
-
     public static LocalDate tempDate;
 
     public UserManager() {
@@ -55,13 +55,13 @@ public class UserManager {
         return userRepository.getUserByEmail(email);
     }
 
-    public void updateUser(int id, User user) {
-        userRepository.updateUser(id, user, TokenService.getInstance().getToken());
+    public void updateUser(String email, User user) {
+        userRepository.updateUser(email, user, TokenService.getInstance().getToken());
     }
 
-    public void deleteUser(int id) {
-        userRepository.deleteUser(id, TokenService.getInstance().getToken());
-        videosViewModel.removeVideosByUser(id);
+    public void deleteUser(String email) {
+        userRepository.deleteUser(email, TokenService.getInstance().getToken());
+//        videosViewModel.removeVideosByUser(id);
     }
 
     public void getAllUsers() {

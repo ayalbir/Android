@@ -16,18 +16,22 @@ import retrofit2.http.Path;
 
 public interface UserAPIService {
 
-    @POST("/api/auth/signin")
+    @POST("/api/tokens")
     Call<JsonObject> signIn(@Body JsonObject requestBody);
 
     @POST("/api/users")
     Call<JsonObject> createUser(@Body JsonObject requestBody);
 
-    @PUT("/api/users/{id}")
-    Call<JsonObject> updateUser(@Path("id") int id, @Body JsonObject requestBody, @Header("Authorization") String token);
-    @GET("/api/users/{id}")
-    Call<User> getUserById(@Path("id") int id, @Header("Authorization") String token);
-    @DELETE("/api/users/{id}")
-    Call<JsonObject> deleteUser(@Path("id") int id, @Header("Authorization") String token);
+    @GET("/api/users/{email}")
+    Call<JsonObject> getUserByEmail(@Path("email") String email);
+
+
+    @PUT("/api/users/{email}")
+    Call<JsonObject> updateUser(@Path("email") String email, @Body JsonObject requestBody, @Header("Authorization") String token);
+
+
+    @DELETE("/api/users/{email}")
+    Call<JsonObject> deleteUser(@Path("email") String email, @Header("Authorization") String token);
 
     @GET("/api/users")
     Call<ArrayList<User>> getAllUsers();
