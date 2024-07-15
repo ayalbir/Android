@@ -29,6 +29,7 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
     private User currentUser;
     private UserManager userManager = UserManager.getInstance();
     private VideosViewModel videosViewModel;
+    String oldEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +45,8 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
         ivProfileImage = findViewById(R.id.ivProfileImage);
 
         currentUser = userManager.getConnectedUser();
+        oldEmail = currentUser.getEmail();
+
 
         if (currentUser != null) {
             etUserName.setText(currentUser.getFirstName());
@@ -64,15 +67,13 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
         String newUserName = etUserName.getText().toString();
         String newUserEmail = etUserEmail.getText().toString();
         String newPassword = etPassword.getText().toString();
-
-        if (!newUserEmail.equalsIgnoreCase(currentUser.getEmail())) {
-            currentUser.setEmail(newUserEmail);
-            userManager.updateUser(currentUser.getEmail(), currentUser);
 //            videosViewModel.updateCommentsEmail(oldEmail, newUserEmail);
-        }
 
+        currentUser.setEmail(newUserEmail);
         currentUser.setFirstName(newUserName);
         currentUser.setPassword(newPassword);
+
+        userManager.updateUser(oldEmail, currentUser);
 
         Toast.makeText(this, "User updated successfully", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, MainActivity.class);
