@@ -31,7 +31,7 @@ public class VideosViewModel extends ViewModel {
     }
 
     public LiveData<List<Video>> get() {
-        return videosLiveData;
+        return videoRepository.getAllVideos();
     }
 
     String token = TokenService.getInstance().getToken();

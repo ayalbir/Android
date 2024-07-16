@@ -54,7 +54,7 @@ public class UserAPI {
         });
 
         retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:8080/")
+                .baseUrl(Helper.context.getString(R.string.BaseUrl))
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(httpClient.build()).build();
 

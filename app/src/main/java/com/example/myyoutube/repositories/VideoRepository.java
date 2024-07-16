@@ -28,6 +28,7 @@ public class VideoRepository {
         }).start();
 
         videoAPI = new VideoAPI();
+        reloadVideos();
     }
 
     class VideoListData extends MutableLiveData<List<Video>> {

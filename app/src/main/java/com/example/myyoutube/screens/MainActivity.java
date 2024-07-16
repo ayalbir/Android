@@ -118,10 +118,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-
-
-
-
     private void initUI() {
         searchView = findViewById(R.id.searchView);
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -130,6 +126,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void setupRecyclerViewDB() {
         RecyclerView videoList = findViewById(R.id.videoList);
         adapter = new VideoListAdapter(this,videosViewModel);
+        videos = videosViewModel.get().getValue();
+        if(videos != null) {
+            adapter.setVideos(videos);
+        }
+
 
         videosViewModel.get().observe(this, new Observer<List<Video>>() {
             @Override
@@ -308,7 +309,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onResume() {
         super.onResume();
         videos.clear();
-       // videos.addAll(videoDao.getAllVideos());
+        videos.addAll(videoDao.getAllVideos());
         adapter.notifyDataSetChanged();
     }
 

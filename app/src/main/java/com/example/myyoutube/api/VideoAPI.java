@@ -10,6 +10,8 @@ import com.example.myyoutube.TokenService;
 import com.example.myyoutube.entities.Comment;
 import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.repositories.VideoRepository;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -30,6 +32,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class VideoAPI {
     Retrofit retrofit;
     VideoApiService webServiceAPI;
+    private MutableLiveData<List<Video>> allVideos;
 
     public VideoAPI() {
 
@@ -47,82 +50,47 @@ public class VideoAPI {
         });
 
         retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:8080/")
+                .baseUrl(Helper.context.getString(R.string.BaseUrl))
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(httpClient.build()).build();
 
-
         webServiceAPI = retrofit.create(VideoApiService.class);
+        allVideos = new MutableLiveData<>();
     }
-
     public void getVideos(MutableLiveData<List<Video>> allVideos) {
-        Call<ArrayList<JsonObject>> call = webServiceAPI.getVideos();
-        call.enqueue(new Callback<ArrayList<JsonObject>>() {
+        Call<List<Video>> call = webServiceAPI.getVideos();
+        call.enqueue(new Callback<List<Video>>() {
             @Override
-            public void onResponse(Call<ArrayList<JsonObject>> call, Response<ArrayList<JsonObject>> response) {
+            public void onResponse(Call<List<Video>> call, Response<List<Video>> response) {
                 if (response.isSuccessful()) {
-                    ArrayList<JsonObject> jsonVideosList = response.body();
-                    if (jsonVideosList != null) {
-                        List<Video> videos = new ArrayList<>();
-                        for (JsonObject jsonVideo : jsonVideosList) {
-                            String videoId = (jsonVideo.get("_id").getAsString());
-                            String channelEmail = jsonVideo.get("email").getAsString();
-                            String create_date = jsonVideo.get("createdAt").getAsString();
-                            String description = jsonVideo.get("description").getAsString();
-                            String picBase64 = jsonVideo.get("pic").getAsString();
-                            String title = jsonVideo.get("title").getAsString();
-                            String urlBase64 = jsonVideo.get("url").getAsString();
-                            String date = create_date.substring(0, 10);
-                            String picString = picBase64.substring(picBase64.indexOf(',') + 1);
-                            String pic = Converters.base64ToFilePath(picString, "image");
-
-                            // Save the video file and get the file path
-                            String urlString = urlBase64.substring(urlBase64.indexOf(',') + 1);
-                            String url = Converters.base64ToFilePath(urlString, "video");
-
-                            Video video = new Video(channelEmail, title, description, pic, url, new ArrayList<Comment>());
-                            video.setId(videoId);
-                            video.setCreatedAt(date);
-
-                            // Set likedBy and dislikedBy if they exist
-                            if (jsonVideo.has("likedBy")) {
-                                List<String> likedBy = Converters.fromStringToStringList(jsonVideo.get("likedBy").getAsString());
-                                video.setLikedBy(likedBy);
-                            }
-
-                            if (jsonVideo.has("dislikedBy")) {
-                                List<String> dislikedBy = Converters.fromStringToStringList(jsonVideo.get("dislikedBy").getAsString());
-                                video.setDislikedBy(dislikedBy);
-                            }
-                            videos.add(video);
-                        }
-
+                    List<Video> videos = response.body();
+                    if (videos != null) {
                         new Thread(() -> {
                             for (Video video : VideoRepository.videoDao.getAllVideos()) {
                                 Converters.deleteFileFromStorage(video.getPic());
                                 VideoRepository.videoDao.delete(video);
                             }
-                            for (Video video1 : videos) {
-                                VideoRepository.videoDao.insert(video1);
+                            for (Video video : videos) {
+                                VideoRepository.videoDao.insert(video);
                             }
                         }).start();
 
-                        if(!videos.isEmpty()) {
+                        if (!videos.isEmpty()) {
                             allVideos.postValue(videos);
                         }
-
                     } else {
-                        Log.e("VideoAPI", "Failed to save image to internal storage");
+                        Log.e("VideoAPI", "Failed to fetch videos");
                     }
                 }
             }
 
             @Override
-            public void onFailure(Call<ArrayList<JsonObject>> call, Throwable t) {
+            public void onFailure(Call<List<Video>> call, Throwable t) {
                 Log.e("VideoAPI", t.getLocalizedMessage());
             }
         });
     }
+
 
     public void addVideo(Video videoToAdd, MutableLiveData<List<Video>> allVideos, String token) {
         try {
