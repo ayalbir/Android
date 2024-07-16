@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.myyoutube.R;
+import com.example.myyoutube.entities.User;
 import com.example.myyoutube.viewmodels.UserManager;
 public class signInScreen4 extends AppCompatActivity {
 
@@ -40,7 +41,8 @@ public class signInScreen4 extends AppCompatActivity {
                 String email = emailInput.getText().toString().trim();
                 if (isValidEmail(email)) {
                     String password = getIntent().getStringExtra("password");
-                    if (userManager.getUserByEmail(email) != null) {
+                    User user = userManager.getUserByEmail(email);
+                    if (user != null) {
                         errorMsg.setText("Email already exists");
                         return;
                     }

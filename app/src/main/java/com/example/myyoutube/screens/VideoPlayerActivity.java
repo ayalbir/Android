@@ -74,7 +74,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
         videosViewModel = new ViewModelProvider(this).get(VideosViewModel.class);
         commentViewModel = new ViewModelProvider(this).get(CommentViewModel.class);
 
-
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         MenuItem profilePictureItem = bottomNavigationView.getMenu().findItem(R.id.nav_login);
         profilePictureItem.setIcon(R.drawable.login);
@@ -87,14 +86,13 @@ public class VideoPlayerActivity extends AppCompatActivity {
             profilePictureItem.setIcon(R.drawable.nav_logout);
             profilePictureItem.setTitle("Logout");
         }
-
         int videoId = getIntent().getIntExtra("videoId", -1);
         video = videosViewModel.getVideoById(videoId).getValue();
         if (video == null) {
             finish();
             return;
         }
-        commentViewModel.fetchCommentsByVideoId(videoId);
+        commentViewModel.fetchCommentsByVideoId(String.valueOf(videoId));
         commentViewModel.getCommentsLiveData().observe(this, comments -> {
             commentsList = comments;
             commentsAdapter.notifyDataSetChanged();
@@ -207,7 +205,8 @@ public class VideoPlayerActivity extends AppCompatActivity {
                 String newComment = commentInput.getText().toString();
                 if (!newComment.isEmpty()) {
                     String profileImageBase64 = currentUser.getProfileImage();
-                    Comment comment = new Comment("", newComment, profileImageBase64, currentUser.getEmail());
+                    String id = String.valueOf(videoId);
+                    Comment comment = new Comment(id, newComment, profileImageBase64, currentUser.getEmail());
                     commentViewModel.addComment(comment);
                     commentsAdapter.notifyDataSetChanged();
                     commentInput.setText("");

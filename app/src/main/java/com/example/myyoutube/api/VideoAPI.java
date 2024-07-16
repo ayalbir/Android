@@ -87,7 +87,11 @@ public class VideoAPI {
                                 VideoRepository.videoDao.insert(video1);
                             }
                         }).start();
-                        allVideos.postValue(videos);
+
+                        if(!videos.isEmpty()) {
+                            allVideos.postValue(videos);
+                        }
+
                     } else {
                         Log.e("VideoAPI", "Failed to save image to internal storage");
                     }

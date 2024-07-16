@@ -61,6 +61,7 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
 
         findViewById(R.id.btnUpdateUser).setOnClickListener(v -> updateUser());
         findViewById(R.id.btnDeleteUser).setOnClickListener(v -> deleteUser());
+        findViewById(R.id.btnSighOut).setOnClickListener(v -> signOut());
     }
 
     private void updateUser() {
@@ -82,10 +83,17 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
     }
 
     private void deleteUser() {
+        userManager.clearConnectedUser();
         userManager.deleteUser(currentUser.getEmail());
         Toast.makeText(this, "User deleted successfully", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(this, logInScreen1.class);
-        intent.putExtra("userEmail", "");
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    private void signOut() {
+        userManager.clearConnectedUser();
+        Toast.makeText(this, "Signing out", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 }

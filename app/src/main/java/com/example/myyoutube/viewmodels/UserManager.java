@@ -44,7 +44,6 @@ public class UserManager {
 
     public void signIn(String email, String password) {
         userRepository.signIn(email, password);
-        setConnectedUser(getUserByEmail(email));
     }
 
     public void createUser(User user) {

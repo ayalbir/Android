@@ -28,7 +28,7 @@ public class CommentViewModel extends ViewModel {
         return messageLiveData;
     }
 
-    public void fetchCommentsByVideoId(int videoId) {
+    public void fetchCommentsByVideoId(String videoId) {
         commentRepository.fetchCommentsByVideoId(videoId);
     }
 
@@ -41,6 +41,6 @@ public class CommentViewModel extends ViewModel {
     }
 
     public void deleteComment(Comment comment) {
-        commentRepository.deleteComment(Integer.parseInt(comment.getVideoId()));
+        commentRepository.deleteComment((comment.getVideoId()));
     }
 }

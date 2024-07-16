@@ -111,7 +111,7 @@ public class AddEditVideoActivity extends AppCompatActivity {
     private void saveVideo() {
         if(isImageSelected && isVideoSelected){
             if(video == null){
-                video = new Video("", "", "", "", "", new ArrayList<Comment>());
+                video = new Video("", "", "", "", "", new ArrayList<>());
             }
             video.setTitle(Objects.requireNonNull(etTitle.getText()).toString());
             video.setDescription(Objects.requireNonNull(etDescription.getText()).toString());

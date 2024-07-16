@@ -72,6 +72,8 @@
     <string name="menu_for_edit_and_delete">Menu for edit and delete</string>
     <string name="dislikes">Dislikes</string>
     <string name="BaseUrl">http://10.100.102.5:8080/</string>
+    <string name="sign_up">Sign up</string>
+    <string name="sign_out">Sign out</string>
 
     <string-array name="months_array">
         <item>month</item>

@@ -127,7 +127,6 @@ public class UserAPI {
                         String profileImageBase64 = jsonObject.get("profileImage").getAsString();
                         String profileImage = profileImageBase64.substring(profileImageBase64.indexOf(',') + 1);
 
-
                         User user = new User(email, password, firstName, familyName, UserManager.getTempDate(), gender, profileImage);
                         userLiveData.postValue(user);
                     } else {
@@ -141,7 +140,7 @@ public class UserAPI {
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 Log.e("UserAPI", t.getLocalizedMessage());
-                Toast.makeText(Helper.context, "Network error", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(Helper.context, "Network error", Toast.LENGTH_SHORT).show();
             }
         });
     }

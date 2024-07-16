@@ -15,7 +15,6 @@ public class User {
     private String gender;
     private String profileImage;
 
-
     public User(String email, String password, String firstName, String familyName, LocalDate birthdate, String gender, String profileImage) {
         this.email = email;
         this.password = password;

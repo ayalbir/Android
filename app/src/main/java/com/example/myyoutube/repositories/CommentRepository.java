@@ -28,8 +28,8 @@ public class CommentRepository {
         return messageLiveData;
     }
 
-    public void fetchCommentsByVideoId(int videoId) {
-        commentAPI.getCommentsByVideoId(videoId, commentsLiveData);
+    public void fetchCommentsByVideoId(String videoId) {
+        commentAPI.fetchCommentsByVideoId(videoId, commentsLiveData);
     }
 
     public void addComment(Comment comment) {
@@ -40,7 +40,7 @@ public class CommentRepository {
         commentAPI.updateComment(comment, messageLiveData);
     }
 
-    public void deleteComment(int commentId) {
+    public void deleteComment(String commentId) {
         commentAPI.deleteComment(commentId, messageLiveData);
     }
 }

@@ -19,8 +19,8 @@ public interface CommentsAPIService {
     Call<JsonObject> addComment(@Body JsonObject comment);
 
     @PUT("/api/comments/{id}")
-    Call<JsonObject> updateComment(@Path("id") int id, @Body JsonObject comment);
+    Call<JsonObject> updateComment(@Path("id") String id, @Body JsonObject comment);
 
     @DELETE("/api/comments/{id}")
-    Call<JsonObject> deleteComment(@Path("id") int id);
+    Call<JsonObject> deleteComment(@Path("id") String id);
 }

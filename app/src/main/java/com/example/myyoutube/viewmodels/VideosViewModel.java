@@ -20,7 +20,7 @@ public class VideosViewModel extends ViewModel {
     public VideosViewModel() {
         videoRepository = new VideoRepository();
         videosLiveData = new MutableLiveData<>(new ArrayList<>());
-        //loadVideos();
+        loadVideos();
     }
 
     public static VideosViewModel getInstance() {
@@ -29,6 +29,7 @@ public class VideosViewModel extends ViewModel {
         }
         return instance;
     }
+
     public LiveData<List<Video>> get() {
         return videosLiveData;
     }
@@ -49,16 +50,9 @@ public class VideosViewModel extends ViewModel {
         loadVideos();
     }
 
-    private void loadVideos() {
-        videoRepository.getAllVideos().observeForever(videos -> {
-            if (videos != null) {
-                videosLiveData.postValue(videos);
-            }
-        });
+    public void loadVideos() {
+        videoRepository.reloadVideos();
     }
-//    public void loadVideos() {
-//        videoRepository.reloadVideos();
-//    }
 
     public LiveData<Video> getVideoById(int id) {
         return videoRepository.getVideoById(id);
