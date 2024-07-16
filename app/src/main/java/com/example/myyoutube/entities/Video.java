@@ -1,5 +1,6 @@
 package com.example.myyoutube.entities;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
@@ -15,8 +16,9 @@ import java.util.concurrent.TimeUnit;
 @Entity
 @TypeConverters({Converters.class})
 public class Video {
-    @PrimaryKey(autoGenerate = true)
-    private int id;
+    @PrimaryKey()
+    @NonNull
+    private String id;
     private String email;
     private int likes;
     private int dislikes;
@@ -46,10 +48,10 @@ public class Video {
         this.dislikedBy = new ArrayList<>();
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

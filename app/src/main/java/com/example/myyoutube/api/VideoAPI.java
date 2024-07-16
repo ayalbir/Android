@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.myyoutube.Converters;
 import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;
+import com.example.myyoutube.TokenService;
 import com.example.myyoutube.entities.Comment;
 import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.repositories.VideoRepository;
@@ -18,6 +19,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -29,10 +32,26 @@ public class VideoAPI {
     VideoApiService webServiceAPI;
 
     public VideoAPI() {
+
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        httpClient.addInterceptor(chain -> {
+            Request original = chain.request();
+
+            // Add the JWT token to the request headers
+            Request request = original.newBuilder()
+                    .header("Authorization", "Bearer " + TokenService.getInstance().getToken())
+                    .method(original.method(), original.body())
+                    .build();
+
+            return chain.proceed(request);
+        });
+
         retrofit = new Retrofit.Builder()
-                .baseUrl(Helper.context.getString(R.string.BaseUrl))
+                .baseUrl("http://10.0.2.2:8080/")
                 .addConverterFactory(GsonConverterFactory.create())
-                .build();
+                .client(httpClient.build()).build();
+
+
         webServiceAPI = retrofit.create(VideoApiService.class);
     }
 
@@ -46,7 +65,7 @@ public class VideoAPI {
                     if (jsonVideosList != null) {
                         List<Video> videos = new ArrayList<>();
                         for (JsonObject jsonVideo : jsonVideosList) {
-                            int videoId = Integer.parseInt(jsonVideo.get("_id").getAsString());
+                            String videoId = (jsonVideo.get("_id").getAsString());
                             String channelEmail = jsonVideo.get("email").getAsString();
                             String create_date = jsonVideo.get("createdAt").getAsString();
                             String description = jsonVideo.get("description").getAsString();
@@ -180,7 +199,7 @@ public class VideoAPI {
 
     public void deleteVideo(Video videoToRemove, MutableLiveData<List<Video>> allVideos, String token) {
         String channelEmail = videoToRemove.getEmail();
-        int id = videoToRemove.getId();
+        String id = videoToRemove.getId();
         Call<JsonObject> call = webServiceAPI.deleteVideo(channelEmail, id, "Bearer " + token);
         call.enqueue(new Callback<JsonObject>() {
             @Override

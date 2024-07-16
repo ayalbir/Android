@@ -26,8 +26,8 @@ public interface VideoApiService {
     Call<JsonObject> createVideo(@Path("email") String email, @Body Object jsonVideo, @Header("authorization") String token);
 
     @PUT("api/users/{email}/videos/{vid}")
-    Call<JsonObject> updateVideo(@Path("email") String email, @Path("vid") int videoId, @Body Object jsonVideo, @Header("authorization") String token);
+    Call<JsonObject> updateVideo(@Path("email") String email, @Path("vid") String videoId, @Body Object jsonVideo, @Header("authorization") String token);
 
     @DELETE("api/users/{email}/videos/{vid}")
-    Call<JsonObject> deleteVideo(@Path("email") String email, @Path("vid") int videoId, @Header("authorization") String token);
+    Call<JsonObject> deleteVideo(@Path("email") String email, @Path("vid") String videoId, @Header("authorization") String token);
 }

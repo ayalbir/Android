@@ -50,6 +50,7 @@ public class signInScreen2 extends AppCompatActivity {
         genderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         genderSpinner.setAdapter(genderAdapter);
 
+
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,7 +92,7 @@ public class signInScreen2 extends AppCompatActivity {
                     Intent intent = new Intent(signInScreen2.this, signInScreen3.class);
                     intent.putExtra("name", name);
                     intent.putExtra("lastName", lastName);
-                    intent.putExtra("gender", name);
+                    intent.putExtra("gender", genderSpinner.getSelectedItem().toString());
                     UserManager.setTempDate(birthDate);
                     startActivity(intent);
 

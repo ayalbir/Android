@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,12 +39,36 @@ public class UserAPI {
     UserAPIService userServiceAPI;
 
     public UserAPI() {
+
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        httpClient.addInterceptor(chain -> {
+            Request original = chain.request();
+
+            // Add the JWT token to the request headers
+            Request request = original.newBuilder()
+                    .header("Authorization", "Bearer " + TokenService.getInstance().getToken())
+                    .method(original.method(), original.body())
+                    .build();
+
+            return chain.proceed(request);
+        });
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl("http://10.0.2.2:8080/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(httpClient.build()).build();
+
+
+        userServiceAPI = retrofit.create(UserAPIService.class);
+    }
+
+    /*public UserAPI() {
         retrofit = new Retrofit.Builder()
                 .baseUrl(Helper.context.getString(R.string.BaseUrl))
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         userServiceAPI = retrofit.create(UserAPIService.class);
-    }
+    }*/
 
     public void signIn(String email, String password) {
         JSONObject requestBodyJson = new JSONObject();

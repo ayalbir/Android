@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase;
 import com.example.myyoutube.dao.VideoDao;
 import com.example.myyoutube.entities.Video;
 
-@Database(entities = {Video.class}, version = 3)
+@Database(entities = {Video.class}, version = 4)
 public abstract class AppDB extends RoomDatabase {
 
     public abstract VideoDao videoDao();
