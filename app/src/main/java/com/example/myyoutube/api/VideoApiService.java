@@ -1,7 +1,6 @@
 package com.example.myyoutube.api;
 
 
-
 import com.example.myyoutube.entities.Video;
 import com.google.gson.JsonObject;
 
@@ -21,7 +20,7 @@ public interface VideoApiService {
     @GET("api/videos")
     Call<List<Video>> getVideos();
 
-    @GET("users/{email}/videos")
+    @GET("api/users/{email}/videos")
     Call<ArrayList<JsonObject>> getUserVideos(@Path("email") String email, @Header("authorization") String token);
 
     @POST("api/users/{email}/videos")

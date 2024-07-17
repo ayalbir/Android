@@ -3,6 +3,7 @@ package com.example.myyoutube.screens;
 import static com.example.myyoutube.R.layout.activity_main;
 
 import android.content.Intent;
+import android.database.CursorWindow;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -49,6 +50,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,11 +72,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private VideosViewModel videosViewModel;
     private UserManager userManager = UserManager.getInstance();
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(activity_main);
+        try {
+            Field field = CursorWindow.class.getDeclaredField("sCursorWindowSize");
+            field.setAccessible(true);
+            field.set(null, 100 * 1024 * 1024);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
             videosViewModel = new ViewModelProvider(this).get(VideosViewModel.class);
             BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
             MenuItem profilePictureItem = bottomNavigationView.getMenu().findItem(R.id.nav_login);
@@ -100,8 +108,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 profilePictureItem.setTitle("Account");
 
             }
-
-
 
         setupRecyclerViewDB();
         initUI();
@@ -186,7 +192,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 //UserViewModel.initializeDefaultUsers();
             }
              firstTime = false;
-             adapter.setVideos(videos);
+            if(videos != null) {
+                adapter.setVideos(videos);
+            }
         }
     }
 
@@ -308,8 +316,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume() {
         super.onResume();
-        videos.clear();
-        videos.addAll(videoDao.getAllVideos());
+        if (videos != null) {
+            videos.clear();
+        }
+        List<Video> videoList = videoDao.getAllVideos();
+        if(!videoList.isEmpty()){
+            videos.addAll(videoDao.getAllVideos());
+        }
         adapter.notifyDataSetChanged();
     }
 

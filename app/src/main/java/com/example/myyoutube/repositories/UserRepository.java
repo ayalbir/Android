@@ -1,23 +1,16 @@
 package com.example.myyoutube.repositories;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.room.Room;
 
-import com.example.myyoutube.AppDB;
-import com.example.myyoutube.Helper;
+import androidx.lifecycle.MutableLiveData;
 import com.example.myyoutube.api.UserAPI;
-import com.example.myyoutube.api.VideoAPI;
-import com.example.myyoutube.dao.UserDao;
-import com.example.myyoutube.dao.VideoDao;
 import com.example.myyoutube.entities.User;
-import com.example.myyoutube.entities.Video;
+
 
 import java.util.List;
 
 public class UserRepository {
 
-    private UserAPI userAPI;
+    private final UserAPI userAPI;
     private MutableLiveData<List<User>> usersLiveData;
     private MutableLiveData<User> userLiveData;
     private MutableLiveData<String> messageLiveData;

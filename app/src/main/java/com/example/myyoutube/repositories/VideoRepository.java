@@ -19,13 +19,11 @@ public class VideoRepository {
     private AppDB db;
 
     public VideoRepository() {
-        new Thread(() -> {
-            db = Room.databaseBuilder(Helper.context, AppDB.class, "FootubeDB")
-                    .fallbackToDestructiveMigration()
-                    .build();
-            videoDao = db.videoDao();
-            videoListData = new VideoListData();
-        }).start();
+        db = Room.databaseBuilder(Helper.context, AppDB.class, "FootubeDB")
+                .fallbackToDestructiveMigration()
+                .build();
+        videoDao = db.videoDao();
+        videoListData = new VideoListData();
 
         videoAPI = new VideoAPI();
         reloadVideos();

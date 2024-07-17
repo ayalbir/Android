@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class Video {
     @PrimaryKey()
     @NonNull
-    private String id;
+    private String _id;
     private String email;
     private int likes;
     private int dislikes;
@@ -32,7 +32,8 @@ public class Video {
     private List<String> likedBy;
     private List<String> dislikedBy;
 
-    public Video(String email, String title, String description, String pic, String url, List<Comment> comments) {
+    public Video(@NonNull String _id , String email, String title, String description, String pic, String url, List<Comment> comments) {
+        this._id = _id;
         this.email = email;
         this.title = title;
         this.description = description;
@@ -49,10 +50,10 @@ public class Video {
     }
 
     public String getId() {
-        return id;
+        return _id;
     }
     public void setId(String id) {
-        this.id = id;
+        this._id = id;
     }
 
     public int getLikes() {
@@ -183,18 +184,18 @@ public class Video {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Video video = (Video) o;
-        return id == video.id;
+        return _id.equals(video._id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(_id);
     }
 
     @Override
     public String toString() {
         return "Video{" +
-                "id=" + id +
+                "id=" + _id +
                 ", email='" + email + '\'' +
                 ", likes=" + likes +
                 ", dislikes=" + dislikes +
