@@ -1,7 +1,13 @@
-In this project, we worked as a team of three people, each responsible for a different area. One team member was in charge of the movie list screen, the movie viewing screen, and the new movie addition screen for the web version. Another team member was responsible for the same screens in the Android version. The third team member was responsible for login and registration on both platforms.
+Footube
+Footube is a YouTube-like application developed within a client-server environment. The client-side is implemented in Android Studio using Java, while the server-side is built with Node.js. This README provides an overview of the project and detailed instructions on how to set it up and run it.
 
-We used the Jira management tool for task allocation and project management, which enabled effective teamwork, with each member contributing their part to the project.
+Running the Client-side (Android App)
+Connect an Android Device or Start an Emulator:
+Connect your Android device via USB, or start an Android emulator from AVD Manager in Android Studio.
+Run the App:
+Click the Run button in Android Studio.
+Grant Necessary Permissions:
+Ensure the app has the necessary permissions to access the internet and read/write to storage.
+Note that for now, the app is compatible with an emulator. If you are interested in using the app on a real phone, you need to change the "baseUrl" in the "Strings" file and the XML file "network_security_config", change it to your computer's IP.
 
-How to run the project:
 
-Android: Run the emulator, which will open the video list screen first. Then, there will be an option to log in at the top, and if there is no user, to register.
