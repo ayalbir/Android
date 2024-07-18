@@ -15,17 +15,15 @@ public class CommentRepository {
     private final String videoId;
 
     public CommentRepository(String videoId) {
-        commentsLiveData = new CommentListData();
         this.videoId = videoId;
+        commentsLiveData = new CommentListData();
         commentsAPI = new CommentsAPI(commentsLiveData);
+        getCommentsForVideo();
     }
 
-    public LiveData<List<Comment>> get() {
-        return commentsLiveData;
-    }
-
-    public void getCommentsForVideo() {
+    public LiveData<List<Comment>> getCommentsForVideo() {
         commentsAPI.getCommentsForVideo(videoId);
+        return commentsLiveData;
     }
 
     public void addComment(Comment comment, String token) {
@@ -36,60 +34,48 @@ public class CommentRepository {
         commentsAPI.deleteComment(comment, token);
     }
 
-    public void updateComment(Comment comment , String token) {
+    public void updateComment(Comment comment, String token) {
         commentsAPI.updateComment(comment, token);
     }
 
     public class CommentListData extends MutableLiveData<List<Comment>> {
-
-
         public CommentListData() {
             super();
             setValue(new LinkedList<>());
-
         }
-
-
 
         @Override
         protected void onActive() {
             super.onActive();
-
         }
-
 
         public void addComment(Comment newComment) {
-            List<Comment> comments1 = getValue();
-            if (comments1 == null)
-                return;
-            comments1.add(0, newComment);
-            commentsLiveData.postValue(comments1);
+            List<Comment> comments = getValue();
+            if (comments == null) return;
+            comments.add(0, newComment);
+            postValue(comments);
         }
 
-
         public void removeComment(String id) {
-            List<Comment> comments1 = getValue();
-            if (comments1 == null)
-                return;
-            for (Comment comment : comments1) {
+            List<Comment> comments = getValue();
+            if (comments == null) return;
+            for (Comment comment : comments) {
                 if (comment.get_id().equals(id)) {
-                    comments1.remove(comment);
-                    commentsLiveData.postValue(comments1);
+                    comments.remove(comment);
+                    postValue(comments);
                     break;
                 }
             }
         }
 
-
         public void updateComment(Comment comment) {
-            List<Comment> comments1 = getValue();
-            if (comments1 == null)
-                return;
+            List<Comment> comments = getValue();
+            if (comments == null) return;
             String commentId = comment.get_id();
-            for (Comment curr : comments1) {
+            for (Comment curr : comments) {
                 if (curr.get_id().equals(commentId)) {
                     curr.setText(comment.getText());
-                    commentsLiveData.postValue(comments1);
+                    postValue(comments);
                     break;
                 }
             }
