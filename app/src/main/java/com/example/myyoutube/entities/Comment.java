@@ -1,20 +1,33 @@
 package com.example.myyoutube.entities;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
 
-import java.util.Date;
+import com.example.myyoutube.Converters;
+import com.example.myyoutube.viewmodels.UserManager;
 
+import java.time.LocalDate;
+
+@Entity(tableName = "comments")
+@TypeConverters({Converters.class})
 public class Comment {
 
-    @PrimaryKey(autoGenerate = true)
     private String videoId;
+
+    @PrimaryKey
+    @NonNull
+    private String _id;
     private String text;
     private String profilePicture;
     private String email;
-    private Date createdAt;
+    private LocalDate createdAt;
 
-    public Comment(String id,String text, String profilePicture, String email) {
-        this.videoId = id;
+    public Comment(String videoId, String _id,String text, String profilePicture, String email) {
+        this.createdAt = UserManager.getTempDate();
+        this.videoId = videoId;
+        this._id = _id;
         this.text = text;
         this.profilePicture = profilePicture;
         this.email = email;
@@ -36,8 +49,24 @@ public class Comment {
         this.profilePicture = profilePicture;
     }
 
+    public LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public String getVideoId() {
         return videoId;
+    }
+
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
     }
 
     public String getEmail() {

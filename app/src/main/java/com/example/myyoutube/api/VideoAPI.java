@@ -7,6 +7,7 @@ import com.example.myyoutube.Converters;
 import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;
 import com.example.myyoutube.TokenService;
+import com.example.myyoutube.dao.VideoDao;
 import com.example.myyoutube.entities.Comment;
 import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.repositories.VideoRepository;
@@ -32,9 +33,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class VideoAPI {
     Retrofit retrofit;
     VideoApiService webServiceAPI;
-    private MutableLiveData<List<Video>> allVideos;
+    private VideoRepository.VideoListData videoListData;
+    private VideoDao videoDao;
 
-    public VideoAPI() {
+    public VideoAPI(VideoRepository.VideoListData videos, VideoDao videoDao) {
+
+        this.videoListData = videos;
+        this.videoDao = videoDao;
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(chain -> {
@@ -54,10 +59,9 @@ public class VideoAPI {
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(httpClient.build()).build();
 
-        webServiceAPI = retrofit.create(VideoApiService.class);
-        allVideos = new MutableLiveData<>();
+        this.webServiceAPI = retrofit.create(VideoApiService.class);
     }
-    public void getVideos(MutableLiveData<List<Video>> allVideos) {
+    public void getVideos() {
         Call<List<Video>> call = webServiceAPI.getVideos();
         call.enqueue(new Callback<List<Video>>() {
             @Override
@@ -66,18 +70,15 @@ public class VideoAPI {
                     List<Video> videos = response.body();
                     if (videos != null) {
                         new Thread(() -> {
-                            for (Video video : VideoRepository.videoDao.getAllVideos()) {
+                            for (Video video : videoDao.getAllVideos()) {
                                 Converters.deleteFileFromStorage(video.getPic());
-                                VideoRepository.videoDao.delete(video);
+                                videoDao.delete(video);
                             }
                             for (Video video : videos) {
-                                VideoRepository.videoDao.insert(video);
+                                videoDao.insert(video);
                             }
+                            videoListData.postValue(videos);
                         }).start();
-
-                        if (!videos.isEmpty()) {
-                            allVideos.postValue(videos);
-                        }
                     } else {
                         Log.e("VideoAPI", "Failed to fetch videos");
                     }
@@ -92,7 +93,7 @@ public class VideoAPI {
     }
 
 
-    public void addVideo(Video videoToAdd, MutableLiveData<List<Video>> allVideos, String token) {
+    public void addVideo(Video videoToAdd, String token) {
         try {
             JSONObject requestBodyJson = new JSONObject();
             requestBodyJson.put("email", videoToAdd.getEmail());
@@ -107,16 +108,13 @@ public class VideoAPI {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     if (response.isSuccessful()) {
-                        JsonObject jsonObject = response.body();
-                        if (jsonObject != null && jsonObject.has("insertedId")) {
-                            new Thread(() -> VideoRepository.videoDao.insert(videoToAdd)).start();
-                            getVideos(allVideos);
-                        } else {
-                            Toast.makeText(Helper.context, "Video cannot be uploaded due to validation failure.", Toast.LENGTH_SHORT).show();
+                        new Thread(() -> {
+                            videoToAdd.setId(response.body().get("_id").getAsString());
+                            videoDao.insert(videoToAdd);
+                            videoListData.addVideo(videoToAdd);
+                        }).start();
                         }
                     }
-                }
-
                 @Override
                 public void onFailure(Call<JsonObject> call, Throwable t) {
                     Log.e("VideoAPI", t.getLocalizedMessage());
@@ -127,7 +125,7 @@ public class VideoAPI {
         }
     }
 
-    public void editVideo(Video videoToEdit, MutableLiveData<List<Video>> allVideos, String token) {
+    public void editVideo(Video videoToEdit, String token) {
         JSONObject requestBodyJson = new JSONObject();
         try {
             requestBodyJson.put("id", videoToEdit.getId());
@@ -148,11 +146,11 @@ public class VideoAPI {
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
                     JsonObject jsonObject = response.body();
-                    if (jsonObject != null && jsonObject.has("modifiedCount")) {
-                        new Thread(() -> VideoRepository.videoDao.update(videoToEdit)).start();
-                        getVideos(allVideos);
+                    try {
+                        new Thread(() -> videoDao.update(videoToEdit)).start();
+                        videoListData.updateVideo(videoToEdit);
                         Toast.makeText(Helper.context, "Video updated", Toast.LENGTH_SHORT).show();
-                    } else {
+                    } catch (Exception e){
                         Toast.makeText(Helper.context, "Video cannot be updated due to validation failure.", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -165,7 +163,7 @@ public class VideoAPI {
         });
     }
 
-    public void deleteVideo(Video videoToRemove, MutableLiveData<List<Video>> allVideos, String token) {
+    public void deleteVideo(Video videoToRemove, String token) {
         String channelEmail = videoToRemove.getEmail();
         String id = videoToRemove.getId();
         Call<JsonObject> call = webServiceAPI.deleteVideo(channelEmail, id, "Bearer " + token);
@@ -173,13 +171,10 @@ public class VideoAPI {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
-                    JsonObject jsonObject = response.body();
-                    if (jsonObject != null && jsonObject.has("deletedCount")) {
                         Converters.deleteFileFromStorage(videoToRemove.getPic());
-                        new Thread(() -> VideoRepository.videoDao.delete(videoToRemove)).start();
-                        getVideos(allVideos);
+                        new Thread(() -> videoDao.delete(videoToRemove)).start();
+                        videoListData.removeVideo(videoToRemove);
                         Toast.makeText(Helper.context, "Video deleted", Toast.LENGTH_SHORT).show();
-                    }
                 }
             }
 
@@ -189,5 +184,37 @@ public class VideoAPI {
             }
         });
     }
+
+
+    public void likeVideo(String email, String videoId, String token) {
+        Call<JsonObject> call = webServiceAPI.likeVideo(email, videoId, "Bearer " + token);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.e("VideoAPI", t.getLocalizedMessage());
+            }
+        });
+    }
+
+    public void dislikeVideo(String email, String videoId, String token) {
+        Call<JsonObject> call = webServiceAPI.dislikeVideo(email, videoId, "Bearer " + token);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.e("VideoAPI", t.getLocalizedMessage());
+            }
+        });
+    }
+
 
 }

@@ -12,6 +12,7 @@ import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
@@ -31,4 +32,10 @@ public interface VideoApiService {
 
     @DELETE("api/users/{email}/videos/{vid}")
     Call<JsonObject> deleteVideo(@Path("email") String email, @Path("vid") String videoId, @Header("authorization") String token);
+    @PATCH("api/users/{email}/videos/{vid}/likes")
+    Call<JsonObject> likeVideo(@Path("email") String email, @Path("vid") String videoId, @Header("authorization") String token);
+
+    @PATCH("api/users/{email}/videos/{vid}/dislikes")
+    Call<JsonObject> dislikeVideo(@Path("email") String email, @Path("vid") String videoId, @Header("authorization") String token);
+
 }

@@ -2,13 +2,21 @@ package com.example.myyoutube;
 
 import androidx.room.Database;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 
 
+import com.example.myyoutube.dao.CommentDao;
+import com.example.myyoutube.dao.UserDao;
 import com.example.myyoutube.dao.VideoDao;
+import com.example.myyoutube.entities.Comment;
+import com.example.myyoutube.entities.User;
 import com.example.myyoutube.entities.Video;
 
-@Database(entities = {Video.class}, version = 5)
+@Database(entities = {Video.class, User.class, Comment.class}, version = 11)
+@TypeConverters(Converters.class)
 public abstract class AppDB extends RoomDatabase {
     public abstract VideoDao videoDao();
+    public abstract UserDao userDao();
+    public abstract CommentDao commentDao();
 }
 

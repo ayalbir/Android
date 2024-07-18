@@ -13,7 +13,6 @@ import java.util.List;
 
 @Dao
 public interface UserDao {
-
     @Insert
     void insert(User user);
 
@@ -24,11 +23,8 @@ public interface UserDao {
     void delete(User user);
 
     @Query("SELECT * FROM users WHERE email = :email")
-    LiveData<User> getUserByEmail(String email);
+    User getUserByEmail(String email);
 
     @Query("SELECT * FROM users")
-    LiveData<List<User>> getAllUsers();
-
-    @Query("SELECT COUNT(*) FROM users WHERE email = :email")
-    int isEmailExist(String email);
+    List<User> getAllUsers();
 }

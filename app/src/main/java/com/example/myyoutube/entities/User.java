@@ -1,12 +1,23 @@
 package com.example.myyoutube.entities;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import com.example.myyoutube.Converters;
+
 import java.time.LocalDate;
-import java.util.Date;
 
 
+
+@Entity(tableName = "users")
+@TypeConverters({Converters.class})
 public class User {
 
-    int id;
+    String id;
+    @NonNull
+    @PrimaryKey
     private String email;
     private String password;
     private String firstName;
@@ -27,11 +38,11 @@ public class User {
 
     // Getters and Setters for all fields
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

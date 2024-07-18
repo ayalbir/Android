@@ -12,15 +12,15 @@ import retrofit2.http.Path;
 
 public interface CommentsAPIService {
 
-    @GET("/api/comments/{videoId}")
+    @GET("api/comments/{videoId}")
     Call<ArrayList<JsonObject>> getCommentsByVideoId(@Path("videoId") int videoId);
 
-    @POST("/api/comments")
+    @POST("api/comments")
     Call<JsonObject> addComment(@Body JsonObject comment);
 
-    @PUT("/api/comments/{id}")
+    @PUT("api/comments/{id}")
     Call<JsonObject> updateComment(@Path("id") String id, @Body JsonObject comment);
 
-    @DELETE("/api/comments/{id}")
+    @DELETE("api/comments/{id}")
     Call<JsonObject> deleteComment(@Path("id") String id);
 }

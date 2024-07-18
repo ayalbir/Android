@@ -86,13 +86,13 @@ public class VideoPlayerActivity extends AppCompatActivity {
             profilePictureItem.setIcon(R.drawable.nav_logout);
             profilePictureItem.setTitle("Logout");
         }
-        int videoId = getIntent().getIntExtra("videoId", -1);
-        video = videosViewModel.getVideoById(videoId).getValue();
+        String videoId = getIntent().getStringExtra("videoId");
+        video = videosViewModel.getVideoById(videoId);
         if (video == null) {
             finish();
             return;
         }
-        commentViewModel.fetchCommentsByVideoId(String.valueOf(videoId));
+        commentViewModel.getCommentsByVideoId(String.valueOf(videoId));
         commentViewModel.getCommentsLiveData().observe(this, comments -> {
             commentsList = comments;
             commentsAdapter.notifyDataSetChanged();
@@ -206,7 +206,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
                 if (!newComment.isEmpty()) {
                     String profileImageBase64 = currentUser.getProfileImage();
                     String id = String.valueOf(videoId);
-                    Comment comment = new Comment(id, newComment, profileImageBase64, currentUser.getEmail());
+                    Comment comment = new Comment(id,"", newComment, profileImageBase64, currentUser.getEmail());
                     commentViewModel.addComment(comment);
                     commentsAdapter.notifyDataSetChanged();
                     commentInput.setText("");
@@ -250,8 +250,8 @@ public class VideoPlayerActivity extends AppCompatActivity {
     }
 
     private void fetchRecommendedVideos() {
-        int currentVideoId = getIntent().getIntExtra("videoId", -1);
-        video = videosViewModel.getVideoById(currentVideoId).getValue();
+        String currentVideoId = getIntent().getStringExtra("videoId");
+        video = videosViewModel.getVideoById(currentVideoId);
 
         if (video != null) {
             otherVideos = new ArrayList<>((Collection) videosViewModel.get());

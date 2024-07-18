@@ -312,7 +312,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -325,32 +324,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         adapter.notifyDataSetChanged();
     }
-
-
-
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
         super.onPointerCaptureChanged(hasCapture);
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && data != null) {
-            int updatedVideoId = data.getIntExtra("updatedVideoId", -1);
-            if (updatedVideoId != -1) {
-                Video updatedVideo = videosViewModel.getVideoById(updatedVideoId).getValue();
-                if (updatedVideo != null) {
-                    if (requestCode == REQUEST_CODE_ADD_VIDEO) {
-                        videosViewModel.add(updatedVideo);
-                        adapter.addItem(updatedVideo);
-                    } else if (requestCode == REQUEST_CODE_EDIT_VIDEO) {
-                        videosViewModel.update(updatedVideo);
-                        adapter.updateItem(updatedVideo);
-                    }
-                }
-            }
-        }
-    }
-
 }

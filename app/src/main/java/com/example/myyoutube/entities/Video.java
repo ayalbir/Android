@@ -7,13 +7,17 @@ import androidx.room.TypeConverters;
 
 import com.example.myyoutube.Converters;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-@Entity
+@Entity(tableName = "videos")
 @TypeConverters({Converters.class})
 public class Video {
     @PrimaryKey()
@@ -212,7 +216,18 @@ public class Video {
     }
 
     public String getTimeAgo() {
-        long duration = System.currentTimeMillis() - new Date(createdAt).getTime();
+        SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+        isoFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        Date createdDate;
+        try {
+            createdDate = isoFormat.parse(createdAt);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return "Unknown time";
+        }
+
+        long duration = System.currentTimeMillis() - createdDate.getTime();
         long seconds = TimeUnit.MILLISECONDS.toSeconds(duration);
         long minutes = TimeUnit.MILLISECONDS.toMinutes(duration);
         long hours = TimeUnit.MILLISECONDS.toHours(duration);

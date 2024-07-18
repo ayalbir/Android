@@ -14,13 +14,13 @@ import com.example.myyoutube.entities.Video;
 @Dao
 public interface VideoDao {
 
-    @Query("SELECT * FROM video")
+    @Query("SELECT * FROM videos")
     List<Video> getAllVideos();
 
-    @Query("SELECT * FROM video WHERE _id = :id")
-    LiveData<Video> getVideoById(int id);
+    @Query("SELECT * FROM videos WHERE _id = :id")
+    Video getVideoById(String id);
 
-    @Query("SELECT * FROM video WHERE email = :email")
+    @Query("SELECT * FROM videos WHERE email = :email")
     List<Video> getVideosByUserEmail(String email);
 
     @Insert
@@ -32,6 +32,6 @@ public interface VideoDao {
     @Delete
     void delete(Video... videos);
 
-    @Query("DELETE FROM video WHERE email = :email")
+    @Query("DELETE FROM videos WHERE email = :email")
     void deleteVideosByUserEmail(String email);
 }

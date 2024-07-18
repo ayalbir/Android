@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;
+import com.example.myyoutube.dao.CommentDao;
 import com.example.myyoutube.entities.Comment;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -26,8 +27,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class CommentsAPI {
     Retrofit retrofit;
     CommentsAPIService commentsAPIService;
+    private CommentDao commentDao;
 
-    public CommentsAPI() {
+    public CommentsAPI(CommentDao commentDao) {
+        this.commentDao = commentDao;
         retrofit = new Retrofit.Builder()
                 .baseUrl(Helper.context.getString(R.string.BaseUrl))
                 .addConverterFactory(GsonConverterFactory.create())
@@ -50,7 +53,7 @@ public class CommentsAPI {
                             String profilePicture = jsonComment.get("profilePicture").getAsString();
                             String email = jsonComment.get("email").getAsString();
                             String videoId = jsonComment.get("videoId").getAsString();
-                            Comment comment = new Comment(videoId, text, profilePicture, email);
+                            Comment comment = new Comment(videoId,id, text, profilePicture, email);
                             comments.add(comment);
                         }
                         commentsLiveData.postValue(comments);
@@ -86,6 +89,7 @@ public class CommentsAPI {
                 if (response.isSuccessful()) {
                     JsonObject jsonObject = response.body();
                     if (jsonObject != null && jsonObject.has("insertedId")) {
+                        new Thread(() -> commentDao.insert(comment)).start();
                         messageLiveData.postValue("Comment added successfully");
                     } else {
                         messageLiveData.postValue("Failed to add comment");
@@ -121,6 +125,7 @@ public class CommentsAPI {
                 if (response.isSuccessful()) {
                     JsonObject jsonObject = response.body();
                     if (jsonObject != null && jsonObject.has("modifiedCount")) {
+                        new Thread(() -> commentDao.update(comment)).start();
                         messageLiveData.postValue("Comment updated successfully");
                     } else {
                         messageLiveData.postValue("Failed to update comment");
@@ -146,6 +151,7 @@ public class CommentsAPI {
                 if (response.isSuccessful()) {
                     JsonObject jsonObject = response.body();
                     if (jsonObject != null && jsonObject.has("deletedCount")) {
+                        new Thread(() -> commentDao.deleteById(commentId)).start();
                         messageLiveData.postValue("Comment deleted successfully");
                     } else {
                         messageLiveData.postValue("Failed to delete comment");

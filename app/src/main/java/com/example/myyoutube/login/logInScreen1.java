@@ -23,7 +23,6 @@ public class logInScreen1 extends AppCompatActivity {
     private Button btn_login;
     private Button btn_create;
     private CheckBox showPasswordCheckBox;
-    private TextView errorMsg;
     private UserManager userManager;
 
     @Override
@@ -36,7 +35,6 @@ public class logInScreen1 extends AppCompatActivity {
         btn_login = findViewById(R.id.btn_login);
         btn_create = findViewById(R.id.btn_create);
         showPasswordCheckBox = findViewById(R.id.cb_show_password);
-        errorMsg = findViewById(R.id.tvErrorMsg);
         userManager = UserManager.getInstance();
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,13 +44,10 @@ public class logInScreen1 extends AppCompatActivity {
                 User user = userManager.getUserByEmail(currentEmail);
 
                 if (user != null && (password.getText().toString().trim().equals(user.getPassword()))) {
-                    errorMsg.setText("");
                     Intent intent = new Intent(logInScreen1.this, MainActivity.class);
                     userManager.setConnectedUser(user);
                     userManager.signIn(currentEmail, currentPassword);
                     startActivity(intent);
-                } else {
-                    errorMsg.setText("Could not find your Foo Tube account.");
                 }
             }
         });

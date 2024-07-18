@@ -2,45 +2,56 @@ package com.example.myyoutube.repositories;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.room.Room;
 
-
+import com.example.myyoutube.AppDB;
+import com.example.myyoutube.Helper;
 import com.example.myyoutube.api.CommentsAPI;
+import com.example.myyoutube.dao.CommentDao;
 import com.example.myyoutube.entities.Comment;
 
 import java.util.List;
 
 public class CommentRepository {
-    private CommentsAPI commentAPI;
+    private CommentDao commentDao;
+    private CommentsAPI commentsAPI;
     private MutableLiveData<List<Comment>> commentsLiveData;
-    private MutableLiveData<String> messageLiveData;
+    private AppDB db;
 
     public CommentRepository() {
-        commentAPI = new CommentsAPI();
+        new Thread(() -> {
+            db = Room.databaseBuilder(Helper.context, AppDB.class, "FootubeDB")
+                    .fallbackToDestructiveMigration()
+                    .build();
+            commentDao = db.commentDao();
+        }).start();
+
+        commentsAPI = new CommentsAPI(commentDao);
         commentsLiveData = new MutableLiveData<>();
-        messageLiveData = new MutableLiveData<>();
     }
 
-    public LiveData<List<Comment>> getCommentsLiveData() {
+    public LiveData<List<Comment>> getCommentsByVideoId(String videoId) {
+        loadCommentsFromServer(videoId);
         return commentsLiveData;
     }
 
-    public LiveData<String> getMessageLiveData() {
-        return messageLiveData;
+    private void loadCommentsFromServer(String videoId) {
+        commentsAPI.fetchCommentsByVideoId(videoId, commentsLiveData);
     }
 
-    public void fetchCommentsByVideoId(String videoId) {
-        commentAPI.fetchCommentsByVideoId(videoId, commentsLiveData);
+    public MutableLiveData<List<Comment>> getCommentsLiveData() {
+        return commentsLiveData;
     }
 
     public void addComment(Comment comment) {
-        commentAPI.addComment(comment, messageLiveData);
+        commentsAPI.addComment(comment, new MutableLiveData<>());
     }
 
     public void updateComment(Comment comment) {
-        commentAPI.updateComment(comment, messageLiveData);
+        commentsAPI.updateComment(comment, new MutableLiveData<>());
     }
 
-    public void deleteComment(String commentId) {
-        commentAPI.deleteComment(commentId, messageLiveData);
+    public void deleteComment(Comment comment) {
+        commentsAPI.deleteComment((comment.getVideoId()), new MutableLiveData<>());
     }
 }

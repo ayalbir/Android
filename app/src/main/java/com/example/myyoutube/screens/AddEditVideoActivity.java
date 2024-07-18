@@ -64,10 +64,10 @@ public class AddEditVideoActivity extends AppCompatActivity {
 
         checkAndRequestPermissions();
 
-        int videoId = getIntent().getIntExtra("videoId", -1);
-        if (videoId != -1) {
+        String videoId = getIntent().getStringExtra("videoId");
+        if (videoId != null) {
             isEditMode = true;
-            videosViewModel.getVideoById(videoId).observe(this, video -> {
+            video = videosViewModel.getVideoById(videoId);
                 if (video != null) {
                     this.video = video;
                     etTitle.setText(video.getTitle());
@@ -77,7 +77,6 @@ public class AddEditVideoActivity extends AppCompatActivity {
                     ivThumbnail.setImageURI(imageUri);
                     ivThumbnail.setVisibility(View.VISIBLE);
                 }
-            });
         }
 
         btnSelectImage.setOnClickListener(v -> openImageGallery());
@@ -111,13 +110,17 @@ public class AddEditVideoActivity extends AppCompatActivity {
     private void saveVideo() {
         if(isImageSelected && isVideoSelected){
             if(video == null){
-                video = new Video("", "", "", "", "", new ArrayList<>());
+                video = new Video("","", "", "", "", "", new ArrayList<>());
             }
             video.setTitle(Objects.requireNonNull(etTitle.getText()).toString());
             video.setDescription(Objects.requireNonNull(etDescription.getText()).toString());
             video.setEmail(curretUser.getEmail());
+
+            // Compress the bitmap and encode it
             Bitmap bitmap = ((BitmapDrawable) ivThumbnail.getDrawable()).getBitmap();
-            String encodedImage = encodeImage(bitmap);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            String encodedImage = Base64.encodeToString(out.toByteArray(), Base64.DEFAULT);
             video.setPic(encodedImage);
 
             String encodedVideo = encodeVideo(videoUri);
@@ -181,11 +184,6 @@ public class AddEditVideoActivity extends AppCompatActivity {
         return null;
     }
 
-    private String encodeImage(Bitmap bitmap) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        return Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
-    }
     @Override
     public void onBackPressed() {
         Intent resultIntent = new Intent();

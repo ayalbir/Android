@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.time.LocalDate;
 import java.util.List;
 
 public class Converters {
@@ -85,6 +86,15 @@ public class Converters {
         deleteAllFilesInDirectory(Helper.context.getExternalFilesDir(Environment.DIRECTORY_MOVIES));
     }
 
+    @TypeConverter
+    public static LocalDate fromString(String value) {
+        return value == null ? null : LocalDate.parse(value);
+    }
+
+    @TypeConverter
+    public static String fromDate(LocalDate date) {
+        return date == null ? null : date.toString();
+    }
     private static void deleteAllFilesInDirectory(File directory) {
         if (directory != null && directory.isDirectory()) {
             File[] files = directory.listFiles();

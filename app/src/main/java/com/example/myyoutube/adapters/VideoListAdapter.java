@@ -183,7 +183,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
 
     public void updateItem(Video updatedVideo) {
         for (int i = 0; i < videos.size(); i++) {
-            if (videos.get(i).getId() == updatedVideo.getId()) {
+            if (Objects.equals(videos.get(i).getId(), updatedVideo.getId())) {
                 videos.set(i, updatedVideo);
                 videosFull.set(i, updatedVideo);
                 notifyItemChanged(i);

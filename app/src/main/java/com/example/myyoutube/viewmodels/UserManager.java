@@ -60,11 +60,11 @@ public class UserManager {
 
     public void deleteUser(String email) {
         userRepository.deleteUser(email, TokenService.getInstance().getToken());
-//        videosViewModel.removeVideosByUser(id);
+        videosViewModel.removeVideosByUser(email);
     }
 
     public void getAllUsers() {
-        userRepository.getAllUsers(TokenService.getInstance().getToken());
+        userRepository.getAllUsers();
     }
 
     public static LocalDate getTempDate() {

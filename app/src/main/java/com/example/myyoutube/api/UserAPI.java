@@ -8,9 +8,8 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;
 import com.example.myyoutube.TokenService;
+import com.example.myyoutube.dao.UserDao;
 import com.example.myyoutube.entities.User;
-import com.example.myyoutube.repositories.UserRepository;
-import com.example.myyoutube.repositories.VideoRepository;
 import com.example.myyoutube.viewmodels.UserManager;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -19,11 +18,7 @@ import com.google.gson.JsonParser;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
@@ -37,8 +32,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class UserAPI {
     Retrofit retrofit;
     UserAPIService userServiceAPI;
+    UserDao userDao;
 
-    public UserAPI() {
+    public UserAPI(UserDao userDao) {
+        this.userDao = userDao;
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(chain -> {
@@ -58,17 +55,8 @@ public class UserAPI {
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(httpClient.build()).build();
 
-
         userServiceAPI = retrofit.create(UserAPIService.class);
     }
-
-    /*public UserAPI() {
-        retrofit = new Retrofit.Builder()
-                .baseUrl(Helper.context.getString(R.string.BaseUrl))
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        userServiceAPI = retrofit.create(UserAPIService.class);
-    }*/
 
     public void signIn(String email, String password) {
         JSONObject requestBodyJson = new JSONObject();
@@ -123,6 +111,10 @@ public class UserAPI {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
+                    user.setId(response.body().get("_id").getAsString());
+                    new Thread(() ->{
+                        userDao.insert(user);
+                    } ).start();
                     messageLiveData.postValue("User created successfully");
                 } else {
                     messageLiveData.postValue("Failed to create user");
@@ -133,40 +125,6 @@ public class UserAPI {
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 Log.e("UserAPI", t.getLocalizedMessage());
                 messageLiveData.postValue("Network error");
-            }
-        });
-    }
-    public void getUserByEmail(String email, MutableLiveData<User> userLiveData) {
-        Call<JsonObject> call = userServiceAPI.getUserByEmail(email);
-        call.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                if (response.isSuccessful()) {
-                    JsonObject jsonObject = response.body();
-                    if (jsonObject != null) {
-                        String email = jsonObject.get("email").getAsString();
-                        String password = jsonObject.get("password").getAsString();
-                        String firstName = jsonObject.get("firstName").getAsString();
-                        String familyName = jsonObject.get("familyName").getAsString();
-                        String birthdate = jsonObject.get("birthdate").getAsString();
-                        String gender = jsonObject.get("gender").getAsString();
-                        String profileImageBase64 = jsonObject.get("profileImage").getAsString();
-                        String profileImage = profileImageBase64.substring(profileImageBase64.indexOf(',') + 1);
-
-                        User user = new User(email, password, firstName, familyName, UserManager.getTempDate(), gender, profileImage);
-                        userLiveData.postValue(user);
-                    } else {
-                        Toast.makeText(Helper.context, "Failed to fetch user data", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(Helper.context, "Failed to fetch user data", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                Log.e("UserAPI", t.getLocalizedMessage());
-                // Toast.makeText(Helper.context, "Network error", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -191,6 +149,9 @@ public class UserAPI {
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
                     messageLiveData.postValue("User updated successfully");
+
+                    // Update the user in the local database
+                    new Thread(() -> userDao.update(user)).start();
                 } else {
                     messageLiveData.postValue("Failed to update user");
                 }
@@ -211,6 +172,12 @@ public class UserAPI {
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
                     messageLiveData.postValue("User deleted successfully");
+
+                    // Delete the user from the local database
+                    User user = userDao.getUserByEmail(email);
+                    if (user != null) {
+                        new Thread(() -> userDao.delete(user)).start();
+                    }
                 } else {
                     messageLiveData.postValue("Failed to delete user");
                 }
@@ -224,23 +191,4 @@ public class UserAPI {
         });
     }
 
-    public void getAllUsers(String token, MutableLiveData<List<User>> usersLiveData) {
-        Call<ArrayList<User>> call = userServiceAPI.getAllUsers();
-        call.enqueue(new Callback<ArrayList<User>>() {
-            @Override
-            public void onResponse(Call<ArrayList<User>> call, Response<ArrayList<User>> response) {
-                if (response.isSuccessful()) {
-                    usersLiveData.postValue(response.body());
-                } else {
-                    Toast.makeText(Helper.context, "Failed to fetch users", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ArrayList<User>> call, Throwable t) {
-                Log.e("UserAPI", t.getLocalizedMessage());
-                Toast.makeText(Helper.context, "Network error", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
 }

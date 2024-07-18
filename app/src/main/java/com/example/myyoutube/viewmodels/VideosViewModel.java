@@ -1,7 +1,9 @@
 package com.example.myyoutube.viewmodels;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.example.myyoutube.TokenService;
@@ -14,13 +16,18 @@ import java.util.List;
 
 public class VideosViewModel extends ViewModel {
     private static VideosViewModel instance;
-    private MutableLiveData<List<Video>> videosLiveData;
+    private LiveData<List<Video>> videosLiveData;
     private final VideoRepository videoRepository;
 
     public VideosViewModel() {
         videoRepository = new VideoRepository();
-        videosLiveData = new MutableLiveData<>(new ArrayList<>());
-        loadVideos();
+        videosLiveData = new LiveData<List<Video>>() {
+            @Override
+            public void observeForever(@NonNull Observer<? super List<Video>> observer) {
+                super.observeForever(observer);
+                get();
+            }
+        };
     }
 
     public static VideosViewModel getInstance() {
@@ -31,30 +38,25 @@ public class VideosViewModel extends ViewModel {
     }
 
     public LiveData<List<Video>> get() {
-        return videoRepository.getAllVideos();
+        videosLiveData = videoRepository.getAllVideos();
+        return videosLiveData;
     }
 
     String token = TokenService.getInstance().getToken();
     public void add(Video video) {
         videoRepository.addVideo(video ,token);
-        loadVideos();
     }
 
     public void update(Video video) {
         videoRepository.updateVideo(video, token);
-        loadVideos();
     }
 
     public void delete(Video video) {
         videoRepository.deleteVideo(video, token);
-        loadVideos();
     }
 
-    public void loadVideos() {
-        videoRepository.reloadVideos();
-    }
 
-    public LiveData<Video> getVideoById(int id) {
+    public Video getVideoById(String id) {
         return videoRepository.getVideoById(id);
     }
 

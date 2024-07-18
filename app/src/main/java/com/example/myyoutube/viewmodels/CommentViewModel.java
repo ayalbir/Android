@@ -17,7 +17,6 @@ public class CommentViewModel extends ViewModel {
     public CommentViewModel() {
         commentRepository = new CommentRepository();
         commentsLiveData = (MutableLiveData<List<Comment>>) commentRepository.getCommentsLiveData();
-        messageLiveData = (MutableLiveData<String>) commentRepository.getMessageLiveData();
     }
 
     public LiveData<List<Comment>> getCommentsLiveData() {
@@ -28,8 +27,8 @@ public class CommentViewModel extends ViewModel {
         return messageLiveData;
     }
 
-    public void fetchCommentsByVideoId(String videoId) {
-        commentRepository.fetchCommentsByVideoId(videoId);
+    public void getCommentsByVideoId(String videoId) {
+        commentRepository.getCommentsByVideoId(videoId);
     }
 
     public void addComment(Comment comment) {
@@ -41,6 +40,6 @@ public class CommentViewModel extends ViewModel {
     }
 
     public void deleteComment(Comment comment) {
-        commentRepository.deleteComment((comment.getVideoId()));
+        commentRepository.deleteComment(comment);
     }
 }
