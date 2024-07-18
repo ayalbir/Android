@@ -26,6 +26,7 @@ import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -46,7 +47,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -54,7 +54,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
     private Video video;
     private CommentsAdapter commentsAdapter;
-    private List<Comment> commentsList;
     private VideoListAdapter videoListAdapter;
     private List<Video> otherVideos;
     private ImageButton likeButton, dislikeButton;
@@ -63,8 +62,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
     private VideosViewModel videosViewModel;
     private UserManager userManager = UserManager.getInstance();
     private CommentViewModel commentViewModel;
-
-
+    private List<Comment> commentsList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +84,15 @@ public class VideoPlayerActivity extends AppCompatActivity {
             profilePictureItem.setIcon(R.drawable.nav_logout);
             profilePictureItem.setTitle("Logout");
         }
+
         String videoId = getIntent().getStringExtra("videoId");
+        if (videoId == null) {
+            finish();
+            return;
+        }
+
+        commentViewModel.init(videoId);
+
         this.video = videosViewModel.getVideoById(videoId);
         if (video == null) {
             finish();
@@ -186,7 +192,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
         });
 
         ListView commentsListView = findViewById(R.id.commentsListView);
-        commentsAdapter = new CommentsAdapter(this, video.getComments());
+        commentsAdapter = new CommentsAdapter(this, commentsList);
         commentsListView.setAdapter(commentsAdapter);
 
         findViewById(R.id.btnAddComment).setOnClickListener(view -> {
@@ -195,10 +201,8 @@ public class VideoPlayerActivity extends AppCompatActivity {
                 String newComment = commentInput.getText().toString();
                 if (!newComment.isEmpty()) {
                     String profileImageBase64 = currentUser.getProfileImage();
-                    String id = String.valueOf(videoId);
-                    Comment comment = new Comment(id,"", newComment, profileImageBase64, currentUser.getEmail());
+                    Comment comment = new Comment(videoId, "", newComment, profileImageBase64, currentUser.getEmail());
                     commentViewModel.addComment(comment);
-                    commentsAdapter.notifyDataSetChanged();
                     commentInput.setText("");
                 }
             } else {
@@ -236,16 +240,26 @@ public class VideoPlayerActivity extends AppCompatActivity {
         });
 
         bottomNavigationView.getMenu().setGroupCheckable(0, false, true);
+
+        // Observe comments and update UI
+        commentViewModel.getCommentsForVideo().observe(this, new Observer<List<Comment>>() {
+            @Override
+            public void onChanged(List<Comment> comments) {
+                commentsList.clear();
+                commentsList.addAll(comments);
+                commentsAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     private void fetchRecommendedVideos() {
-            if (video != null) {
-                otherVideos = new ArrayList<>(videosViewModel.get().getValue());
-                otherVideos.remove(video);
-                videoListAdapter = new VideoListAdapter(this, videosViewModel);
-                videoListAdapter.setVideos(otherVideos);
-                rvOtherVideos.setAdapter(videoListAdapter);
-            }
+        if (video != null) {
+            otherVideos = new ArrayList<>(videosViewModel.get().getValue());
+            otherVideos.remove(video);
+            videoListAdapter = new VideoListAdapter(this, videosViewModel);
+            videoListAdapter.setVideos(otherVideos);
+            rvOtherVideos.setAdapter(videoListAdapter);
+        }
     }
 
     private Bitmap decodeImage(String encodedImage) {
@@ -255,6 +269,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
         }
         return null;
     }
+
     @Override
     public void onBackPressed() {
         Intent resultIntent = new Intent();
@@ -295,7 +310,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
         fos.close();
         return Uri.fromFile(tempFile);
     }
-
 
     private class CommentsAdapter extends ArrayAdapter<Comment> {
 
@@ -356,7 +370,8 @@ public class VideoPlayerActivity extends AppCompatActivity {
                             showEditCommentDialog(position);
                         } else if (which == 1) {
                             Comment comment = comments.get(position);
-                            commentViewModel.deleteComment(comment);                        }
+                            commentViewModel.deleteComment(comment);
+                        }
                     })
                     .show();
         }
