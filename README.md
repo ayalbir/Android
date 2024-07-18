@@ -1,4 +1,4 @@
-#Footube
+# Footube
 Footube is a YouTube-like application developed within a client-server environment. The client-side is implemented in Android Studio using Java, while the server-side is built with Node.js. This README provides an overview of the project and detailed instructions on how to set it up and run it.
 
 Running the Client-side (Android App)
