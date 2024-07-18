@@ -10,14 +10,10 @@ import com.example.myyoutube.viewmodels.UserManager;
 
 import java.time.LocalDate;
 
-@Entity(tableName = "comments")
-@TypeConverters({Converters.class})
+
 public class Comment {
 
     private String videoId;
-
-    @PrimaryKey
-    @NonNull
     private String _id;
     private String text;
     private String profilePicture;

@@ -55,7 +55,6 @@ public class VideosViewModel extends ViewModel {
         videoRepository.deleteVideo(video, token);
     }
 
-
     public Video getVideoById(String id) {
         return videoRepository.getVideoById(id);
     }
@@ -74,18 +73,8 @@ public class VideosViewModel extends ViewModel {
         }
     }
 
-    public LiveData<List<Video>> getVideosByUserEmail(String email) {
-        MutableLiveData<List<Video>> userVideosLiveData = new MutableLiveData<>();
-        List<Video> userVideos = new ArrayList<>();
-
-        for (Video video : videosLiveData.getValue()) {
-            if (video.getEmail().equals(email)) {
-                userVideos.add(video);
-            }
-        }
-
-        userVideosLiveData.postValue(userVideos);
-        return userVideosLiveData;
+    public List<Video> getVideosByUserEmail(String email) {
+        return videoRepository.getVideoDao().getVideosByUserEmail(email);
     }
 
     public void removeVideosByUser(String email) {

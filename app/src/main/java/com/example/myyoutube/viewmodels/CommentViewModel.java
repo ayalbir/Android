@@ -1,45 +1,44 @@
 package com.example.myyoutube.viewmodels;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
+import com.example.myyoutube.Helper;
+import com.example.myyoutube.TokenService;
 import com.example.myyoutube.entities.Comment;
+import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.repositories.CommentRepository;
 
 import java.util.List;
 
 public class CommentViewModel extends ViewModel {
     private CommentRepository commentRepository;
-    private MutableLiveData<List<Comment>> commentsLiveData;
-    private MutableLiveData<String> messageLiveData;
+    private LiveData<List<Comment>> commentsLiveData;
 
-    public CommentViewModel() {
-        commentRepository = new CommentRepository();
-        commentsLiveData = (MutableLiveData<List<Comment>>) commentRepository.getCommentsLiveData();
+    public CommentViewModel(String videoId) {
+        commentRepository = new CommentRepository(videoId);
+        commentsLiveData = commentRepository.get();
     }
 
-    public LiveData<List<Comment>> getCommentsLiveData() {
+    String token = TokenService.getInstance().getToken();
+    public void getCommentsForVideo() {
+        commentRepository.getCommentsForVideo();
+    }
+    public LiveData<List<Comment>> get(){
         return commentsLiveData;
     }
-
-    public LiveData<String> getMessageLiveData() {
-        return messageLiveData;
-    }
-
-    public void getCommentsByVideoId(String videoId) {
-        commentRepository.getCommentsByVideoId(videoId);
-    }
-
     public void addComment(Comment comment) {
-        commentRepository.addComment(comment);
+        commentRepository.addComment(comment, token);
     }
 
     public void updateComment(Comment comment) {
-        commentRepository.updateComment(comment);
+        commentRepository.updateComment(comment, token);
     }
 
     public void deleteComment(Comment comment) {
-        commentRepository.deleteComment(comment);
+        commentRepository.deleteComment(comment, token);
     }
 }

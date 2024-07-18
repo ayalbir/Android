@@ -78,9 +78,8 @@ public class UserVideosActivity extends AppCompatActivity {
     }
 
     private void getUserVideos(String email) {
-        videosViewModel.getVideosByUserEmail(email).observe(this, userVideos -> {
-            setupRecyclerView(userVideos);
-        });
+        List<Video> userVideos = videosViewModel.getVideosByUserEmail(email);
+        setupRecyclerView(userVideos);
     }
 
     private void setupRecyclerView(List<Video> userVideos) {

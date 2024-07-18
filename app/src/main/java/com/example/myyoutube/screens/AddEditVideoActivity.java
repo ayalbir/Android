@@ -127,8 +127,10 @@ public class AddEditVideoActivity extends AppCompatActivity {
             video.setUrl(encodedVideo != null ? encodedVideo : "");
 
             if (isEditMode) {
+                Toast.makeText(this, "Saving... It may take a couple of seconds", Toast.LENGTH_LONG).show();
                 videosViewModel.update(video);
             } else {
+                Toast.makeText(this, "Saving... It may take a couple of seconds", Toast.LENGTH_LONG).show();
                 videosViewModel.add(video);
             }
 

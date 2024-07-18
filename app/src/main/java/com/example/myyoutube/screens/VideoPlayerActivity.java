@@ -87,16 +87,11 @@ public class VideoPlayerActivity extends AppCompatActivity {
             profilePictureItem.setTitle("Logout");
         }
         String videoId = getIntent().getStringExtra("videoId");
-        video = videosViewModel.getVideoById(videoId);
+        this.video = videosViewModel.getVideoById(videoId);
         if (video == null) {
             finish();
             return;
         }
-        commentViewModel.getCommentsByVideoId(String.valueOf(videoId));
-        commentViewModel.getCommentsLiveData().observe(this, comments -> {
-            commentsList = comments;
-            commentsAdapter.notifyDataSetChanged();
-        });
 
         Uri videoUri;
         VideoView videoView = findViewById(R.id.videoView);
@@ -113,11 +108,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
             }
         }
         videoView.setVideoURI(videoUri);
-        // commentsList = video.getComments();
-
-        if (commentsList == null) {
-            commentsList = new ArrayList<>();
-        }
 
         MediaController mediaController = new MediaController(this);
         videoView.setMediaController(mediaController);
@@ -216,7 +206,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
             }
         });
 
-
         rvOtherVideos = findViewById(R.id.rvOtherVideos);
         rvOtherVideos.setLayoutManager(new LinearLayoutManager(this));
 
@@ -250,16 +239,13 @@ public class VideoPlayerActivity extends AppCompatActivity {
     }
 
     private void fetchRecommendedVideos() {
-        String currentVideoId = getIntent().getStringExtra("videoId");
-        video = videosViewModel.getVideoById(currentVideoId);
-
-        if (video != null) {
-            otherVideos = new ArrayList<>((Collection) videosViewModel.get());
-            otherVideos.remove(video);
-            videoListAdapter = new VideoListAdapter(this, videosViewModel);
-            videoListAdapter.setVideos(otherVideos);
-            rvOtherVideos.setAdapter(videoListAdapter);
-        }
+            if (video != null) {
+                otherVideos = new ArrayList<>(videosViewModel.get().getValue());
+                otherVideos.remove(video);
+                videoListAdapter = new VideoListAdapter(this, videosViewModel);
+                videoListAdapter.setVideos(otherVideos);
+                rvOtherVideos.setAdapter(videoListAdapter);
+            }
     }
 
     private Bitmap decodeImage(String encodedImage) {
