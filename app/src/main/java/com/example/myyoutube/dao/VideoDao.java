@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -23,7 +24,7 @@ public interface VideoDao {
     @Query("SELECT * FROM videos WHERE email = :email")
     List<Video> getVideosByUserEmail(String email);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Video... videos);
 
     @Update
@@ -34,4 +35,8 @@ public interface VideoDao {
 
     @Query("DELETE FROM videos WHERE email = :email")
     void deleteVideosByUserEmail(String email);
+
+    @Query("DELETE FROM videos")
+    void clear();
+
 }

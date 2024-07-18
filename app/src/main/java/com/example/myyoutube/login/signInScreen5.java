@@ -67,7 +67,7 @@ public class signInScreen5 extends AppCompatActivity {
 
         btnLogin.setOnClickListener(v -> {
             if (isImageSelected) {
-                Toast.makeText(signInScreen5.this, "Logging in...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(signInScreen5.this, "Signing in...It may take a couple of seconds", Toast.LENGTH_LONG).show();
 
                 String email = getIntent().getStringExtra("email");
                 String name = getIntent().getStringExtra("name");

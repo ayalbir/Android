@@ -30,6 +30,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.myyoutube.AppDB;
 import com.example.myyoutube.R;
@@ -71,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private VideoDao videoDao;
     private VideosViewModel videosViewModel;
     private UserManager userManager = UserManager.getInstance();
+    private SwipeRefreshLayout swipeRefreshLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,7 +140,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             adapter.setVideos(videos);
         }
 
-
         videosViewModel.get().observe(this, new Observer<List<Video>>() {
             @Override
             public void onChanged(List<Video> videos) {
@@ -154,8 +156,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .allowMainThreadQueries()
                 .build();
         videoDao = db.videoDao();
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(this::refreshVideos);
     }
 
+    private void refreshVideos() {
+        videosViewModel.get();
+        videosViewModel.get().observe(this, videos -> {
+            adapter.setVideos(videos);
+            adapter.notifyDataSetChanged();
+            swipeRefreshLayout.setRefreshing(false);
+        });
+    }
     private void setupToolbarAndDrawer() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

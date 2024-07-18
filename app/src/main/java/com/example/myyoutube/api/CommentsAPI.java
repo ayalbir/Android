@@ -7,8 +7,9 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;
-import com.example.myyoutube.dao.CommentDao;
+import com.example.myyoutube.TokenService;
 import com.example.myyoutube.entities.Comment;
+import com.example.myyoutube.repositories.CommentRepository;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -18,6 +19,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -27,19 +30,35 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class CommentsAPI {
     Retrofit retrofit;
     CommentsAPIService commentsAPIService;
-    private CommentDao commentDao;
+    private CommentRepository.CommentListData commentListData;
 
-    public CommentsAPI(CommentDao commentDao) {
-        this.commentDao = commentDao;
+    public CommentsAPI(CommentRepository.CommentListData commentListData) {
+
+        this.commentListData = commentListData;
+
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        httpClient.addInterceptor(chain -> {
+            Request original = chain.request();
+
+            // Add the JWT token to the request headers
+            Request request = original.newBuilder()
+                    .header("Authorization", "Bearer " + TokenService.getInstance().getToken())
+                    .method(original.method(), original.body())
+                    .build();
+
+            return chain.proceed(request);
+        });
+
         retrofit = new Retrofit.Builder()
                 .baseUrl(Helper.context.getString(R.string.BaseUrl))
                 .addConverterFactory(GsonConverterFactory.create())
-                .build();
+                .client(httpClient.build()).build();
+
         commentsAPIService = retrofit.create(CommentsAPIService.class);
     }
 
-    public void fetchCommentsByVideoId(String videoId, MutableLiveData<List<Comment>> commentsLiveData) {
-        Call<ArrayList<JsonObject>> call = commentsAPIService.getCommentsByVideoId(Integer.parseInt(videoId));
+    public void getCommentsForVideo(String videoId) {
+        Call<ArrayList<JsonObject>> call = commentsAPIService.getCommentsByVideoId(videoId);
         call.enqueue(new Callback<ArrayList<JsonObject>>() {
             @Override
             public void onResponse(Call<ArrayList<JsonObject>> call, Response<ArrayList<JsonObject>> response) {
@@ -53,10 +72,11 @@ public class CommentsAPI {
                             String profilePicture = jsonComment.get("profilePicture").getAsString();
                             String email = jsonComment.get("email").getAsString();
                             String videoId = jsonComment.get("videoId").getAsString();
-                            Comment comment = new Comment(videoId,id, text, profilePicture, email);
+                            Comment comment = new Comment(videoId,"", text, profilePicture, email);
+                            comment.set_id(id);
                             comments.add(comment);
                         }
-                        commentsLiveData.postValue(comments);
+                        commentListData.postValue(comments);
                     }
                 } else {
                     Toast.makeText(Helper.context, "Failed to fetch comments", Toast.LENGTH_SHORT).show();
@@ -70,8 +90,40 @@ public class CommentsAPI {
             }
         });
     }
+    public void addComment(Comment comment, String token) {
+        JSONObject requestBodyJson = new JSONObject();
+        try {
+            requestBodyJson.put("text", comment.getText());
+            requestBodyJson.put("profilePicture", comment.getProfilePicture());
+            requestBodyJson.put("email", comment.getEmail());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-    public void addComment(Comment comment, MutableLiveData<String> messageLiveData) {
+        Call<JsonObject> call = commentsAPIService.addComment(comment.getVideoId(), (JsonObject) JsonParser.parseString(requestBodyJson.toString()), "Bearer " + token);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    new Thread(() -> {
+                        JsonObject json = response.body();
+                        if (json != null) {
+                            comment.set_id(json.get("_id").getAsString());
+                            commentListData.addComment(comment);
+                        }
+                    }).start();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.e("CommentsAPI", t.getLocalizedMessage());
+            }
+        });
+    }
+
+
+    public void updateComment(Comment comment, String token) {
         JSONObject requestBodyJson = new JSONObject();
         try {
             requestBodyJson.put("text", comment.getText());
@@ -82,90 +134,41 @@ public class CommentsAPI {
             e.printStackTrace();
         }
 
-        Call<JsonObject> call = commentsAPIService.addComment((JsonObject) JsonParser.parseString(requestBodyJson.toString()));
+        Object jsonParser = JsonParser.parseString(requestBodyJson.toString());
+        Call<JsonObject> call = commentsAPIService.updateComment(comment.getVideoId(), (JsonObject) jsonParser, "Bearer " + token);
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
-                    JsonObject jsonObject = response.body();
-                    if (jsonObject != null && jsonObject.has("insertedId")) {
-                        new Thread(() -> commentDao.insert(comment)).start();
-                        messageLiveData.postValue("Comment added successfully");
-                    } else {
-                        messageLiveData.postValue("Failed to add comment");
-                    }
-                } else {
-                    messageLiveData.postValue("Failed to add comment");
+                    new Thread(() -> {
+                        commentListData.updateComment(comment);
+                    }).start();
                 }
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 Log.e("CommentsAPI", t.getLocalizedMessage());
-                messageLiveData.postValue("Network error");
             }
         });
     }
 
-    public void updateComment(Comment comment, MutableLiveData<String> messageLiveData) {
-        JSONObject requestBodyJson = new JSONObject();
-        try {
-            requestBodyJson.put("text", comment.getText());
-            requestBodyJson.put("profilePicture", comment.getProfilePicture());
-            requestBodyJson.put("email", comment.getEmail());
-            requestBodyJson.put("videoId", comment.getVideoId());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        Call<JsonObject> call = commentsAPIService.updateComment(comment.getVideoId(), (JsonObject) JsonParser.parseString(requestBodyJson.toString()));
+    public void deleteComment(Comment comment, String token) {
+        Call<JsonObject> call = commentsAPIService.deleteComment(comment.getVideoId(),comment.get_id(), "Bearer " + token);
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
-                    JsonObject jsonObject = response.body();
-                    if (jsonObject != null && jsonObject.has("modifiedCount")) {
-                        new Thread(() -> commentDao.update(comment)).start();
-                        messageLiveData.postValue("Comment updated successfully");
-                    } else {
-                        messageLiveData.postValue("Failed to update comment");
-                    }
-                } else {
-                    messageLiveData.postValue("Failed to update comment");
+                    new Thread(() -> {
+                        commentListData.removeComment(comment.get_id());
+                    }).start();
                 }
             }
-
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 Log.e("CommentsAPI", t.getLocalizedMessage());
-                messageLiveData.postValue("Network error");
-            }
-        });
-    }
-
-    public void deleteComment(String commentId, MutableLiveData<String> messageLiveData) {
-        Call<JsonObject> call = commentsAPIService.deleteComment(commentId);
-        call.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                if (response.isSuccessful()) {
-                    JsonObject jsonObject = response.body();
-                    if (jsonObject != null && jsonObject.has("deletedCount")) {
-                        new Thread(() -> commentDao.deleteById(commentId)).start();
-                        messageLiveData.postValue("Comment deleted successfully");
-                    } else {
-                        messageLiveData.postValue("Failed to delete comment");
-                    }
-                } else {
-                    messageLiveData.postValue("Failed to delete comment");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                Log.e("CommentsAPI", t.getLocalizedMessage());
-                messageLiveData.postValue("Network error");
             }
         });
     }
 }
+

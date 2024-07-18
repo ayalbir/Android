@@ -70,10 +70,7 @@ public class VideoAPI {
                     List<Video> videos = response.body();
                     if (videos != null) {
                         new Thread(() -> {
-                            for (Video video : videoDao.getAllVideos()) {
-                                Converters.deleteFileFromStorage(video.getPic());
-                                videoDao.delete(video);
-                            }
+                           videoDao.clear();
                             for (Video video : videos) {
                                 videoDao.insert(video);
                             }

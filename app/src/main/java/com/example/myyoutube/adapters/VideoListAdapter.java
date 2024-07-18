@@ -82,7 +82,8 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             Video video = videos.get(position);
             holder.tvTitle.setText(video.getTitle());
             holder.tvViews.setText(String.valueOf(video.getViews()));
-            holder.tvChannel.setText(Objects.requireNonNull(userManager.getUserByEmail(video.getEmail())).getFirstName());
+            User user = userManager.getUserByEmail(video.getEmail());
+            holder.tvChannel.setText(Objects.requireNonNull(user.getFirstName()));
             holder.tvTimeAgo.setText(video.getTimeAgo());
 
             // Check if the pic is in the drawable resources
@@ -96,7 +97,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 holder.thumbnail.setImageBitmap(decodedByte);
             }
-            String profileImageBase64 = userManager.getUserByEmail(video.getEmail()).getProfileImage();
+            String profileImageBase64 = user.getProfileImage();
             if (profileImageBase64 != null) {
                 byte[] decodedString = Base64.decode(profileImageBase64, Base64.DEFAULT);
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);

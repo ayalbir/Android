@@ -22,16 +22,20 @@ public class VideoRepository {
     public VideoRepository() {
         db = Room.databaseBuilder(Helper.context, AppDB.class, "FootubeDB")
                 .fallbackToDestructiveMigration()
+                .allowMainThreadQueries()
                 .build();
         videoDao = db.videoDao();
         videoListData = new VideoListData();
         videoAPI = new VideoAPI(videoListData, videoDao);
-        //reloadVideos();
     }
 
     public LiveData<List<Video>> getAllVideos() {
         videoAPI.getVideos();
         return videoListData;
+    }
+
+    public VideoDao getVideoDao() {
+        return videoDao;
     }
 
     public void addVideo(final Video video, String token) {
@@ -49,10 +53,6 @@ public class VideoRepository {
     public Video getVideoById(String id) {
         return videoDao.getVideoById(id);
     }
-
-//    public void reloadVideos() {
-//        videoAPI.getVideos(videoListData);
-//    }
 
     public class VideoListData extends MutableLiveData<List<Video>> {
         public VideoListData() {

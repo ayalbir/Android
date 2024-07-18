@@ -24,12 +24,11 @@ public class signInScreen1 extends AppCompatActivity {
         this.errorMsg = findViewById(R.id.tvErrorMsg);
         Button button = findViewById(R.id.btn_nxt);
 
-
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String name = firstName.getText().toString();
-                String familyName = firstName.getText().toString();
+                String familyName = lastName.getText().toString();
 
                 boolean isName = name.length()>0 && name.length()<51;
                 if(isName){
