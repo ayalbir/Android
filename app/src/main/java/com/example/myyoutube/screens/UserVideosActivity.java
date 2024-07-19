@@ -43,7 +43,6 @@ public class UserVideosActivity extends AppCompatActivity {
         videosViewModel = new ViewModelProvider(this).get(VideosViewModel.class);
         userManager = UserManager.getInstance();
 
-
         // Return to main activity on button click
         findViewById(R.id.btnBackFromChannel).setOnClickListener(view -> {
             Intent intent = new Intent(UserVideosActivity.this, MainActivity.class);

@@ -59,6 +59,7 @@
                     android:textSize="16sp"
                     tools:text="channel@example.com" />
             </LinearLayout>
+
         </LinearLayout>
 
 
