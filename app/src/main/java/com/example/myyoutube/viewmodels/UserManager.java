@@ -14,7 +14,7 @@ import java.util.Date;
 public class UserManager {
     private static UserManager instance;
     private final UserRepository userRepository;
-    private User connectedUser;
+    public static User connectedUser;
     private VideosViewModel videosViewModel;
     public static LocalDate tempDate;
 
@@ -30,16 +30,16 @@ public class UserManager {
         return instance;
     }
 
-    public User getConnectedUser() {
+    public static User getConnectedUser() {
         return connectedUser;
     }
 
-    public void setConnectedUser(User user) {
-        this.connectedUser = user;
+    public static void setConnectedUser(User user) {
+        connectedUser = user;
     }
 
     public void clearConnectedUser() {
-        this.connectedUser = null;
+        connectedUser = null;
     }
 
     public void signIn(String email, String password) {

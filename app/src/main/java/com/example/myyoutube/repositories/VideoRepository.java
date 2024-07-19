@@ -102,4 +102,14 @@ public class VideoRepository {
             postValue(tempVideos);
         }
     }
+
+    public void likeVideo(String email, String videoId, String token){
+        videoAPI.likeVideo(email, videoId, token);
+    }
+    public void disLikeVideo(String email, String videoId, String token){
+        videoAPI.dislikeVideo(email, videoId, token);
+    }
+    public void updateViews(String videoId){
+        videoAPI.updateVideoViews(videoId);
+    }
 }

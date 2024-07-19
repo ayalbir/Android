@@ -79,8 +79,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
         currentUser = MainActivity.getCurrentUser();
         if (currentUser != null) {
-            Bitmap bitmap = decodeImage(currentUser.getProfileImage());
-            NavigationView navigationView = findViewById(R.id.nav_view);
             profilePictureItem.setIcon(R.drawable.nav_logout);
             profilePictureItem.setTitle("Logout");
         }
@@ -153,6 +151,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
         likeButton.setOnClickListener(v -> {
             if (currentUser != null) {
+                videosViewModel.likeVideo(video);
                 if (video.getLikedBy().contains(currentUser.getEmail())) {
                     video.decrementLikes();
                     video.getLikedBy().remove(currentUser.getEmail());
@@ -173,6 +172,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
         dislikeButton.setOnClickListener(v -> {
             if (currentUser != null) {
+                videosViewModel.disLikeVideo(video);
                 if (video.getDislikedBy().contains(currentUser.getEmail())) {
                     video.decrementDislikes();
                     video.getDislikedBy().remove(currentUser.getEmail());

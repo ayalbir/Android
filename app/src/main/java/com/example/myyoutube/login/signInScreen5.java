@@ -78,7 +78,10 @@ public class signInScreen5 extends AppCompatActivity {
                 Bitmap bitmap = ((BitmapDrawable) selectedImageView.getDrawable()).getBitmap();
                 String encodedImage = encodeImage(bitmap);
                 assert email != null;
-                userManager.createUser(new User(email, password, name, lastName, UserManager.getTempDate(),gender, encodedImage));
+                User user = new User(email, password, name, lastName, UserManager.getTempDate(),gender, encodedImage);
+                UserManager.setConnectedUser(user);
+                userManager.createUser(user);
+
                 Intent intent = new Intent(signInScreen5.this, logInScreen1.class);
                 intent.putExtra("email", email);
                 startActivity(intent);

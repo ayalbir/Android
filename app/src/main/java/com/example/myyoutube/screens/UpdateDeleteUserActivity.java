@@ -92,7 +92,7 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
     private void signOut() {
         userManager.clearConnectedUser();
         Toast.makeText(this, "Signing out", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, logInScreen1.class);
         startActivity(intent);
     }
 }

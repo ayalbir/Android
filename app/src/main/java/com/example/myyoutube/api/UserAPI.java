@@ -10,6 +10,7 @@ import com.example.myyoutube.R;
 import com.example.myyoutube.TokenService;
 import com.example.myyoutube.dao.UserDao;
 import com.example.myyoutube.entities.User;
+import com.example.myyoutube.screens.MainActivity;
 import com.example.myyoutube.viewmodels.UserManager;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -111,9 +112,9 @@ public class UserAPI {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
-                    user.setId(response.body().get("_id").getAsString());
                     new Thread(() ->{
-                        userDao.insert(user);
+                        UserManager.getConnectedUser().setId(response.body().get("_id").getAsString());
+                        userDao.insert(UserManager.getConnectedUser());
                     } ).start();
                     messageLiveData.postValue("User created successfully");
                 } else {

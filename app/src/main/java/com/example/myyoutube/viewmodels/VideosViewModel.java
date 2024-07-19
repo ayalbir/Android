@@ -91,4 +91,14 @@ public class VideosViewModel extends ViewModel {
         }
     }
 
+    public void likeVideo(Video video){
+        videoRepository.likeVideo(video.getEmail(), video.getId(), token);
+    }
+    public void disLikeVideo(Video video){
+        videoRepository.disLikeVideo(video.getEmail(), video.getId(), token);
+    }
+    public void updateViews(Video video){
+        videoRepository.updateViews(video.getId());
+    }
+
 }

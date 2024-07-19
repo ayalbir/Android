@@ -45,7 +45,7 @@ public class logInScreen1 extends AppCompatActivity {
 
                 if (user != null && (password.getText().toString().trim().equals(user.getPassword()))) {
                     Intent intent = new Intent(logInScreen1.this, MainActivity.class);
-                    userManager.setConnectedUser(user);
+                    UserManager.setConnectedUser(user);
                     userManager.signIn(currentEmail, currentPassword);
                     startActivity(intent);
                 }

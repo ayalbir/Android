@@ -182,9 +182,8 @@ public class VideoAPI {
         });
     }
 
-
     public void likeVideo(String email, String videoId, String token) {
-        Call<JsonObject> call = webServiceAPI.likeVideo(email, videoId, "Bearer " + token);
+        Call<JsonObject> call = webServiceAPI.likeVideo(email, videoId, token);
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -199,7 +198,7 @@ public class VideoAPI {
     }
 
     public void dislikeVideo(String email, String videoId, String token) {
-        Call<JsonObject> call = webServiceAPI.dislikeVideo(email, videoId, "Bearer " + token);
+        Call<JsonObject> call = webServiceAPI.dislikeVideo(email, videoId, token);
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -213,5 +212,18 @@ public class VideoAPI {
         });
     }
 
+    public void updateVideoViews(String videoId) {
+        Call<JsonObject> call = webServiceAPI.updateVideoViews(videoId);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
 
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.e("VideoAPI", t.getLocalizedMessage());
+            }
+        });
+    }
 }

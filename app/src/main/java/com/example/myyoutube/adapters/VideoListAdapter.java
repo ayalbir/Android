@@ -111,6 +111,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             });
             holder.itemView.setOnClickListener(view -> {
                 video.incrementViews();
+                videosViewModel.updateViews(video);
                 holder.tvViews.setText(String.valueOf(video.getViews()));
 
                 Intent intent = new Intent(mContext, VideoPlayerActivity.class);
