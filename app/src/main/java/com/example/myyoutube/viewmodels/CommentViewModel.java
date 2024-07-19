@@ -19,15 +19,14 @@ public class CommentViewModel extends ViewModel {
     }
 
     public void init(String videoId) {
-        if (commentRepository != null) {
-            return; // ViewModel is created per Activity, so videoId won't change
-        }
         commentRepository = new CommentRepository(videoId);
-        commentsLiveData = commentRepository.getCommentsForVideo();
+        commentsLiveData = commentRepository.get();
     }
-
-    public LiveData<List<Comment>> getCommentsForVideo() {
+    public LiveData<List<Comment>> get(){
         return commentsLiveData;
+    }
+    public void getCommentsForVideo() {
+        commentRepository.getCommentsForVideo();
     }
 
     public void addComment(Comment comment) {

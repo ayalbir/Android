@@ -92,6 +92,7 @@ public class CommentsAPI {
             }
         });
     }
+
     public void addComment(Comment comment, String token) {
         JSONObject requestBodyJson = new JSONObject();
         try {
@@ -124,7 +125,6 @@ public class CommentsAPI {
         });
     }
 
-
     public void updateComment(Comment comment, String token) {
         JSONObject requestBodyJson = new JSONObject();
         try {
@@ -137,7 +137,7 @@ public class CommentsAPI {
         }
 
         Object jsonParser = JsonParser.parseString(requestBodyJson.toString());
-        Call<JsonObject> call = commentsAPIService.updateComment(comment.getVideoId(), (JsonObject) jsonParser, "Bearer " + token);
+        Call<JsonObject> call = commentsAPIService.updateComment(comment.get_id(), (JsonObject) jsonParser, "Bearer " + token);
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {

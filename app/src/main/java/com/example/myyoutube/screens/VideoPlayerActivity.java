@@ -116,7 +116,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
         MediaController mediaController = new MediaController(this);
         videoView.setMediaController(mediaController);
         mediaController.setAnchorView(videoView);
-
         videoView.start();
 
         TextView titleView = findViewById(R.id.tvTitle);
@@ -195,6 +194,16 @@ public class VideoPlayerActivity extends AppCompatActivity {
         commentsAdapter = new CommentsAdapter(this, commentsList);
         commentsListView.setAdapter(commentsAdapter);
 
+        commentViewModel.get().observe(this, new Observer<List<Comment>>() {
+            @Override
+            public void onChanged(List<Comment> comments) {
+                commentsList.clear();
+                commentsList.addAll(comments);
+                commentsAdapter.notifyDataSetChanged();
+            }
+        });
+        commentViewModel.getCommentsForVideo();
+
         findViewById(R.id.btnAddComment).setOnClickListener(view -> {
             if (currentUser != null) {
                 EditText commentInput = findViewById(R.id.etComment);
@@ -245,15 +254,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
         bottomNavigationView.getMenu().setGroupCheckable(0, false, true);
 
-        // Observe comments and update UI
-        commentViewModel.getCommentsForVideo().observe(this, new Observer<List<Comment>>() {
-            @Override
-            public void onChanged(List<Comment> comments) {
-                commentsList.clear();
-                commentsList.addAll(comments);
-                commentsAdapter.notifyDataSetChanged();
-            }
-        });
     }
 
     private void fetchRecommendedVideos() {
@@ -314,9 +314,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
         fos.close();
         return Uri.fromFile(tempFile);
     }
-
     private class CommentsAdapter extends ArrayAdapter<Comment> {
-
         private Context context;
         private List<Comment> comments;
 
@@ -354,7 +352,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
             btnMenu.setOnClickListener(v -> {
                 if (currentUser != null) {
                     if (currentUser.getEmail().equalsIgnoreCase(comment.getEmail())) {
-                        showEditDeleteDialog(position);
+                        showEditDeleteDialog(comment);
                     } else {
                         Toast.makeText(getContext(), "You can only edit or delete your own comments", Toast.LENGTH_SHORT).show();
                     }
@@ -366,28 +364,27 @@ public class VideoPlayerActivity extends AppCompatActivity {
             return convertView;
         }
 
-        private void showEditDeleteDialog(int position) {
+        private void showEditDeleteDialog(Comment comment) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setTitle("Choose an option")
                     .setItems(new CharSequence[]{"Edit", "Delete"}, (dialog, which) -> {
                         if (which == 0) {
-                            showEditCommentDialog(position);
+                            showEditCommentDialog(comment);
                         } else if (which == 1) {
-                            Comment comment = comments.get(position);
                             commentViewModel.deleteComment(comment);
                         }
                     })
                     .show();
         }
 
-        private void showEditCommentDialog(int position) {
+        private void showEditCommentDialog(Comment comment) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setTitle("Edit Comment");
 
             View viewInflated = LayoutInflater.from(context).inflate(R.layout.dialog_edit_comment,
                     (ViewGroup) ((Activity) context).findViewById(android.R.id.content), false);
             EditText input = viewInflated.findViewById(R.id.input);
-            input.setText(comments.get(position).getText());
+            input.setText(comment.getText());
 
             builder.setView(viewInflated);
 
@@ -395,7 +392,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
                 dialog.dismiss();
                 String editedComment = input.getText().toString();
                 if (!editedComment.isEmpty()) {
-                    Comment comment = comments.get(position);
                     comment.setText(editedComment);
                     commentViewModel.updateComment(comment);
                     notifyDataSetChanged();
@@ -405,5 +401,4 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
             builder.show();
         }
-    }
-}
+    }}

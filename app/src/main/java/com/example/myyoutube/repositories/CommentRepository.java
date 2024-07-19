@@ -18,14 +18,15 @@ public class CommentRepository {
         this.videoId = videoId;
         commentsLiveData = new CommentListData();
         commentsAPI = new CommentsAPI(commentsLiveData);
-        getCommentsForVideo();
     }
 
-    public LiveData<List<Comment>> getCommentsForVideo() {
+    public void getCommentsForVideo() {
         commentsAPI.getCommentsForVideo(videoId);
+    }
+
+    public LiveData<List<Comment>> get() {
         return commentsLiveData;
     }
-
     public void addComment(Comment comment, String token) {
         commentsAPI.addComment(comment, token);
     }
@@ -49,25 +50,26 @@ public class CommentRepository {
             super.onActive();
         }
 
-        public void addComment(Comment newComment) {
+        public void addComment(Comment commentToAdd) {
             List<Comment> comments = getValue();
             if (comments == null) return;
-            comments.add(0, newComment);
-            postValue(comments);
+            comments.add(0, commentToAdd);
+            commentsLiveData.postValue(comments);
         }
 
-        public void removeComment(String id) {
+        public void updateVideo(Comment comment) {
             List<Comment> comments = getValue();
-            if (comments == null) return;
-            for (Comment comment : comments) {
-                if (comment.get_id().equals(id)) {
-                    comments.remove(comment);
-                    postValue(comments);
+            if (comments == null)
+                return;
+            String commentId = comment.get_id();
+            for (Comment current : comments) {
+                if (current.get_id().equals(commentId)) {
+                    current.setText(comment.getText());
+                    commentsLiveData.postValue(comments);
                     break;
                 }
             }
         }
-
         public void updateComment(Comment comment) {
             List<Comment> comments = getValue();
             if (comments == null) return;
@@ -80,5 +82,17 @@ public class CommentRepository {
                 }
             }
         }
+        public void removeComment(String id) {
+            List<Comment> comments = getValue();
+            if (comments == null) return;
+            for (Comment comment : comments) {
+                if (comment.get_id().equals(id)) {
+                    comments.remove(comment);
+                    commentsLiveData.postValue(comments);
+                    break;
+                }
+            }
+        }
+
     }
 }
