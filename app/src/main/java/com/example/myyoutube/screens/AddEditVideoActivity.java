@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class AddEditVideoActivity extends AppCompatActivity {
-    private static final int PICK_IMAGE_REQUEST = 1;
+    private static final int PICK_IMAGE_REQUEST = 200;
     private static final int PICK_VIDEO_REQUEST = 2;
     private static final int REQUEST_CAMERA = 3;
     private static final int PERMISSION_REQUEST_CODE = 4;
@@ -69,7 +69,6 @@ public class AddEditVideoActivity extends AppCompatActivity {
             isEditMode = true;
             video = videosViewModel.getVideoById(videoId);
                 if (video != null) {
-                    this.video = video;
                     etTitle.setText(video.getTitle());
                     etDescription.setText(video.getDescription());
                     imageUri = Uri.parse(video.getPic());
@@ -87,19 +86,14 @@ public class AddEditVideoActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && data != null && data.getData() != null) {
+        if (resultCode == RESULT_OK) {
             if (requestCode == PICK_IMAGE_REQUEST) {
                 imageUri = data.getData();
-                try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                    ivThumbnail.setImageBitmap(bitmap);
-                    ivThumbnail.setVisibility(View.VISIBLE);
-                    isImageSelected = true;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                ivThumbnail.setImageURI(imageUri);
+                ivThumbnail.setVisibility(View.VISIBLE);
+                isImageSelected = true;
             } else if (requestCode == PICK_VIDEO_REQUEST) {
                 videoUri = data.getData();
                 isVideoSelected = true;
@@ -146,9 +140,11 @@ public class AddEditVideoActivity extends AppCompatActivity {
 
 
     private void openImageGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent intent = new Intent();
         intent.setType("image/*");
-        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+
     }
 
     private void openVideoGallery() {

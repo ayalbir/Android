@@ -37,7 +37,6 @@ public class signInScreen3 extends AppCompatActivity {
         String lastName = getIntent().getStringExtra("lastName");
         String gender = getIntent().getStringExtra("gender");
 
-
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

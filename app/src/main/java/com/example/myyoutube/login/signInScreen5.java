@@ -122,25 +122,22 @@ public class signInScreen5 extends AppCompatActivity {
     }
 
     private void openGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (resultCode == RESULT_OK) {
             if (requestCode == PICK_IMAGE_REQUEST) {
                 if (data != null && data.getData() != null) {
                     imageUri = data.getData();
-                    try {
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                        selectedImageView.setImageBitmap(bitmap);
-                        isImageSelected = true;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    selectedImageView.setImageURI(imageUri);
+                    isImageSelected = true;
                 }
             } else if (requestCode == REQUEST_CAMERA) {
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
