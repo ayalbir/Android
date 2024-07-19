@@ -1,19 +1,23 @@
 package com.example.myyoutube.viewmodels;
 
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.myyoutube.TokenService;
 import com.example.myyoutube.entities.User;
+import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.repositories.UserRepository;
 
 import java.io.StringReader;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 public class UserManager {
     private static UserManager instance;
     private final UserRepository userRepository;
+    private LiveData<List<User>> usersLiveData;
     public static User connectedUser;
     private VideosViewModel videosViewModel;
     public static LocalDate tempDate;

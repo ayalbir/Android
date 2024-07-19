@@ -10,6 +10,7 @@ import com.example.myyoutube.R;
 import com.example.myyoutube.TokenService;
 import com.example.myyoutube.dao.UserDao;
 import com.example.myyoutube.entities.User;
+import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.screens.MainActivity;
 import com.example.myyoutube.viewmodels.UserManager;
 import com.google.gson.Gson;
@@ -57,6 +58,35 @@ public class UserAPI {
                 .client(httpClient.build()).build();
 
         userServiceAPI = retrofit.create(UserAPIService.class);
+    }
+
+    public void getAllUsers() {
+        Call<ArrayList<User>> call = userServiceAPI.getAllUsers();
+        call.enqueue(new Callback<ArrayList<User>>() {
+            @Override
+            public void onResponse(Call<ArrayList<User>> call, Response<ArrayList<User>> response) {
+                if (response.isSuccessful()) {
+                    List<User> users = response.body();
+                    if (users != null) {
+                        new Thread(() -> {
+                            userDao.clear();
+                            for (User user : users) {
+                                userDao.insert(user);
+                            }
+                        }).start();
+                    } else {
+                        Log.e("UserAPI", "Failed to fetch users");
+                    }
+                } else {
+                    Log.e("UserAPI", "Response not successful: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<User>> call, Throwable t) {
+                Log.e("UserAPI", t.getLocalizedMessage());
+            }
+        });
     }
 
     public void signIn(String email, String password) {

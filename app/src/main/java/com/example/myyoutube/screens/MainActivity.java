@@ -120,7 +120,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setupNightModeSwitch();
         setupBottomNavigationView();
 
-
         if (savedInstanceState == null) {
             navigationView = findViewById(R.id.nav_view);
             navigationView.setCheckedItem(R.id.nav_home);
@@ -201,6 +200,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String jsonData = loadJSONFromAsset();
         if (jsonData != null) {
             if (firstTime) {
+   //             userManager.getAllUsers();
                 videos = parseVideosFromJSON(jsonData);
                 //UserViewModel.initializeDefaultUsers();
             }

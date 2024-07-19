@@ -11,7 +11,7 @@ import com.example.myyoutube.entities.Comment;
 import com.example.myyoutube.entities.User;
 import com.example.myyoutube.entities.Video;
 
-@Database(entities = {Video.class, User.class}, version = 13)
+@Database(entities = {Video.class, User.class}, version = 14)
 @TypeConverters(Converters.class)
 public abstract class AppDB extends RoomDatabase {
     public abstract VideoDao videoDao();

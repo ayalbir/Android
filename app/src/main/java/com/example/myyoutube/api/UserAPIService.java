@@ -29,7 +29,6 @@ public interface UserAPIService {
     @PUT("api/users/{email}")
     Call<JsonObject> updateUser(@Path("email") String email, @Body JsonObject requestBody, @Header("Authorization") String token);
 
-
     @DELETE("api/users/{email}")
     Call<JsonObject> deleteUser(@Path("email") String email, @Header("Authorization") String token);
 
