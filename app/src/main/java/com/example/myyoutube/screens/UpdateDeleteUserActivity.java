@@ -36,15 +36,19 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_delete_user);
 
-
         videosViewModel = new ViewModelProvider(this).get(VideosViewModel.class);
 
         etUserName = findViewById(R.id.etUserName);
         etUserEmail = findViewById(R.id.etUserEmail);
         etPassword = findViewById(R.id.etPassword);
         ivProfileImage = findViewById(R.id.ivProfileImage);
+        findViewById(R.id.btnRet).setOnClickListener(v -> {
+            Intent i = new Intent(this, MainActivity.class);
+            startActivity(i);
+        });
 
-        currentUser = userManager.getConnectedUser();
+
+        currentUser = UserManager.getConnectedUser();
         oldEmail = currentUser.getEmail();
 
         if (currentUser != null) {
@@ -92,7 +96,7 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
     private void signOut() {
         userManager.clearConnectedUser();
         Toast.makeText(this, "Signing out", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(this, logInScreen1.class);
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 }

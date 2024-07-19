@@ -187,7 +187,6 @@ public class VideoAPI {
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-
             }
 
             @Override
@@ -202,7 +201,6 @@ public class VideoAPI {
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-
             }
 
             @Override

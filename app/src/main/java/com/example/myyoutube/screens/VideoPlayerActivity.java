@@ -79,8 +79,8 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
         currentUser = MainActivity.getCurrentUser();
         if (currentUser != null) {
-            profilePictureItem.setIcon(R.drawable.nav_logout);
-            profilePictureItem.setTitle("Logout");
+            profilePictureItem.setIcon(R.drawable.settings);
+            profilePictureItem.setTitle("Account");
         }
 
         String videoId = getIntent().getStringExtra("videoId");
@@ -233,6 +233,10 @@ public class VideoPlayerActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
             } else if (id == R.id.nav_login) {
+                if(UserManager.getConnectedUser() != null) {
+                    Intent intent = new Intent(VideoPlayerActivity.this, UpdateDeleteUserActivity.class);
+                    startActivity(intent);
+                }
                 Intent intent = new Intent(VideoPlayerActivity.this, logInScreen1.class);
                 startActivity(intent);
             }

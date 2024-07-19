@@ -45,7 +45,8 @@
         android:layout_height="50dp"
         android:layout_marginTop="16dp"
         android:hint="@string/password"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:text="12345678p" />
 
     <TextView
         android:id="@+id/tvErrorMsg"

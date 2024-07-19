@@ -112,10 +112,7 @@ public class UserAPI {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
-                    new Thread(() ->{
                         UserManager.getConnectedUser().setId(response.body().get("_id").getAsString());
-                        userDao.insert(UserManager.getConnectedUser());
-                    } ).start();
                     messageLiveData.postValue("User created successfully");
                 } else {
                     messageLiveData.postValue("Failed to create user");

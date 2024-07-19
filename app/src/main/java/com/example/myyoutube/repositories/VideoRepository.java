@@ -105,11 +105,14 @@ public class VideoRepository {
 
     public void likeVideo(String email, String videoId, String token){
         videoAPI.likeVideo(email, videoId, token);
+        getAllVideos();
     }
     public void disLikeVideo(String email, String videoId, String token){
         videoAPI.dislikeVideo(email, videoId, token);
+        getAllVideos();
     }
     public void updateViews(String videoId){
         videoAPI.updateVideoViews(videoId);
+        getAllVideos();
     }
 }

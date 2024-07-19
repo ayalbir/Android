@@ -44,7 +44,8 @@
         android:layout_height="wrap_content"
         android:hint="@string/password"
         android:inputType="textPassword"
-        android:paddingBottom="16dp" />
+        android:paddingBottom="16dp"
+        android:text="12345678p" />
 
     <EditText
         android:id="@+id/et_confirm_password"
@@ -52,7 +53,8 @@
         android:layout_height="wrap_content"
         android:hint="@string/confirm"
         android:inputType="textPassword"
-        android:paddingBottom="16dp" />
+        android:paddingBottom="16dp"
+        android:text="12345678p" />
 
     <TextView
         android:id="@+id/tvErrorMsg"

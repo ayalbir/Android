@@ -71,7 +71,7 @@
     <string name="divider">|</string>
     <string name="menu_for_edit_and_delete">Menu for edit and delete</string>
     <string name="dislikes">Dislikes</string>
-    <string name="BaseUrl">http://192.168.1.42:8080/</string>
+    <string name="BaseUrl">http://10.100.102.5:8080/</string>
     <string name="sign_up">Sign up</string>
     <string name="sign_out">Sign out</string>
 

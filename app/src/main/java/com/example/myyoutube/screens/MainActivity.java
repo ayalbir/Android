@@ -94,8 +94,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             profilePictureItem.setIcon(R.drawable.login);
             profilePictureItem.setTitle("Login");
             cardView.setVisibility(View.INVISIBLE);
-            if (userManager.getConnectedUser() != null) {
-                currentUser = userManager.getConnectedUser();
+            if (UserManager.getConnectedUser() != null) {
+                currentUser = UserManager.getConnectedUser();
             }
             if (getCurrentUser() != null) {
                 assert currentUser != null;
@@ -158,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         videoDao = db.videoDao();
         swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this::refreshVideos);
+        refreshVideos();
     }
 
     private void refreshVideos() {

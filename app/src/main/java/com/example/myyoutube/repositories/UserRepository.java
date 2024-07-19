@@ -9,6 +9,7 @@ import com.example.myyoutube.Helper;
 import com.example.myyoutube.api.UserAPI;
 import com.example.myyoutube.dao.UserDao;
 import com.example.myyoutube.entities.User;
+import com.example.myyoutube.viewmodels.UserManager;
 
 import java.util.List;
 
@@ -42,6 +43,7 @@ public class UserRepository {
 
     public void createUser(User user) {
         userAPI.createUser(user, messageLiveData);
+        userDao.insert(UserManager.getConnectedUser());
     }
 
     public User getUserByEmail(String email) {

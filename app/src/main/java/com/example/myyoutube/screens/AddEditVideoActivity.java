@@ -108,7 +108,8 @@ public class AddEditVideoActivity extends AppCompatActivity {
     }
 
     private void saveVideo() {
-        if(isImageSelected && isVideoSelected){
+        Toast.makeText(this, "Saving... It may take a couple of seconds", Toast.LENGTH_LONG).show();
+        if((isImageSelected && isVideoSelected) || isEditMode){
             if(video == null){
                 video = new Video("","", "", "", "", "", new ArrayList<>());
             }
@@ -116,28 +117,27 @@ public class AddEditVideoActivity extends AppCompatActivity {
             video.setDescription(Objects.requireNonNull(etDescription.getText()).toString());
             video.setEmail(curretUser.getEmail());
 
-            // Compress the bitmap and encode it
-            Bitmap bitmap = ((BitmapDrawable) ivThumbnail.getDrawable()).getBitmap();
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-            String encodedImage = Base64.encodeToString(out.toByteArray(), Base64.DEFAULT);
-            video.setPic(encodedImage);
+            if(!isEditMode) {
+                // Compress the bitmap and encode it
+                Bitmap bitmap = ((BitmapDrawable) ivThumbnail.getDrawable()).getBitmap();
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                String encodedImage = Base64.encodeToString(out.toByteArray(), Base64.DEFAULT);
+                video.setPic(encodedImage);
 
-            String encodedVideo = encodeVideo(videoUri);
-            video.setUrl(encodedVideo != null ? encodedVideo : "");
+                String encodedVideo = encodeVideo(videoUri);
+                video.setUrl(encodedVideo != null ? encodedVideo : "");
+
+            }
 
             if (isEditMode) {
-                Toast.makeText(this, "Saving... It may take a couple of seconds", Toast.LENGTH_LONG).show();
                 videosViewModel.update(video);
             } else {
-                Toast.makeText(this, "Saving... It may take a couple of seconds", Toast.LENGTH_LONG).show();
                 videosViewModel.add(video);
             }
 
-            Intent resultIntent = new Intent();
-            resultIntent.putExtra("updatedVideoId", video.getId());
-            setResult(RESULT_OK, resultIntent);
-            finish();
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
         } else if (!isImageSelected)
             Toast.makeText(this, "Please select an image before saving.", Toast.LENGTH_SHORT).show();
         else
