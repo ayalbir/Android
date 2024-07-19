@@ -18,7 +18,6 @@
             android:id="@+id/nav_switch_night"
             android:icon="@drawable/moon"
             android:title="@string/night_mode"
-            app:actionLayout="@layout/switch_item"
             app:showAsAction="always" />
     </group>
 

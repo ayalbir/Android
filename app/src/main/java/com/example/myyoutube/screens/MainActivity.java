@@ -3,6 +3,7 @@ package com.example.myyoutube.screens;
 import static com.example.myyoutube.R.layout.activity_main;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.CursorWindow;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -63,7 +64,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final int REQUEST_CODE_ADD_VIDEO = 1;
     public static final int REQUEST_CODE_EDIT_VIDEO = 2;
     private DrawerLayout drawerLayout;
-    private Switch nightSwitch;
     private SearchView searchView;
     private VideoListAdapter adapter;
     public static List<Video> videos;
@@ -217,25 +217,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void setupNightModeSwitch() {
         NavigationView navigationView = findViewById(R.id.nav_view);
-        MenuItem switchItem = navigationView.getMenu().findItem(R.id.nav_switch_night);
-        nightSwitch = Objects.requireNonNull(switchItem.getActionView()).findViewById(R.id.night_switch);
+        MenuItem btnNight = navigationView.getMenu().findItem(R.id.nav_switch_night);
 
-        int nightMode = AppCompatDelegate.getDefaultNightMode();
-        nightSwitch.setChecked(nightMode == AppCompatDelegate.MODE_NIGHT_YES);
-
-        nightSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                    Toast.makeText(MainActivity.this, "Night mode enabled", Toast.LENGTH_SHORT).show();
-                } else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    Toast.makeText(MainActivity.this, "Night mode disabled", Toast.LENGTH_SHORT).show();
-                }
+        btnNight.setOnMenuItemClickListener(item -> {
+            int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+            if (currentNightMode == Configuration.UI_MODE_NIGHT_NO) {
+                // Switch to dark mode
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            } else {
+                // Switch to light mode
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
             }
+            recreate(); // Recreate the activity to apply the new theme
+            return true;
         });
     }
+
 
     private void setupBottomNavigationView() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -311,7 +308,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
         drawerLayout.closeDrawer(GravityCompat.START);
         return false;
     }
