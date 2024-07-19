@@ -18,7 +18,7 @@
 
             <ImageButton
                 android:id="@+id/btnRet"
-                android:background=""
+                android:background="@null"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/back" />
@@ -43,6 +43,7 @@
                 android:layout_weight="1" />
 
         </LinearLayout>
+
 
 
         <EditText

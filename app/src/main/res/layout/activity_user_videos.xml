@@ -25,7 +25,13 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:contentDescription="@string/back"
+                android:padding="5dp"
+                android:paddingRight="10dp"
                 app:srcCompat="@drawable/back" />
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="wrap_content" />
 
             <ImageView
                 android:id="@+id/ivChannelHeaderPic"
