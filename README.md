@@ -1,7 +1,48 @@
-In this project, we worked as a team of three people, each responsible for a different area. One team member was in charge of the movie list screen, the movie viewing screen, and the new movie addition screen for the web version. Another team member was responsible for the same screens in the Android version. The third team member was responsible for login and registration on both platforms.
+# FooTube
 
-We used the Jira management tool for task allocation and project management, which enabled effective teamwork, with each member contributing their part to the project.
+![FooTube Icon](app/src/main/res/drawable/logodark.png)
 
-How to run the project:
+FooTube is a video sharing platform designed to provide a user-friendly experience for uploading, viewing, and interacting with videos. With features such as user authentication, video uploads, comments, likes, and dislikes, FooTube aims to create a seamless and enjoyable experience for all users.
 
-Android: Run the emulator, which will open the video list screen first. Then, there will be an option to log in at the top, and if there is no user, to register.
+## Features
+
+- **User Authentication**: Secure sign-in and sign-up processes.
+- **Video Uploads**: Upload and share your videos with the FooTube community.
+- **Comment System**: Engage with videos by leaving comments.
+- **Like and Dislike**: Express your opinions on videos.
+- **Dark Mode**: Switch between light and dark themes for a comfortable viewing experience.
+
+## Usage
+### Sign Up:
+
+- Open the FooTube app.
+- Click on the "Sign Up" button.
+- Fill in the required details and create your account.
+### Sign In:
+
+- Open the FooTube app.
+- Click on the "Sign In" button.
+- Enter your email and password to log in.
+### Upload Video:
+
+- Click on the plus icon in the bottom menu.
+- Enter the video title, description, and select a thumbnail.
+- Choose the video file from your device and click "Upload".
+- you can edit and delete yout own comments.
+
+### View Videos:
+
+- Browse through the video feed on the home screen.
+- Click on any video to start playing it.
+### Like and Dislike Videos:
+
+- While watching a video, click the thumbs up (like) or thumbs down (dislike) button to express your opinion.
+### Comment on Videos:
+
+- Scroll down to the comment section below the video.
+- Enter your comment in the input box and click "Add comment".
+- you can edit and delete yout own comments.
+### Dark Mode:
+
+- Access the side navigation drawer.
+- Press the "Night Mode" button for dark mode to enable or disable it.
