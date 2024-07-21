@@ -6,11 +6,13 @@
       "description": "This is a sample video 1.",
       "duration": 120,
       "thumbnail": "video1pic",
+      "channelEmail": "Elay@gmail.com",
       "mp4file": "video1"
     },
     {
       "channel": "Channel 2",
       "title": "Sample Video 2",
+      "channelEmail": "Dvir@gmail.com",
       "description": "This is a sample video 2.",
       "duration": 150,
       "thumbnail": "video2pic",
@@ -19,6 +21,7 @@
     {
       "channel": "Channel 3",
       "title": "Sample Video 3",
+      "channelEmail": "Dvir@gmail.com",
       "description": "This is a sample video 3.",
       "duration": 200,
       "thumbnail": "video3pic",
@@ -27,6 +30,7 @@
     {
       "channel": "Channel 4",
       "title": "Sample Video 4",
+      "channelEmail": "Ayal@gmail.com",
       "description": "This is a sample video 4.",
       "duration": 180,
       "thumbnail": "video4pic",
@@ -35,6 +39,7 @@
     {
       "channel": "Channel 5",
       "title": "Sample Video 5",
+      "channelEmail": "Ayal@gmail.com",
       "description": "This is a sample video 5.",
       "duration": 210,
       "thumbnail": "video5pic",
@@ -43,6 +48,7 @@
     {
       "channel": "Channel 6",
       "title": "Sample Video 6",
+      "channelEmail": "Elay@gmail.com",
       "description": "This is a sample video 6.",
       "duration": 170,
       "thumbnail": "video6pic",
@@ -51,6 +57,7 @@
     {
       "channel": "Channel 7",
       "title": "Sample Video 7",
+      "channelEmail": "Elay@gmail.com",
       "description": "This is a sample video 7.",
       "duration": 190,
       "thumbnail": "video7pic",
@@ -59,6 +66,7 @@
     {
       "channel": "Channel 8",
       "title": "Sample Video 8",
+      "channelEmail": "Ayal@gmail.com",
       "description": "This is a sample video 8.",
       "duration": 160,
       "thumbnail": "video8pic",
@@ -67,6 +75,7 @@
     {
       "channel": "Channel 9",
       "title": "Sample Video 9",
+      "channelEmail": "Elay@gmail.com",
       "description": "This is a sample video 9.",
       "duration": 220,
       "thumbnail": "video9pic",
@@ -75,6 +84,7 @@
     {
       "channel": "Channel 10",
       "title": "Sample Video 10",
+      "channelEmail": "Dvir@gmail.com",
       "description": "This is a sample video 10.",
       "duration": 140,
       "thumbnail": "video10pic",

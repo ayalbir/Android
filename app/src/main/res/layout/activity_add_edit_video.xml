@@ -9,28 +9,26 @@
         android:id="@+id/etTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Title"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/edit_text_background"
+        android:hint="@string/title"
+        android:minHeight="48dp" />
 
     <EditText
         android:id="@+id/etDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Description"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/edit_text_background"
+        android:hint="@string/description"
+        android:minHeight="48dp" />
 
-    <EditText
-        android:id="@+id/etChannel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Channel"
-        android:layout_marginBottom="8dp" />
 
     <Button
         android:id="@+id/btnSelectImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select Thumbnail Image"
+        android:text="@string/select_thumbnail_image"
         android:layout_marginBottom="8dp" />
 
     <ImageView
@@ -45,14 +43,14 @@
         android:id="@+id/btnChooseVid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select Video"
+        android:text="@string/select_video"
         android:layout_marginBottom="8dp" />
 
     <Button
         android:id="@+id/btnSaveEditVideo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save"
+        android:text="@string/save"
         android:layout_marginTop="16dp" />
 
 </LinearLayout>

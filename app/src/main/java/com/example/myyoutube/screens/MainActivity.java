@@ -1,12 +1,12 @@
-package com.example.myyoutube;
+package com.example.myyoutube.screens;
 
 import static com.example.myyoutube.R.layout.activity_main;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.database.CursorWindow;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.MenuItem;
@@ -26,14 +26,22 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.myyoutube.AppDB;
+import com.example.myyoutube.R;
+import com.example.myyoutube.dao.VideoDao;
 import com.example.myyoutube.adapters.VideoListAdapter;
-import com.example.myyoutube.classes.User;
-import com.example.myyoutube.classes.UserManager;
-import com.example.myyoutube.classes.Video;
-import com.example.myyoutube.classes.VideoManager;
+import com.example.myyoutube.entities.User;
+import com.example.myyoutube.entities.Video;
+import com.example.myyoutube.login.logInScreen1;
+import com.example.myyoutube.viewmodels.UserManager;
+import com.example.myyoutube.viewmodels.VideosViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
@@ -44,9 +52,11 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -54,33 +64,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final int REQUEST_CODE_ADD_VIDEO = 1;
     public static final int REQUEST_CODE_EDIT_VIDEO = 2;
     private DrawerLayout drawerLayout;
-    private Switch nightSwitch;
     private SearchView searchView;
-    private int currentMenuItemId = R.id.nav_home;
     private VideoListAdapter adapter;
     public static List<Video> videos;
     public static boolean firstTime = true;
     private static User currentUser;
+    private VideoDao videoDao;
+    private VideosViewModel videosViewModel;
+    private UserManager userManager = UserManager.getInstance();
+    private SwipeRefreshLayout swipeRefreshLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(activity_main);
-
-        Intent intent = getIntent();
-        String email = intent.getStringExtra("email");
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        MenuItem profilePictureItem = bottomNavigationView.getMenu().findItem(R.id.nav_login);
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        CardView cardView = navigationView.getHeaderView(0).findViewById(R.id.cardview);
-        profilePictureItem.setIcon(R.drawable.login);
-        profilePictureItem.setTitle("Login");
-        cardView.setVisibility(View.INVISIBLE);
-
-            if (email != null) {
-                currentUser = UserManager.getUserByEmail(email);
+            videosViewModel = new ViewModelProvider(this).get(VideosViewModel.class);
+            //userManager.getAllUsers();
+            BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+            MenuItem profilePictureItem = bottomNavigationView.getMenu().findItem(R.id.nav_login);
+            NavigationView navigationView = findViewById(R.id.nav_view);
+            CardView cardView = navigationView.getHeaderView(0).findViewById(R.id.cardview);
+            profilePictureItem.setIcon(R.drawable.login);
+            profilePictureItem.setTitle("Login");
+            cardView.setVisibility(View.INVISIBLE);
+            if (UserManager.getConnectedUser() != null) {
+                currentUser = UserManager.getConnectedUser();
             }
-            if(getCurrentUser() != null) {
+            if (getCurrentUser() != null) {
+                assert currentUser != null;
                 Bitmap bitmap = decodeImage(currentUser.getProfileImage());
                 cardView.setVisibility(View.VISIBLE);
                 ImageView navHeaderImageView = navigationView.getHeaderView(0).findViewById(R.id.IVHeaderProfilePic);
@@ -88,22 +100,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (bitmap != null) {
                     navHeaderImageView.setImageBitmap(bitmap);
                 }
-                navHeaderTextView.setText("Hello " + currentUser.getUserName());
-                profilePictureItem.setIcon(R.drawable.nav_logout);
-                profilePictureItem.setTitle("Logout");
+                navHeaderTextView.setText("Hello " + currentUser.getFirstName());
+                profilePictureItem.setIcon(R.drawable.settings);
+                profilePictureItem.setTitle("Account");
 
             }
 
-
-
+        setupRecyclerViewDB();
         initUI();
-        setupRecyclerView();
         setupToolbarAndDrawer();
         setupSearchView();
         loadVideosFromJSON();
         setupNightModeSwitch();
         setupBottomNavigationView();
-
 
         if (savedInstanceState == null) {
             navigationView = findViewById(R.id.nav_view);
@@ -116,13 +125,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout = findViewById(R.id.drawer_layout);
     }
 
-    private void setupRecyclerView() {
+    private void setupRecyclerViewDB() {
         RecyclerView videoList = findViewById(R.id.videoList);
-        adapter = new VideoListAdapter(this);
+        adapter = new VideoListAdapter(this,videosViewModel);
+        videos = videosViewModel.get().getValue();
+        if(videos != null) {
+            adapter.setVideos(videos);
+        }
+
+        videosViewModel.get().observe(this, new Observer<List<Video>>() {
+            @Override
+            public void onChanged(List<Video> videos) {
+                adapter.setVideos(videos);
+                adapter.notifyDataSetChanged();
+            }
+        });
+
         videoList.setAdapter(adapter);
         videoList.setLayoutManager(new LinearLayoutManager(this));
+
+        AppDB db = Room.databaseBuilder(getApplicationContext(),
+                        AppDB.class, "VideoDB")
+                .allowMainThreadQueries()
+                .build();
+        videoDao = db.videoDao();
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(this::refreshVideos);
+        refreshVideos();
     }
 
+    private void refreshVideos() {
+        videosViewModel.get();
+        videosViewModel.get().observe(this, videos -> {
+            adapter.setVideos(videos);
+            adapter.notifyDataSetChanged();
+            swipeRefreshLayout.setRefreshing(false);
+        });
+    }
     private void setupToolbarAndDrawer() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -154,74 +193,39 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void loadVideosFromJSON() {
         String jsonData = loadJSONFromAsset();
         if (jsonData != null) {
-            if (firstTime)
+            if (firstTime) {
                 videos = parseVideosFromJSON(jsonData);
-            firstTime = false;
-            VideoManager.getVideoManager().setVideos(videos);
-            adapter.setVideos(videos);
-        }
-    }
-
-    private List<Video> parseVideosFromJSON(String jsonData) {
-        Gson gson = new Gson();
-        JsonObject jsonObject = JsonParser.parseString(jsonData).getAsJsonObject();
-        Type videoListType = new TypeToken<ArrayList<Video>>() {}.getType();
-        List<Video> videoList = gson.fromJson(jsonObject.get("Videos"), videoListType);
-        for (Video video : videoList) {
-            if (video.getComments() == null) {
-                video.setComments(new ArrayList<>());
+                //UserViewModel.initializeDefaultUsers();
+            }
+             firstTime = false;
+            if(videos != null) {
+                adapter.setVideos(videos);
             }
         }
-        return videoList;
     }
 
     public static User getCurrentUser() {
         return currentUser;
     }
-    private Bitmap decodeImage(String encodedImage) {
-        if (encodedImage != null) {
-            byte[] decodedBytes = Base64.decode(encodedImage, Base64.DEFAULT);
-            return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
-        }
-        return null;
-    }
 
     private void setupNightModeSwitch() {
         NavigationView navigationView = findViewById(R.id.nav_view);
-        MenuItem switchItem = navigationView.getMenu().findItem(R.id.nav_switch_night);
-        nightSwitch = switchItem.getActionView().findViewById(R.id.night_switch);
+        MenuItem btnNight = navigationView.getMenu().findItem(R.id.nav_switch_night);
 
-        int nightMode = AppCompatDelegate.getDefaultNightMode();
-        nightSwitch.setChecked(nightMode == AppCompatDelegate.MODE_NIGHT_YES);
-
-        nightSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                    Toast.makeText(MainActivity.this, "Night mode enabled", Toast.LENGTH_SHORT).show();
-                } else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    Toast.makeText(MainActivity.this, "Night mode disabled", Toast.LENGTH_SHORT).show();
-                }
+        btnNight.setOnMenuItemClickListener(item -> {
+            int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+            if (currentNightMode == Configuration.UI_MODE_NIGHT_NO) {
+                // Switch to dark mode
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            } else {
+                // Switch to light mode
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
             }
+            recreate(); // Recreate the activity to apply the new theme
+            return true;
         });
     }
 
-    private String loadJSONFromAsset() {
-        String json = null;
-        try {
-            InputStream is = getResources().getAssets().open("data.json");
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        return json;
-    }
 
     private void setupBottomNavigationView() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -243,23 +247,60 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                     return true;
                 } else if (id == R.id.nav_login) {
-                    currentUser = null;
-                    Intent intent = new Intent(MainActivity.this, logInScreen1.class);
-                    startActivity(intent);
+                    if(currentUser != null && currentUser.getEmail() != null) {
+                        Intent intent = new Intent(MainActivity.this, UpdateDeleteUserActivity.class);
+                        intent.putExtra("userEmail", currentUser.getEmail());
+                        startActivity(intent);
+                    }
+                    else{
+                        currentUser = null;
+                        Intent intent = new Intent(MainActivity.this, logInScreen1.class);
+                        startActivity(intent);
+                    }
+
                 }
                 return false;
             }
         });
     }
 
+    private Bitmap decodeImage(String encodedImage) {
+        if (encodedImage != null) {
+            byte[] decodedBytes = Base64.decode(encodedImage, Base64.DEFAULT);
+            return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+        }
+        return null;
+    }
+
+    private List<Video> parseVideosFromJSON(String jsonData) {
+        Gson gson = new Gson();
+        JsonObject jsonObject = JsonParser.parseString(jsonData).getAsJsonObject();
+        Type videoListType = new TypeToken<ArrayList<Video>>() {}.getType();
+        List<Video> videoList = gson.fromJson(jsonObject.get("Videos"), videoListType);
+        for (Video video : videoList) {
+            if (video.getComments() == null) {
+                video.setComments(new ArrayList<>());
+            }
+        }
+        return videoList;
+    }
+    private String loadJSONFromAsset() {
+        String json = null;
+        try {
+            InputStream is = getResources().getAssets().open("data.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return json;
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        currentMenuItemId = id;
-        if (id == R.id.nav_close) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return false;
-        }
         drawerLayout.closeDrawer(GravityCompat.START);
         return false;
     }
@@ -274,36 +315,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        refreshVideos();
+    }
+    @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
         super.onPointerCaptureChanged(hasCapture);
-    }
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && data != null) {
-            int updatedVideoId = data.getIntExtra("updatedVideoId", -1);
-            if (updatedVideoId != -1) {
-                Video updatedVideo = VideoManager.getVideoManager().getVideoById(updatedVideoId);
-                if (updatedVideo != null) {
-                    if (requestCode == REQUEST_CODE_ADD_VIDEO) {
-                        adapter.addItem(updatedVideo);
-                    } else if (requestCode == REQUEST_CODE_EDIT_VIDEO) {
-                        updateVideo(updatedVideo);
-                    }
-                }
-            }
-        }
-    }
-
-    private void updateVideo(Video updatedVideo) {
-        for (int i = 0; i < videos.size(); i++) {
-            if (videos.get(i).getId() == updatedVideo.getId()) {
-                videos.set(i, updatedVideo);
-                adapter.updateItem(updatedVideo);
-                break;
-            }
-        }
     }
 }

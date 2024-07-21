@@ -1,4 +1,4 @@
-package com.example.myyoutube;
+package com.example.myyoutube.login;
 
 import android.Manifest;
 import android.content.Intent;
@@ -7,6 +7,9 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.widget.Button;
@@ -18,12 +21,21 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
 
-import com.example.myyoutube.classes.User;
-import com.example.myyoutube.classes.UserManager;
+import com.example.myyoutube.Helper;
+import com.example.myyoutube.R;
+import com.example.myyoutube.entities.User;
+import com.example.myyoutube.viewmodels.UserManager;
+
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
+import okhttp3.internal.http2.Header;
 
 public class signInScreen5 extends AppCompatActivity {
 
@@ -33,12 +45,13 @@ public class signInScreen5 extends AppCompatActivity {
     private Uri imageUri;
     private boolean isImageSelected = false;
     private TextView errorMsg;
+    private UserManager userManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in_screen5);
-
+        userManager = UserManager.getInstance();
         selectedImageView = findViewById(R.id.selectedImageView);
         Button btnSelectImage = findViewById(R.id.btnSelectImage);
         Button btnLogin = findViewById(R.id.btnLogin);
@@ -54,15 +67,20 @@ public class signInScreen5 extends AppCompatActivity {
 
         btnLogin.setOnClickListener(v -> {
             if (isImageSelected) {
-                Toast.makeText(signInScreen5.this, "Logging in...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(signInScreen5.this, "Signing in...It may take a couple of seconds", Toast.LENGTH_LONG).show();
 
                 String email = getIntent().getStringExtra("email");
                 String name = getIntent().getStringExtra("name");
                 String password = getIntent().getStringExtra("password");
+                String lastName = getIntent().getStringExtra("lastName");
+                String gender = getIntent().getStringExtra("gender");
+
                 Bitmap bitmap = ((BitmapDrawable) selectedImageView.getDrawable()).getBitmap();
                 String encodedImage = encodeImage(bitmap);
-
-                UserManager.addUser(new User(email, name, password, encodedImage));
+                assert email != null;
+                User user = new User(email, password, name, lastName, UserManager.getTempDate(),gender, encodedImage);
+                UserManager.setConnectedUser(user);
+                userManager.createUser(user);
 
                 Intent intent = new Intent(signInScreen5.this, logInScreen1.class);
                 intent.putExtra("email", email);
@@ -104,25 +122,22 @@ public class signInScreen5 extends AppCompatActivity {
     }
 
     private void openGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (resultCode == RESULT_OK) {
             if (requestCode == PICK_IMAGE_REQUEST) {
                 if (data != null && data.getData() != null) {
                     imageUri = data.getData();
-                    try {
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                        selectedImageView.setImageBitmap(bitmap);
-                        isImageSelected = true;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    selectedImageView.setImageURI(imageUri);
+                    isImageSelected = true;
                 }
             } else if (requestCode == REQUEST_CAMERA) {
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
@@ -136,7 +151,7 @@ public class signInScreen5 extends AppCompatActivity {
 
     private String encodeImage(Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        bitmap.compress(Bitmap.CompressFormat.PNG, 10, byteArrayOutputStream);
         return Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
     }
 }

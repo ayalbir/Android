@@ -16,6 +16,7 @@
             android:id="@+id/ivProfilePic"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:contentDescription="@string/profile_pic"
             android:scaleType="centerCrop"
             android:src="@drawable/login" />
     </androidx.cardview.widget.CardView>
@@ -26,7 +27,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:enabled="false"
-        android:hint="Comment"
+        android:hint="@string/comment"
+        android:minHeight="48dp"
         android:paddingLeft="10dp" />
 
     <ImageButton
@@ -34,7 +36,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@null"
-        android:contentDescription="Menu"
+        android:contentDescription="@string/menu"
         android:padding="10dp"
         android:src="@drawable/more" />
 </LinearLayout>

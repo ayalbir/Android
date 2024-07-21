@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginBottom="16dp"
-        android:text="Create a Google Account"
+        android:text="@string/create_a_google_account"
         android:textColor="@android:color/black"
         android:textSize="24sp" />
 
@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginBottom="16dp"
-        android:text="Enter your name"
+        android:text="@string/enter_your_name"
         android:textSize="14sp" />
 
     <EditText
@@ -37,14 +37,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:hint="First name" />
+        android:hint="@string/first_name"
+        android:minHeight="48dp" />
 
     <EditText
         android:id="@+id/etLastName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:hint="Last name (optional)" />
+        android:hint="@string/last_name_optional"
+        android:minHeight="48dp" />
 
     <TextView
         android:id="@+id/tvErrorMsg"
@@ -62,10 +64,10 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/btn_nxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Next" />
+            android:text="@string/next" />
     </LinearLayout>
 
 

@@ -1,4 +1,4 @@
-package com.example.myyoutube;
+package com.example.myyoutube.screens;
 
 import android.Manifest;
 import android.content.Intent;
@@ -13,45 +13,50 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
 
-import com.example.myyoutube.classes.Video;
-import com.example.myyoutube.classes.VideoManager;
+import com.example.myyoutube.R;
+import com.example.myyoutube.entities.Comment;
+import com.example.myyoutube.entities.User;
+import com.example.myyoutube.entities.Video;
+import com.example.myyoutube.viewmodels.VideosViewModel;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class AddEditVideoActivity extends AppCompatActivity {
-    private static final int PICK_IMAGE_REQUEST = 1;
+    private static final int PICK_IMAGE_REQUEST = 200;
     private static final int PICK_VIDEO_REQUEST = 2;
     private static final int REQUEST_CAMERA = 3;
     private static final int PERMISSION_REQUEST_CODE = 4;
-
-    private EditText etTitle, etDescription, etChannel;
+    User curretUser;
+    private EditText etTitle, etDescription;
     private ImageView ivThumbnail;
     private Uri imageUri, videoUri;
     private Video video;
     private boolean isEditMode = false;
     private boolean isVideoSelected = false
             , isImageSelected = false;
+    private VideosViewModel videosViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_video);
+        videosViewModel = new ViewModelProvider(this).get(VideosViewModel.class);
 
+        curretUser = MainActivity.getCurrentUser();
         etTitle = findViewById(R.id.etTitle);
         etDescription = findViewById(R.id.etDescription);
-        etChannel = findViewById(R.id.etChannel);
         Button btnSave = findViewById(R.id.btnSaveEditVideo);
         Button btnSelectImage = findViewById(R.id.btnSelectImage);
         Button btnSelectVideo = findViewById(R.id.btnChooseVid);
@@ -59,21 +64,18 @@ public class AddEditVideoActivity extends AppCompatActivity {
 
         checkAndRequestPermissions();
 
-        int videoId = getIntent().getIntExtra("videoId", -1);
-        if (videoId != -1) {
+        String videoId = getIntent().getStringExtra("videoId");
+        if (videoId != null) {
             isEditMode = true;
-            video = VideoManager.getVideoManager().getVideoById(videoId);
-            if (video != null) {
-                etTitle.setText(video.getTitle());
-                etDescription.setText(video.getDescription());
-                etChannel.setText(video.getChannel());
-                imageUri = Uri.parse(video.getThumbnail());
-                videoUri = Uri.parse(video.getMp4file());
-                ivThumbnail.setImageURI(imageUri);
-                ivThumbnail.setVisibility(View.VISIBLE);
-            }
-        } else {
-            video = new Video();
+            video = videosViewModel.getVideoById(videoId);
+                if (video != null) {
+                    etTitle.setText(video.getTitle());
+                    etDescription.setText(video.getDescription());
+                    imageUri = Uri.parse(video.getPic());
+                    videoUri = Uri.parse(video.getUrl());
+                    ivThumbnail.setImageURI(imageUri);
+                    ivThumbnail.setVisibility(View.VISIBLE);
+                }
         }
 
         btnSelectImage.setOnClickListener(v -> openImageGallery());
@@ -84,19 +86,14 @@ public class AddEditVideoActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && data != null && data.getData() != null) {
+        if (resultCode == RESULT_OK) {
             if (requestCode == PICK_IMAGE_REQUEST) {
                 imageUri = data.getData();
-                try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                    ivThumbnail.setImageBitmap(bitmap);
-                    ivThumbnail.setVisibility(View.VISIBLE);
-                    isImageSelected = true;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                ivThumbnail.setImageURI(imageUri);
+                ivThumbnail.setVisibility(View.VISIBLE);
+                isImageSelected = true;
             } else if (requestCode == PICK_VIDEO_REQUEST) {
                 videoUri = data.getData();
                 isVideoSelected = true;
@@ -105,37 +102,48 @@ public class AddEditVideoActivity extends AppCompatActivity {
     }
 
     private void saveVideo() {
-        if(isImageSelected && isVideoSelected){
+        Toast.makeText(this, "Saving... It may take a couple of seconds", Toast.LENGTH_LONG).show();
+        if((isImageSelected && isVideoSelected) || isEditMode){
+            if(video == null){
+                video = new Video("","", "", "", "", "", new ArrayList<>());
+            }
             video.setTitle(Objects.requireNonNull(etTitle.getText()).toString());
             video.setDescription(Objects.requireNonNull(etDescription.getText()).toString());
-            video.setChannel(Objects.requireNonNull(etChannel.getText()).toString());
-            Bitmap bitmap = ((BitmapDrawable) ivThumbnail.getDrawable()).getBitmap();
-            String encodedImage = encodeImage(bitmap);
-            video.setThumbnail(encodedImage);
+            video.setEmail(curretUser.getEmail());
 
-            String encodedVideo = encodeVideo(videoUri);
-            video.setMp4file(encodedVideo != null ? encodedVideo : "");
+            if(!isEditMode) {
+                // Compress the bitmap and encode it
+                Bitmap bitmap = ((BitmapDrawable) ivThumbnail.getDrawable()).getBitmap();
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 10, out);
+                String encodedImage = Base64.encodeToString(out.toByteArray(), Base64.DEFAULT);
+                video.setPic(encodedImage);
 
-            if (isEditMode) {
-                VideoManager.getVideoManager().updateVideo(video);
-            } else {
-                VideoManager.getVideoManager().addVideo(video);
+                String encodedVideo = encodeVideo(videoUri);
+                video.setUrl(encodedVideo != null ? encodedVideo : "");
             }
 
-            Intent resultIntent = new Intent();
-            resultIntent.putExtra("updatedVideoId", video.getId());
-            setResult(RESULT_OK, resultIntent);
-            finish();
+            if (isEditMode) {
+                videosViewModel.update(video);
+            } else {
+                videosViewModel.add(video);
+            }
+
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
         } else if (!isImageSelected)
             Toast.makeText(this, "Please select an image before saving.", Toast.LENGTH_SHORT).show();
         else
             Toast.makeText(this, "Please select a video before saving.", Toast.LENGTH_SHORT).show();
     }
 
+
     private void openImageGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent intent = new Intent();
         intent.setType("image/*");
-        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+
     }
 
     private void openVideoGallery() {
@@ -173,11 +181,6 @@ public class AddEditVideoActivity extends AppCompatActivity {
         return null;
     }
 
-    private String encodeImage(Bitmap bitmap) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        return Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
-    }
     @Override
     public void onBackPressed() {
         Intent resultIntent = new Intent();

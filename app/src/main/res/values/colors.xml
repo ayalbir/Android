@@ -8,5 +8,5 @@
     <color name="background">@color/white</color>
     <color name="lightLavender">#BFC3EA</color>
     <color name="custom_red">#D62540</color>
-    <color name="dark_grey">#3A3A3A</color>
+    <color name="dark_grey">#575757</color>
 </resources>

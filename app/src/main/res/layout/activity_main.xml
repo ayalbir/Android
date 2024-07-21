@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".MainActivity"
+    tools:context=".screens.MainActivity"
     tools:openDrawer="start">
 
     <RelativeLayout
@@ -18,7 +18,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:background="@color/custom_red"
+            android:background="@drawable/mybutton"
             android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             android:theme="@style/Theme.MyYoutube"
             app:buttonGravity="top" />
@@ -33,7 +33,7 @@
             android:queryHint="Search video" />
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/refreshLayout"
+            android:id="@+id/swipe_refresh_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@id/bottom_navigation"
@@ -58,7 +58,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            app:backgroundTint="@color/custom_red"
+            android:background="@drawable/mybutton"
             app:menu="@menu/bottom_nav_menu" />
     </RelativeLayout>
 

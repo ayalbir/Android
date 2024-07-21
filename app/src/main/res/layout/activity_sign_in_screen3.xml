@@ -1,11 +1,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    tools:context=".MainActivity">
+    android:background="@color/background"
+    android:padding="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingBottom="16dp"
-        android:text="Create a strong password"
+        android:text="@string/create_a_strong_password"
         android:textSize="24sp"
         android:textStyle="bold" />
 
@@ -35,14 +33,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingBottom="24dp"
-        android:text="Create a strong password with a mix of letters, numbers and symbols"
+        android:text="@string/create_a_strong_password_with_a_mix_of_letters_numbers_and_symbols"
         android:textSize="16sp" />
 
     <EditText
         android:id="@+id/et_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Password"
+        android:hint="@string/password"
         android:inputType="textPassword"
         android:paddingBottom="16dp" />
 
@@ -50,7 +48,7 @@
         android:id="@+id/et_confirm_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Confirm"
+        android:hint="@string/confirm"
         android:inputType="textPassword"
         android:paddingBottom="16dp" />
 
@@ -66,7 +64,7 @@
         android:id="@+id/cb_show_password"
         android:layout_width="157dp"
         android:layout_height="81dp"
-        android:text="Show password" />
+        android:text="@string/show_password" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -78,7 +76,7 @@
             android:id="@+id/btn_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Next" />
+            android:text="@string/next" />
     </LinearLayout>
 
 </LinearLayout>

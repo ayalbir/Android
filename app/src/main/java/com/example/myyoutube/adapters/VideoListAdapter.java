@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,22 +18,32 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myyoutube.AddEditVideoActivity;
-import com.example.myyoutube.MainActivity;
+import com.example.myyoutube.screens.AddEditVideoActivity;
+import com.example.myyoutube.screens.MainActivity;
 import com.example.myyoutube.R;
-import com.example.myyoutube.VideoPlayerActivity;
-import com.example.myyoutube.classes.Video;
-import com.example.myyoutube.classes.VideoManager;
+import com.example.myyoutube.screens.UserVideosActivity;
+import com.example.myyoutube.screens.VideoPlayerActivity;
+import com.example.myyoutube.entities.User;
+import com.example.myyoutube.entities.Video;
+import com.example.myyoutube.viewmodels.UserManager;
+import com.example.myyoutube.viewmodels.VideosViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.VideoViewHolder> {
 
+    private User currentUser = MainActivity.getCurrentUser();
+    private VideosViewModel videosViewModel;
+    private UserManager userManager = UserManager.getInstance();
+
+
     static class VideoViewHolder extends RecyclerView.ViewHolder {
-        private final TextView tvViews, tvTitle, tvChannel;
-        private final ImageView thumbnail;
+        private final TextView tvViews, tvTitle, tvChannel, tvTimeAgo;
+        private final ImageView thumbnail, ivChannelPhoto;
         private final ImageButton overflowMenu;
+        private final View channelLayout;
 
         private VideoViewHolder(View view) {
             super(view);
@@ -43,17 +52,21 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             thumbnail = view.findViewById(R.id.ivPic);
             tvChannel = view.findViewById(R.id.tvChannel);
             overflowMenu = view.findViewById(R.id.overflowMenu);
+            ivChannelPhoto = view.findViewById(R.id.ivChannelPhoto);
+            channelLayout= view.findViewById(R.id.channelLayout);
+            tvTimeAgo= view.findViewById(R.id.tvTimeAgo);
         }
     }
 
     private final LayoutInflater mInflater;
     private final Context mContext;
-    private List<Video> videos = new ArrayList<>();
+    private List<Video> videos;
     private List<Video> videosFull = new ArrayList<>();
 
-    public VideoListAdapter(Context context) {
+    public VideoListAdapter(Context context, VideosViewModel videosViewModel) {
         this.mInflater = LayoutInflater.from(context);
         this.mContext = context;
+        this.videosViewModel = videosViewModel;
     }
 
     @NonNull
@@ -69,22 +82,39 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             Video video = videos.get(position);
             holder.tvTitle.setText(video.getTitle());
             holder.tvViews.setText(String.valueOf(video.getViews()));
-            holder.tvChannel.setText(video.getChannel());
-
-            // Check if the thumbnail is in the drawable resources
-            int imageResId = mContext.getResources().getIdentifier(video.getThumbnail(), "drawable", mContext.getPackageName());
+            User user = userManager.getUserByEmail(video.getEmail());
+            holder.tvChannel.setText(Objects.requireNonNull(user.getFirstName()));
+            holder.tvTimeAgo.setText(video.getTimeAgo());
+            if(video.getPic() == null){
+                Toast.makeText(mContext, "Failed to fetch photo. File is too big", Toast.LENGTH_SHORT).show();
+                video.setPic("");
+            }
+            // Check if the pic is in the drawable resources
+            int imageResId = mContext.getResources().getIdentifier(video.getPic(), "drawable", mContext.getPackageName());
             if (imageResId != 0) {
                 // Image is in the drawable resources
                 holder.thumbnail.setImageResource(imageResId);
             } else {
                 // Image is from the gallery
-                byte[] decodedString = Base64.decode(video.getThumbnail(), Base64.DEFAULT);
+                byte[] decodedString = Base64.decode(video.getPic(), Base64.DEFAULT);
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 holder.thumbnail.setImageBitmap(decodedByte);
             }
+            String profileImageBase64 = user.getProfileImage();
+            if (profileImageBase64 != null) {
+                byte[] decodedString = Base64.decode(profileImageBase64, Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                holder.ivChannelPhoto.setImageBitmap(decodedByte);
+            }
 
+            holder.channelLayout.setOnClickListener(view -> {
+                Intent intent = new Intent(mContext, UserVideosActivity.class);
+                intent.putExtra("userEmail", video.getEmail());
+                mContext.startActivity(intent);
+            });
             holder.itemView.setOnClickListener(view -> {
                 video.incrementViews();
+                videosViewModel.updateViews(video);
                 holder.tvViews.setText(String.valueOf(video.getViews()));
 
                 Intent intent = new Intent(mContext, VideoPlayerActivity.class);
@@ -92,7 +122,21 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
                 ((Activity) mContext).startActivityForResult(intent, 1);
             });
 
-            holder.overflowMenu.setOnClickListener(view -> showEditDeleteDialog(video, position));
+            holder.overflowMenu.setOnClickListener(view -> {
+                if(currentUser != null){
+                    if(currentUser.getEmail().equals(video.getEmail())){
+                        showEditDeleteDialog(video, position);
+                    }
+                    else {
+                        Toast.makeText(holder.itemView.getContext(), "You can only edit or delete your own videos", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else
+                    Toast.makeText(mContext, "User not connected", Toast.LENGTH_SHORT).show();
+            });
+        }
+        else {
+            videos = new ArrayList<>();
         }
     }
 
@@ -102,7 +146,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         builder.setItems(new CharSequence[]{"Edit", "Delete"}, (dialog, which) -> {
             switch (which) {
                 case 0: // Edit
-                    if (MainActivity.getCurrentUser() != null) {
+                    if (currentUser != null) {
                         Intent intent = new Intent(mContext, AddEditVideoActivity.class);
                         intent.putExtra("videoId", video.getId());
                         ((Activity) mContext).startActivityForResult(intent, MainActivity.REQUEST_CODE_EDIT_VIDEO);
@@ -111,9 +155,10 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
                     }
                     break;
                 case 1: // Delete
-                    if (MainActivity.getCurrentUser() != null) {
-                        VideoManager.getVideoManager().removeVideo(video);
+                    if (currentUser != null) {
+                        videosViewModel.delete(video);
                         removeItem(position);
+                        notifyDataSetChanged();
                     } else {
                         Toast.makeText(mContext, "User not connected", Toast.LENGTH_SHORT).show();
                     }
@@ -129,11 +174,9 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
     }
 
     public void removeItem(int position) {
-        //videos.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, videos.size());
     }
-
 
     public void addItem(Video video) {
         if (!videos.contains(video)) {
@@ -143,10 +186,9 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         }
     }
 
-
     public void updateItem(Video updatedVideo) {
         for (int i = 0; i < videos.size(); i++) {
-            if (videos.get(i).getId() == updatedVideo.getId()) {
+            if (Objects.equals(videos.get(i).getId(), updatedVideo.getId())) {
                 videos.set(i, updatedVideo);
                 videosFull.set(i, updatedVideo);
                 notifyItemChanged(i);
@@ -166,7 +208,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         } else {
             text = text.toLowerCase();
             for (Video video : videosFull) {
-                if (video.getTitle().toLowerCase().contains(text) || video.getChannel().toLowerCase().contains(text)) {
+                if (video.getTitle().toLowerCase().contains(text) || video.getEmail().toLowerCase().contains(text)) {
                     videos.add(video);
                 }
             }

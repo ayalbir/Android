@@ -1,43 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
+        android:name=".Helper"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/logolight"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyYoutube"
+        android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="31">
         <activity
-            android:name=".signInScreen5"
+            android:name=".screens.UpdateDeleteUserActivity"
             android:exported="false" />
         <activity
-            android:name=".logInScreen1"
+            android:name=".screens.UserVideosActivity"
             android:exported="false" />
         <activity
-            android:name=".signInScreen4"
+            android:name=".login.signInScreen5"
             android:exported="false" />
         <activity
-            android:name=".AddEditVideoActivity"
+            android:name=".login.logInScreen1"
             android:exported="false" />
         <activity
-            android:name=".VideoPlayerActivity"
+            android:name=".login.signInScreen4"
             android:exported="false" />
         <activity
-            android:name=".signInScreen3"
+            android:name=".screens.AddEditVideoActivity"
             android:exported="false" />
         <activity
-            android:name=".signInScreen2"
+            android:name=".screens.VideoPlayerActivity"
             android:exported="false" />
         <activity
-            android:name=".signInScreen1"
+            android:name=".login.signInScreen3"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".login.signInScreen2"
+            android:exported="false" />
+        <activity
+            android:name=".login.signInScreen1"
+            android:exported="false" />
+        <activity
+            android:name=".screens.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>

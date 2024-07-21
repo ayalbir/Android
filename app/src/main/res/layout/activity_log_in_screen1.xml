@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="16dp"
-        android:text="Sign in"
+        android:text="@string/sign_in"
         android:textSize="24sp"
         android:textStyle="bold" />
 
@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="8dp"
-        android:text="to continue to YouTube"
+        android:text="@string/to_continue_to_youtube"
         android:textSize="16sp" />
 
     <EditText
@@ -36,7 +36,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="16dp"
-        android:hint="Email"
+        android:hint="@string/email"
         android:inputType="textEmailAddress" />
 
     <EditText
@@ -44,7 +44,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="16dp"
-        android:hint="Password"
+        android:hint="@string/password"
         android:inputType="textPassword" />
 
     <TextView
@@ -61,21 +61,23 @@
         android:layout_gravity="start"
         android:layout_marginTop="8dp"
         android:clickable="true"
-        android:text="Forgot email?"
+        android:focusable="true"
+        android:minHeight="48dp"
+        android:text="@string/forgot_email"
         android:textColor="#0000FF" />
 
     <CheckBox
         android:id="@+id/cb_show_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Show password"
+        android:text="@string/show_password"
         android:layout_marginTop="8dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Not your computer? Use Guest mode to sign in privately."
+        android:text="@string/not_your_computer_use_guest_mode_to_sign_in_privately"
         android:textSize="14sp" />
 
     <LinearLayout
@@ -89,7 +91,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Create account" />
+            android:text="@string/create_account" />
 
         <Space
             android:layout_width="8dp"
@@ -100,7 +102,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Login" />
+            android:text="@string/login" />
     </LinearLayout>
 
 </LinearLayout>
