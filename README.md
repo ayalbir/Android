@@ -12,7 +12,7 @@ FooTube is a video sharing platform designed to provide a user-friendly experien
 - **Like and Dislike**: Express your opinions on videos.
 - **Dark Mode**: Switch between light and dark themes for a comfortable viewing experience.
 ## Notice
-- Wipe the data on the MongoDB and pn the phone.
+- Wipe the data on the MongoDB and on the phone.
 - Change the base Url in the "Strings" to your computer's IP or if you are using an emulator change to 10.0.2.2. Do this changes also to the  "@xml/network_security_config".
 ## Usage
 ### Sign Up:
