@@ -30,6 +30,7 @@ FooTube is a video sharing platform designed to provide a user-friendly experien
 - Click on the plus icon in the bottom menu.
 - Enter the video title, description, and select a thumbnail.
 - Choose the video file from your device and click "Upload".
+- Refresh the page to see the video on the home page.
 - you can edit and delete yout own comments.
 
 ### View Videos:
