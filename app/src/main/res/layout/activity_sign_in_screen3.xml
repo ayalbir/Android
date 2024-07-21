@@ -42,8 +42,7 @@
         android:layout_height="wrap_content"
         android:hint="@string/password"
         android:inputType="textPassword"
-        android:paddingBottom="16dp"
-        android:text="12345678p" />
+        android:paddingBottom="16dp" />
 
     <EditText
         android:id="@+id/et_confirm_password"

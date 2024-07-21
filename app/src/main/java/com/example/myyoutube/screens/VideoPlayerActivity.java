@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -31,6 +32,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;
 import com.example.myyoutube.adapters.VideoListAdapter;
 import com.example.myyoutube.entities.Comment;
@@ -137,6 +139,13 @@ public class VideoPlayerActivity extends AppCompatActivity {
         ImageButton shareBtn = findViewById(R.id.IBShare);
         likeButton = findViewById(R.id.IBLike);
         dislikeButton = findViewById(R.id.IBDisLike);
+        View channelLayout = findViewById(R.id.ChannelLayoutVideoPlayerScreen);
+        channelLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(this, UserVideosActivity.class);
+            intent.putExtra("userEmail", video.getEmail());
+            startActivity(intent);
+        });
+
         updateLikeDislikeButtons();
 
         shareBtn.setOnClickListener(v -> {
@@ -329,7 +338,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.comment_item, parent, false);
             }
-
             EditText commentEdit = convertView.findViewById(R.id.etComment);
             ImageButton btnMenu = convertView.findViewById(R.id.btnMenu);
             ImageView ivProfilePic = convertView.findViewById(R.id.ivProfilePic);
@@ -360,7 +368,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
                     Toast.makeText(getContext(), "User not connected", Toast.LENGTH_SHORT).show();
                 }
             });
-
             return convertView;
         }
 

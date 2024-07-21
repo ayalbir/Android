@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -48,6 +49,9 @@ public class logInScreen1 extends AppCompatActivity {
                     UserManager.setConnectedUser(user);
                     userManager.signIn(currentEmail, currentPassword);
                     startActivity(intent);
+                }
+                else {
+                    Toast.makeText(logInScreen1.this, "Incorrect credentials", Toast.LENGTH_SHORT).show();
                 }
             }
         });

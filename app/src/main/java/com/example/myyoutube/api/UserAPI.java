@@ -67,13 +67,13 @@ public class UserAPI {
             public void onResponse(Call<ArrayList<User>> call, Response<ArrayList<User>> response) {
                 if (response.isSuccessful()) {
                     List<User> users = response.body();
-                    if (users != null) {
-                        new Thread(() -> {
+                    if (users != null && !users.isEmpty()) {
+                        if(!userDao.getAllUsers().isEmpty()){
                             userDao.clear();
+                        }
                             for (User user : users) {
                                 userDao.insert(user);
                             }
-                        }).start();
                     } else {
                         Log.e("UserAPI", "Failed to fetch users");
                     }
@@ -178,8 +178,6 @@ public class UserAPI {
                 if (response.isSuccessful()) {
                     messageLiveData.postValue("User updated successfully");
 
-                    // Update the user in the local database
-                    new Thread(() -> userDao.update(user)).start();
                 } else {
                     messageLiveData.postValue("Failed to update user");
                 }
@@ -201,11 +199,6 @@ public class UserAPI {
                 if (response.isSuccessful()) {
                     messageLiveData.postValue("User deleted successfully");
 
-                    // Delete the user from the local database
-                    User user = userDao.getUserByEmail(email);
-                    if (user != null) {
-                        new Thread(() -> userDao.delete(user)).start();
-                    }
                 } else {
                     messageLiveData.postValue("Failed to delete user");
                 }

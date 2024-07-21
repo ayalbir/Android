@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:text="@string/update_user"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/custom_red"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 

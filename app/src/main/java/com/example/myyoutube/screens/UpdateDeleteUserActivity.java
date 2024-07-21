@@ -47,7 +47,6 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
             startActivity(i);
         });
 
-
         currentUser = UserManager.getConnectedUser();
         oldEmail = currentUser.getEmail();
 

@@ -79,14 +79,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(activity_main);
-        try {
-            Field field = CursorWindow.class.getDeclaredField("sCursorWindowSize");
-            field.setAccessible(true);
-            field.set(null, 100 * 1024 * 1024);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
             videosViewModel = new ViewModelProvider(this).get(VideosViewModel.class);
+            //userManager.getAllUsers();
             BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
             MenuItem profilePictureItem = bottomNavigationView.getMenu().findItem(R.id.nav_login);
             NavigationView navigationView = findViewById(R.id.nav_view);
@@ -200,7 +194,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String jsonData = loadJSONFromAsset();
         if (jsonData != null) {
             if (firstTime) {
-   //             userManager.getAllUsers();
                 videos = parseVideosFromJSON(jsonData);
                 //UserViewModel.initializeDefaultUsers();
             }
@@ -324,14 +317,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume() {
         super.onResume();
-        if (videos != null) {
-            videos.clear();
-        }
-        List<Video> videoList = videoDao.getAllVideos();
-        if(!videoList.isEmpty()){
-            videos.addAll(videoDao.getAllVideos());
-        }
-        adapter.notifyDataSetChanged();
+        refreshVideos();
     }
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {

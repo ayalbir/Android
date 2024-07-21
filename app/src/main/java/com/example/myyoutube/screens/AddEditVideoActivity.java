@@ -115,13 +115,12 @@ public class AddEditVideoActivity extends AppCompatActivity {
                 // Compress the bitmap and encode it
                 Bitmap bitmap = ((BitmapDrawable) ivThumbnail.getDrawable()).getBitmap();
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 10, out);
                 String encodedImage = Base64.encodeToString(out.toByteArray(), Base64.DEFAULT);
                 video.setPic(encodedImage);
 
                 String encodedVideo = encodeVideo(videoUri);
                 video.setUrl(encodedVideo != null ? encodedVideo : "");
-
             }
 
             if (isEditMode) {

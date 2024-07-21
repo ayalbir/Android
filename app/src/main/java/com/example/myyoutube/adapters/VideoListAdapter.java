@@ -85,7 +85,10 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             User user = userManager.getUserByEmail(video.getEmail());
             holder.tvChannel.setText(Objects.requireNonNull(user.getFirstName()));
             holder.tvTimeAgo.setText(video.getTimeAgo());
-
+            if(video.getPic() == null){
+                Toast.makeText(mContext, "Failed to fetch photo. File is too big", Toast.LENGTH_SHORT).show();
+                video.setPic("");
+            }
             // Check if the pic is in the drawable resources
             int imageResId = mContext.getResources().getIdentifier(video.getPic(), "drawable", mContext.getPackageName());
             if (imageResId != 0) {

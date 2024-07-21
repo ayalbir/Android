@@ -57,10 +57,12 @@ public class UserRepository {
 
     public void updateUser(String email, User user, String token) {
         userAPI.updateUser(email, user, token, messageLiveData);
+        userDao.update(UserManager.getConnectedUser());
     }
 
     public void deleteUser(String email, String token) {
         userAPI.deleteUser(email, token, messageLiveData);
+        userDao.delete(UserManager.getConnectedUser());
     }
 
 }
