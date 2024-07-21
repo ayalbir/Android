@@ -251,12 +251,15 @@ public class VideoPlayerActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
             } else if (id == R.id.nav_login) {
-                if(UserManager.getConnectedUser() != null) {
+                if(currentUser != null) {
                     Intent intent = new Intent(VideoPlayerActivity.this, UpdateDeleteUserActivity.class);
+                    intent.putExtra("userEmail", currentUser.getEmail());
                     startActivity(intent);
                 }
-                Intent intent = new Intent(VideoPlayerActivity.this, logInScreen1.class);
-                startActivity(intent);
+                else{
+                    Intent intent = new Intent(VideoPlayerActivity.this, logInScreen1.class);
+                    startActivity(intent);
+                }
             }
             return false;
         });
