@@ -12,7 +12,7 @@ import java.util.List;
 public class CommentViewModel extends ViewModel {
     private CommentRepository commentRepository;
     private LiveData<List<Comment>> commentsLiveData;
-    private String token;
+    private final String token;
 
     public CommentViewModel() {
         token = TokenService.getInstance().getToken();
@@ -22,9 +22,11 @@ public class CommentViewModel extends ViewModel {
         commentRepository = new CommentRepository(videoId);
         commentsLiveData = commentRepository.get();
     }
-    public LiveData<List<Comment>> get(){
+
+    public LiveData<List<Comment>> get() {
         return commentsLiveData;
     }
+
     public void getCommentsForVideo() {
         commentRepository.getCommentsForVideo();
     }

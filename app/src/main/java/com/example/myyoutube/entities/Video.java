@@ -36,7 +36,7 @@ public class Video {
     private List<String> likedBy;
     private List<String> dislikedBy;
 
-    public Video(@NonNull String _id , String email, String title, String description, String pic, String url, List<Comment> comments) {
+    public Video(@NonNull String _id, String email, String title, String description, String pic, String url, List<Comment> comments) {
         this._id = _id;
         this.email = email;
         this.title = title;
@@ -56,6 +56,7 @@ public class Video {
     public String getId() {
         return _id;
     }
+
     public void setId(String id) {
         this._id = id;
     }
@@ -163,7 +164,8 @@ public class Video {
     public String getCreatedAt() {
         return createdAt;
     }
-    public void setCreatedAt(String createdAt){
+
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 

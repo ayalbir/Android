@@ -59,9 +59,9 @@ public class VideoPlayerActivity extends AppCompatActivity {
     private RecyclerView rvOtherVideos;
     private User currentUser;
     private VideosViewModel videosViewModel;
-    private UserViewModel userViewModel = UserViewModel.getInstance();
+    private final UserViewModel userViewModel = UserViewModel.getInstance();
     private CommentViewModel commentViewModel;
-    private List<Comment> commentsList = new ArrayList<>();
+    private final List<Comment> commentsList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,9 +164,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
                     video.incrementLikes();
                     video.decrementDislikes();
                     video.getLikedBy().add(currentUser.getEmail());
-                    if (video.getDislikedBy().contains(currentUser.getEmail())) {
-                        video.getDislikedBy().remove(currentUser.getEmail());
-                    }
+                    video.getDislikedBy().remove(currentUser.getEmail());
                 }
                 likesView.setText("" + video.getLikes());
                 updateLikeDislikeButtons();
@@ -185,9 +183,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
                     video.incrementDislikes();
                     video.decrementLikes();
                     video.getDislikedBy().add(currentUser.getEmail());
-                    if (video.getLikedBy().contains(currentUser.getEmail())) {
-                        video.getLikedBy().remove(currentUser.getEmail());
-                    }
+                    video.getLikedBy().remove(currentUser.getEmail());
                 }
                 likesView.setText("" + video.getLikes());
                 updateLikeDislikeButtons();
@@ -248,12 +244,11 @@ public class VideoPlayerActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
             } else if (id == R.id.nav_login) {
-                if(currentUser != null) {
+                if (currentUser != null) {
                     Intent intent = new Intent(VideoPlayerActivity.this, UpdateDeleteUserActivity.class);
                     intent.putExtra("userEmail", currentUser.getEmail());
                     startActivity(intent);
-                }
-                else{
+                } else {
                     Intent intent = new Intent(VideoPlayerActivity.this, logInScreen1.class);
                     startActivity(intent);
                 }
@@ -340,9 +335,10 @@ public class VideoPlayerActivity extends AppCompatActivity {
         fos.close();
         return Uri.fromFile(tempFile);
     }
+
     private class CommentsAdapter extends ArrayAdapter<Comment> {
-        private Context context;
-        private List<Comment> comments;
+        private final Context context;
+        private final List<Comment> comments;
 
         public CommentsAdapter(Context context, List<Comment> comments) {
             super(context, 0, comments);
@@ -406,7 +402,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
             builder.setTitle("Edit Comment");
 
             View viewInflated = LayoutInflater.from(context).inflate(R.layout.dialog_edit_comment,
-                    (ViewGroup) ((Activity) context).findViewById(android.R.id.content), false);
+                    ((Activity) context).findViewById(android.R.id.content), false);
             EditText input = viewInflated.findViewById(R.id.input);
             input.setText(comment.getText());
 
@@ -425,4 +421,5 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
             builder.show();
         }
-    }}
+    }
+}

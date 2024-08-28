@@ -28,7 +28,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class CommentsAPI {
     Retrofit retrofit;
     CommentsAPIService commentsAPIService;
-    private CommentRepository.CommentListData commentListData;
+    private final CommentRepository.CommentListData commentListData;
 
     public CommentsAPI(CommentRepository.CommentListData commentListData) {
 
@@ -70,7 +70,7 @@ public class CommentsAPI {
                             String profilePicture = jsonComment.get("profilePicture").getAsString();
                             String email = jsonComment.get("email").getAsString();
                             String videoId = jsonComment.get("videoId").getAsString();
-                            Comment comment = new Comment(videoId,"", text, profilePicture, email);
+                            Comment comment = new Comment(videoId, "", text, profilePicture, email);
                             comment.set_id(id);
                             comments.add(comment);
                         }
@@ -152,7 +152,7 @@ public class CommentsAPI {
     }
 
     public void deleteComment(Comment comment, String token) {
-        Call<JsonObject> call = commentsAPIService.deleteComment(comment.getVideoId(),comment.get_id(), "Bearer " + token);
+        Call<JsonObject> call = commentsAPIService.deleteComment(comment.getVideoId(), comment.get_id(), "Bearer " + token);
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -162,6 +162,7 @@ public class CommentsAPI {
                     }).start();
                 }
             }
+
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 Log.e("CommentsAPI", t.getLocalizedMessage());

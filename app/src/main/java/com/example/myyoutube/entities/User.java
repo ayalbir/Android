@@ -10,7 +10,6 @@ import com.example.myyoutube.Converters;
 import java.time.LocalDate;
 
 
-
 @Entity(tableName = "users")
 @TypeConverters({Converters.class})
 public class User {
@@ -22,11 +21,11 @@ public class User {
     private String password;
     private String firstName;
     private String familyName;
-    private LocalDate birthdate;
+    private String birthdate;
     private String gender;
     private String profileImage;
 
-    public User(String email, String password, String firstName, String familyName, LocalDate birthdate, String gender, String profileImage) {
+    public User(String email, String password, String firstName, String familyName, String birthdate, String gender, String profileImage) {
         this.email = email;
         this.password = password;
         this.firstName = firstName;
@@ -78,11 +77,11 @@ public class User {
         this.familyName = familyName;
     }
 
-    public LocalDate getBirthdate() {
+    public String getBirthdate() {
         return birthdate;
     }
 
-    public void setBirthdate(LocalDate birthdate) {
+    public void setBirthdate(String birthdate) {
         this.birthdate = birthdate;
     }
 

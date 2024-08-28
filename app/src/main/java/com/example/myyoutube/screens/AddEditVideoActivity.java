@@ -42,8 +42,7 @@ public class AddEditVideoActivity extends AppCompatActivity {
     private Uri imageUri, videoUri;
     private Video video;
     private boolean isEditMode = false;
-    private boolean isVideoSelected = false
-            , isImageSelected = false;
+    private boolean isVideoSelected = false, isImageSelected = false;
     private VideosViewModel videosViewModel;
 
     @Override
@@ -66,14 +65,14 @@ public class AddEditVideoActivity extends AppCompatActivity {
         if (videoId != null) {
             isEditMode = true;
             video = videosViewModel.getVideoById(videoId);
-                if (video != null) {
-                    etTitle.setText(video.getTitle());
-                    etDescription.setText(video.getDescription());
-                    imageUri = Uri.parse(video.getPic());
-                    videoUri = Uri.parse(video.getUrl());
-                    ivThumbnail.setImageURI(imageUri);
-                    ivThumbnail.setVisibility(View.VISIBLE);
-                }
+            if (video != null) {
+                etTitle.setText(video.getTitle());
+                etDescription.setText(video.getDescription());
+                imageUri = Uri.parse(video.getPic());
+                videoUri = Uri.parse(video.getUrl());
+                ivThumbnail.setImageURI(imageUri);
+                ivThumbnail.setVisibility(View.VISIBLE);
+            }
         }
 
         btnSelectImage.setOnClickListener(v -> openImageGallery());
@@ -101,15 +100,15 @@ public class AddEditVideoActivity extends AppCompatActivity {
 
     private void saveVideo() {
         Toast.makeText(this, "Saving... It may take a couple of seconds", Toast.LENGTH_LONG).show();
-        if((isImageSelected && isVideoSelected) || isEditMode){
-            if(video == null){
-                video = new Video("","", "", "", "", "", new ArrayList<>());
+        if ((isImageSelected && isVideoSelected) || isEditMode) {
+            if (video == null) {
+                video = new Video("", "", "", "", "", "", new ArrayList<>());
             }
             video.setTitle(Objects.requireNonNull(etTitle.getText()).toString());
             video.setDescription(Objects.requireNonNull(etDescription.getText()).toString());
             video.setEmail(curretUser.getEmail());
 
-            if(!isEditMode) {
+            if (!isEditMode) {
                 // Compress the bitmap and encode it
                 Bitmap bitmap = ((BitmapDrawable) ivThumbnail.getDrawable()).getBitmap();
                 ByteArrayOutputStream out = new ByteArrayOutputStream();

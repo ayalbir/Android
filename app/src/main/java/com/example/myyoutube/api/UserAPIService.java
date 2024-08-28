@@ -4,6 +4,7 @@ import com.example.myyoutube.entities.User;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -33,5 +34,5 @@ public interface UserAPIService {
     Call<JsonObject> deleteUser(@Path("email") String email, @Header("Authorization") String token);
 
     @GET("api/users")
-    Call<ArrayList<User>> getAllUsers();
+    Call<List<User>> getAllUsers();
 }

@@ -32,6 +32,7 @@ public interface VideoApiService {
 
     @DELETE("api/users/{email}/videos/{vid}")
     Call<JsonObject> deleteVideo(@Path("email") String email, @Path("vid") String videoId, @Header("authorization") String token);
+
     @PATCH("api/users/{email}/videos/{pid}/likes")
     Call<JsonObject> likeVideo(@Path("email") String email, @Path("pid") String videoId, @Header("Authorization") String token);
 

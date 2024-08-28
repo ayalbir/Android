@@ -36,6 +36,7 @@ public class UserVideosActivity extends AppCompatActivity {
     private VideosViewModel videosViewModel;
 
     private UserViewModel userViewModel;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

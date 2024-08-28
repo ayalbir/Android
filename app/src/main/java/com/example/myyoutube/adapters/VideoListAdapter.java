@@ -34,35 +34,13 @@ import java.util.Objects;
 
 public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.VideoViewHolder> {
 
-    private User currentUser = MainActivity.getCurrentUser();
-    private VideosViewModel videosViewModel;
-    private UserViewModel userViewModel = UserViewModel.getInstance();
-
-
-    static class VideoViewHolder extends RecyclerView.ViewHolder {
-        private final TextView tvViews, tvTitle, tvChannel, tvTimeAgo;
-        private final ImageView thumbnail, ivChannelPhoto;
-        private final ImageButton overflowMenu;
-        private final View channelLayout;
-
-        private VideoViewHolder(View view) {
-            super(view);
-            tvTitle = view.findViewById(R.id.tvTitle);
-            tvViews = view.findViewById(R.id.tvViews);
-            thumbnail = view.findViewById(R.id.ivPic);
-            tvChannel = view.findViewById(R.id.tvChannel);
-            overflowMenu = view.findViewById(R.id.overflowMenu);
-            ivChannelPhoto = view.findViewById(R.id.ivChannelPhoto);
-            channelLayout= view.findViewById(R.id.channelLayout);
-            tvTimeAgo= view.findViewById(R.id.tvTimeAgo);
-        }
-    }
-
     private final LayoutInflater mInflater;
     private final Context mContext;
+    private final User currentUser = MainActivity.getCurrentUser();
+    private final VideosViewModel videosViewModel;
+    private final UserViewModel userViewModel = UserViewModel.getInstance();
     private List<Video> videos;
     private List<Video> videosFull = new ArrayList<>();
-
     public VideoListAdapter(Context context, VideosViewModel videosViewModel) {
         this.mInflater = LayoutInflater.from(context);
         this.mContext = context;
@@ -85,7 +63,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             User user = userViewModel.getUserByEmail(video.getEmail());
             holder.tvChannel.setText(Objects.requireNonNull(user.getFirstName()));
             holder.tvTimeAgo.setText(video.getTimeAgo());
-            if(video.getPic() == null){
+            if (video.getPic() == null) {
                 Toast.makeText(mContext, "Failed to fetch photo. File is too big", Toast.LENGTH_SHORT).show();
                 video.setPic("");
             }
@@ -123,19 +101,16 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             });
 
             holder.overflowMenu.setOnClickListener(view -> {
-                if(currentUser != null){
-                    if(currentUser.getEmail().equals(video.getEmail())){
+                if (currentUser != null) {
+                    if (currentUser.getEmail().equals(video.getEmail())) {
                         showEditDeleteDialog(video, position);
-                    }
-                    else {
+                    } else {
                         Toast.makeText(holder.itemView.getContext(), "You can only edit or delete your own videos", Toast.LENGTH_SHORT).show();
                     }
-                }
-                else
+                } else
                     Toast.makeText(mContext, "User not connected", Toast.LENGTH_SHORT).show();
             });
-        }
-        else {
+        } else {
             videos = new ArrayList<>();
         }
     }
@@ -167,6 +142,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         });
         builder.show();
     }
+
     public void setVideos(List<Video> v) {
         videos = v;
         videosFull = new ArrayList<>(v);
@@ -196,6 +172,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             }
         }
     }
+
     @Override
     public int getItemCount() {
         return videos != null ? videos.size() : 0;
@@ -214,5 +191,24 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             }
         }
         notifyDataSetChanged();
+    }
+
+    static class VideoViewHolder extends RecyclerView.ViewHolder {
+        private final TextView tvViews, tvTitle, tvChannel, tvTimeAgo;
+        private final ImageView thumbnail, ivChannelPhoto;
+        private final ImageButton overflowMenu;
+        private final View channelLayout;
+
+        private VideoViewHolder(View view) {
+            super(view);
+            tvTitle = view.findViewById(R.id.tvTitle);
+            tvViews = view.findViewById(R.id.tvViews);
+            thumbnail = view.findViewById(R.id.ivPic);
+            tvChannel = view.findViewById(R.id.tvChannel);
+            overflowMenu = view.findViewById(R.id.overflowMenu);
+            ivChannelPhoto = view.findViewById(R.id.ivChannelPhoto);
+            channelLayout = view.findViewById(R.id.channelLayout);
+            tvTimeAgo = view.findViewById(R.id.tvTimeAgo);
+        }
     }
 }

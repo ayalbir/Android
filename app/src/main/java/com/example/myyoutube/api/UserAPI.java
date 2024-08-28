@@ -10,6 +10,7 @@ import com.example.myyoutube.R;
 import com.example.myyoutube.TokenService;
 import com.example.myyoutube.dao.UserDao;
 import com.example.myyoutube.entities.User;
+import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.viewmodels.UserViewModel;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -57,35 +58,33 @@ public class UserAPI {
         userServiceAPI = retrofit.create(UserAPIService.class);
     }
 
-    public void getAllUsers() {
-        Call<ArrayList<User>> call = userServiceAPI.getAllUsers();
-        call.enqueue(new Callback<ArrayList<User>>() {
+    public void getAllUsers(MutableLiveData<List<User>> usersListData) {
+        Call<List<User>> call = userServiceAPI.getAllUsers();
+        call.enqueue(new Callback<List<User>>() {
             @Override
-            public void onResponse(Call<ArrayList<User>> call, Response<ArrayList<User>> response) {
+            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
                 if (response.isSuccessful()) {
                     List<User> users = response.body();
-                    if (users != null && !users.isEmpty()) {
-                        if(!userDao.getAllUsers().isEmpty()){
-                            userDao.clear();
-                        }
+                    if (users != null && userDao != null) {
+                            if (!userDao.getAllUsers().isEmpty()) {
+                                userDao.clear();
+                            }
                             for (User user : users) {
                                 userDao.insert(user);
                             }
+                            usersListData.postValue(users);
                     } else {
-                        Log.e("UserAPI", "Failed to fetch users");
+                        Log.e("VideoAPI", "Failed to fetch videos");
                     }
-                } else {
-                    Log.e("UserAPI", "Response not successful: " + response.message());
                 }
             }
-
             @Override
-            public void onFailure(Call<ArrayList<User>> call, Throwable t) {
+            public void onFailure(Call<List<User>> call, Throwable t) {
                 Log.e("UserAPI", t.getLocalizedMessage());
             }
+
         });
     }
-
     public void signIn(String email, String password) {
         JSONObject requestBodyJson = new JSONObject();
         try {
@@ -139,7 +138,7 @@ public class UserAPI {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
-                        UserViewModel.getConnectedUser().setId(response.body().get("_id").getAsString());
+                    UserViewModel.getConnectedUser().setId(response.body().get("_id").getAsString());
                     messageLiveData.postValue("User created successfully");
                 } else {
                     messageLiveData.postValue("Failed to create user");

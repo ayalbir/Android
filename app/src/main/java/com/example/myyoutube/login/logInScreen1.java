@@ -48,8 +48,7 @@ public class logInScreen1 extends AppCompatActivity {
                     UserViewModel.setConnectedUser(user);
                     userViewModel.signIn(currentEmail, currentPassword);
                     startActivity(intent);
-                }
-                else {
+                } else {
                     Toast.makeText(logInScreen1.this, "Incorrect credentials", Toast.LENGTH_SHORT).show();
                 }
             }

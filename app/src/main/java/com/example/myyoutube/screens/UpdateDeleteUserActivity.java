@@ -19,14 +19,14 @@ import com.example.myyoutube.viewmodels.VideosViewModel;
 
 
 public class UpdateDeleteUserActivity extends AppCompatActivity {
+    String oldEmail;
     private EditText etUserName;
     private EditText etUserEmail;
     private EditText etPassword;
     private ImageView ivProfileImage;
     private User currentUser;
-    private UserViewModel userViewModel = UserViewModel.getInstance();
+    private final UserViewModel userViewModel = UserViewModel.getInstance();
     private VideosViewModel videosViewModel;
-    String oldEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

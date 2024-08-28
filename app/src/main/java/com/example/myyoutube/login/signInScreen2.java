@@ -23,6 +23,7 @@ public class signInScreen2 extends AppCompatActivity {
     private EditText dayEditText, yearEditText;
     private Button nextButton;
     private TextView errorMsg;
+
     @SuppressLint("NewApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +80,7 @@ public class signInScreen2 extends AppCompatActivity {
                     }
 
                     // Check if the createdAt is more than 130 years ago
-                    int d =  now.minusYears(130).getYear();
+                    int d = now.minusYears(130).getYear();
                     if (year < d) {
                         errorMsg.setText("Please check your date of birth again.");
                         return;

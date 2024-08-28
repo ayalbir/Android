@@ -1,5 +1,6 @@
 package com.example.myyoutube.repositories;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.room.Room;
 
@@ -16,9 +17,8 @@ public class UserRepository {
 
     private final UserAPI userAPI;
     private UserDao userDao;
-    private MutableLiveData<List<User>> usersLiveData;
-    private MutableLiveData<User> userLiveData;
-    private MutableLiveData<String> messageLiveData;
+    private MutableLiveData<List<User>> usersListData;
+    private final MutableLiveData<String> messageLiveData;
     private AppDB db;
 
     public UserRepository() {
@@ -29,10 +29,8 @@ public class UserRepository {
                     .build();
             userDao = db.userDao();
         }).start();
-
-        usersLiveData = new MutableLiveData<>();
+        usersListData = new MutableLiveData<>();
         userAPI = new UserAPI(userDao);
-        userLiveData = new MutableLiveData<>();
         messageLiveData = new MutableLiveData<>();
     }
 
@@ -45,17 +43,22 @@ public class UserRepository {
         userDao.insert(UserViewModel.getConnectedUser());
     }
 
-    public void getAllUsers() {
-        userAPI.getAllUsers();
+    public LiveData<List<User>> get() {
+        userAPI.getAllUsers(usersListData);
+        return usersListData;
     }
+
+    public void getUsersFromDao() {
+        userDao.getAllUsers();
+    }
+
     public User getUserByEmail(String email) {
-        User user = userDao.getUserByEmail(email);
-        return user;
+        return userDao.getUserByEmail(email);
     }
 
     public void updateUser(String email, User user, String token) {
         userAPI.updateUser(email, user, token, messageLiveData);
-        userDao.update(UserViewModel.getConnectedUser());
+        userDao.update(user);
     }
 
     public void deleteUser(String email, String token) {

@@ -29,8 +29,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class VideoAPI {
     Retrofit retrofit;
     VideoApiService webServiceAPI;
-    private VideoRepository.VideoListData videoListData;
-    private VideoDao videoDao;
+    private final VideoRepository.VideoListData videoListData;
+    private final VideoDao videoDao;
 
     public VideoAPI(VideoRepository.VideoListData videos, VideoDao videoDao) {
 
@@ -57,6 +57,7 @@ public class VideoAPI {
 
         this.webServiceAPI = retrofit.create(VideoApiService.class);
     }
+
     public void getVideos() {
         Call<List<Video>> call = webServiceAPI.getVideos();
         call.enqueue(new Callback<List<Video>>() {
@@ -108,8 +109,9 @@ public class VideoAPI {
                             videoDao.insert(videoToAdd);
                             videoListData.addVideo(videoToAdd);
                         }).start();
-                        }
                     }
+                }
+
                 @Override
                 public void onFailure(Call<JsonObject> call, Throwable t) {
                     Log.e("VideoAPI", t.getLocalizedMessage());
@@ -145,7 +147,7 @@ public class VideoAPI {
                         new Thread(() -> videoDao.update(videoToEdit)).start();
                         videoListData.updateVideo(videoToEdit);
                         Toast.makeText(Helper.context, "Video updated", Toast.LENGTH_SHORT).show();
-                    } catch (Exception e){
+                    } catch (Exception e) {
                         Toast.makeText(Helper.context, "Video cannot be updated due to validation failure.", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -166,10 +168,10 @@ public class VideoAPI {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
-                        Converters.deleteFileFromStorage(videoToRemove.getPic());
-                        new Thread(() -> videoDao.delete(videoToRemove)).start();
-                        videoListData.removeVideo(videoToRemove);
-                        Toast.makeText(Helper.context, "Video deleted", Toast.LENGTH_SHORT).show();
+                    Converters.deleteFileFromStorage(videoToRemove.getPic());
+                    new Thread(() -> videoDao.delete(videoToRemove)).start();
+                    videoListData.removeVideo(videoToRemove);
+                    Toast.makeText(Helper.context, "Video deleted", Toast.LENGTH_SHORT).show();
                 }
             }
 

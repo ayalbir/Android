@@ -33,8 +33,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.myyoutube.AppDB;
 import com.example.myyoutube.R;
-import com.example.myyoutube.dao.VideoDao;
 import com.example.myyoutube.adapters.VideoListAdapter;
+import com.example.myyoutube.dao.VideoDao;
 import com.example.myyoutube.entities.User;
 import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.login.logInScreen1;
@@ -43,16 +43,8 @@ import com.example.myyoutube.viewmodels.VideosViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 @SuppressLint("NotifyDataSetChanged")
@@ -65,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static List<User> users;
     public static boolean firstTime = true;
     private static User currentUser;
-    private final UserViewModel userViewModel = UserViewModel.getInstance();
+    private UserViewModel userViewModel;
     private DrawerLayout drawerLayout;
     private SearchView searchView;
     private VideoListAdapter adapter;
@@ -85,12 +77,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         try {
             Field field = CursorWindow.class.getDeclaredField("sCursorWindowSize");
             field.setAccessible(true);
-            field.set(null, 100 * 1024 * 1024); //the 100MB is the new size
+            field.set(null, 100 * 1024 * 1024);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //userViewModel.getAllUsers();
-        videosViewModel = new ViewModelProvider(this).get(VideosViewModel.class);
+
+
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         MenuItem profilePictureItem = bottomNavigationView.getMenu().findItem(R.id.nav_login);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -115,13 +107,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             profilePictureItem.setTitle("Account");
         }
 
-        setupRecyclerViewDB();
-        initUI();
-        setupToolbarAndDrawer();
-        setupSearchView();
-        loadVideosFromJSON();
-        setupNightModeSwitch();
-        setupBottomNavigationView();
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        if(userViewModel.isFirstTime()){
+            userViewModel.get().observe(this, usersList -> {
+                if (usersList != null) {
+                    // Users fetched successfully, now proceed to load videos
+                    videosViewModel = new ViewModelProvider(MainActivity.this).get(VideosViewModel.class);
+                    setupRecyclerViewDB();
+                    initUI();
+                    setupToolbarAndDrawer();
+                    setupSearchView();
+                    setupNightModeSwitch();
+                    setupBottomNavigationView();
+                }
+            });
+        }
+        else{
+            videosViewModel = new ViewModelProvider(MainActivity.this).get(VideosViewModel.class);
+            setupRecyclerViewDB();
+            initUI();
+            setupToolbarAndDrawer();
+            setupSearchView();
+            setupNightModeSwitch();
+            setupBottomNavigationView();
+        }
 
         if (savedInstanceState == null) {
             navigationView = findViewById(R.id.nav_view);
@@ -136,9 +145,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void setupRecyclerViewDB() {
         RecyclerView videoList = findViewById(R.id.videoList);
-        adapter = new VideoListAdapter(this,videosViewModel);
+        adapter = new VideoListAdapter(this, videosViewModel);
         videos = videosViewModel.get().getValue();
-        if(videos != null) {
+        if (videos != null) {
             adapter.setVideos(videos);
         }
 
@@ -164,15 +173,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void refreshVideos() {
-        videosViewModel.get();
-        videosViewModel.get().observe(this, videos -> {
-            if (videos != null && adapter != null) {
-                adapter.setVideos(videos);
-                adapter.notifyDataSetChanged();
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        });
+        if(videosViewModel != null){
+            videosViewModel.get();
+            videosViewModel.get().observe(this, videos -> {
+                if (videos != null && adapter != null) {
+                    adapter.setVideos(videos);
+                    adapter.notifyDataSetChanged();
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+            });
+        }
     }
+
     private void setupToolbarAndDrawer() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -199,20 +211,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return false;
             }
         });
-    }
-
-    private void loadVideosFromJSON() {
-        String jsonData = loadJSONFromAsset();
-        if (jsonData != null) {
-            if (firstTime) {
-                videos = parseVideosFromJSON(jsonData);
-                //UserViewModel.initializeDefaultUsers();
-            }
-             firstTime = false;
-            if(videos != null) {
-                adapter.setVideos(videos);
-            }
-        }
     }
 
 
@@ -273,33 +271,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
         }
         return null;
-    }
-
-    private List<Video> parseVideosFromJSON(String jsonData) {
-        Gson gson = new Gson();
-        JsonObject jsonObject = JsonParser.parseString(jsonData).getAsJsonObject();
-        Type videoListType = new TypeToken<ArrayList<Video>>() {}.getType();
-        List<Video> videoList = gson.fromJson(jsonObject.get("Videos"), videoListType);
-        for (Video video : videoList) {
-            if (video.getComments() == null) {
-                video.setComments(new ArrayList<>());
-            }
-        }
-        return videoList;
-    }
-    private String loadJSONFromAsset() {
-        String json = null;
-        try {
-            InputStream is = getResources().getAssets().open("data.json");
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        return json;
     }
 
     @Override

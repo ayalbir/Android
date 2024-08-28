@@ -17,6 +17,7 @@ public interface CommentsAPIService {
 
     @GET("api/videos/{videoId}/comments")
     Call<ArrayList<JsonObject>> getCommentsByVideoId(@Path("videoId") String videoId);
+
     @POST("api/videos/{videoId}/comments")
     Call<JsonObject> addComment(@Path("videoId") String videoId, @Body JsonObject comment, @Header("Authorization") String token);
 

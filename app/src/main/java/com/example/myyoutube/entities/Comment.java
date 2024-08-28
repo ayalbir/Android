@@ -7,14 +7,14 @@ import java.time.LocalDate;
 
 public class Comment {
 
-    private String videoId;
+    private final String videoId;
     private String _id;
     private String text;
     private String profilePicture;
     private String email;
     private LocalDate createdAt;
 
-    public Comment(String videoId, String _id,String text, String profilePicture, String email) {
+    public Comment(String videoId, String _id, String text, String profilePicture, String email) {
         this.createdAt = UserViewModel.getTempDate();
         this.videoId = videoId;
         this._id = _id;
