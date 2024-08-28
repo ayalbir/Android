@@ -34,6 +34,11 @@ public class VideoRepository {
         return videoListData;
     }
 
+    public LiveData<List<Video>> getSuggestedVideos(String email) {
+        videoAPI.getSuggestedVideos(email);
+        return videoListData;
+    }
+
     public VideoDao getVideoDao() {
         return videoDao;
     }

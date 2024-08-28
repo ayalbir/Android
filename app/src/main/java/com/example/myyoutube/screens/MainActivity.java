@@ -108,7 +108,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
-        if(userViewModel.isFirstTime()){
+         if(firstTime){
+            firstTime = false;
             userViewModel.get().observe(this, usersList -> {
                 if (usersList != null) {
                     // Users fetched successfully, now proceed to load videos

@@ -23,7 +23,6 @@ public class UserViewModel extends ViewModel {
         this.userRepository = new UserRepository();
         connectedUser = null;
         videosViewModel = VideosViewModel.getInstance();
-        firstTime = true;
         get();
     }
 
@@ -75,9 +74,6 @@ public class UserViewModel extends ViewModel {
         videosViewModel.removeVideosByUser(email);
     }
 
-    public boolean isFirstTime() {
-        return firstTime;
-    }
 
     public void getUsersFromDao() {
         userRepository.getUsersFromDao();

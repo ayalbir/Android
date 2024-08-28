@@ -10,6 +10,7 @@ import com.example.myyoutube.TokenService;
 import com.example.myyoutube.dao.VideoDao;
 import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.repositories.VideoRepository;
+import com.example.myyoutube.viewmodels.UserViewModel;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -211,7 +212,10 @@ public class VideoAPI {
     }
 
     public void updateVideoViews(String videoId) {
-        Call<JsonObject> call = webServiceAPI.updateVideoViews(videoId);
+        JsonObject emailBody = new JsonObject();
+        //emailBody.addProperty("email", UserViewModel.getConnectedUser().getEmail());
+        emailBody.addProperty("email", "dvir@example.com");
+        Call<JsonObject> call = webServiceAPI.updateVideoViews(videoId, emailBody);
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -224,4 +228,39 @@ public class VideoAPI {
             }
         });
     }
+
+    public void getSuggestedVideos(String email) {
+        // Make the Retrofit POST call
+        Call<List<Video>> call = webServiceAPI.getSuggestedVideos(email);
+        call.enqueue(new Callback<List<Video>>() {
+            @Override
+            public void onResponse(Call<List<Video>> call, Response<List<Video>> response) {
+                if (response.isSuccessful()) {
+                    List<Video> videos = response.body();
+                    if (videos != null) {
+                        new Thread(() -> {
+                            if (!videoDao.getAllVideos().isEmpty()) {
+                                videoDao.clear();
+                            }
+                            for (Video video : videos) {
+                                videoDao.insert(video);
+                            }
+                            videoListData.postValue(videos);
+                        }).start();
+                    } else {
+                        Log.e("VideoAPI", "Failed to fetch videos: response body is null");
+                    }
+                } else {
+                    Log.e("VideoAPI", "Failed to fetch videos: " + response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Video>> call, Throwable t) {
+                Log.e("VideoAPI", "API call failed: " + t.getLocalizedMessage());
+            }
+        });
+    }
+
+
 }

@@ -244,24 +244,23 @@ public class VideoPlayerActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
             } else if (id == R.id.nav_login) {
+                Intent intent;
                 if (currentUser != null) {
-                    Intent intent = new Intent(VideoPlayerActivity.this, UpdateDeleteUserActivity.class);
+                    intent = new Intent(VideoPlayerActivity.this, UpdateDeleteUserActivity.class);
                     intent.putExtra("userEmail", currentUser.getEmail());
-                    startActivity(intent);
                 } else {
-                    Intent intent = new Intent(VideoPlayerActivity.this, logInScreen1.class);
-                    startActivity(intent);
+                    intent = new Intent(VideoPlayerActivity.this, logInScreen1.class);
                 }
+                startActivity(intent);
             }
             return false;
         });
 
         bottomNavigationView.getMenu().setGroupCheckable(0, false, true);
-
     }
 
     private void fetchRecommendedVideos() {
-        videosViewModel.get().observe(this, videos -> {
+        videosViewModel.getSuggestedVideos(currentUser.getEmail()).observe(this, videos -> {
             if (videos != null && video != null) {
                 otherVideos = new ArrayList<>(videos);
                 otherVideos.remove(video);  // Remove the current video from the list of recommended videos
@@ -275,8 +274,8 @@ public class VideoPlayerActivity extends AppCompatActivity {
     }
 
     private void refreshRecommendedVideos() {
-        videosViewModel.get();
-        videosViewModel.get().observe(this, videos -> {
+        videosViewModel.getSuggestedVideos(currentUser.getEmail());
+        videosViewModel.getSuggestedVideos(currentUser.getEmail()).observe(this, videos -> {
             if (videos != null) {
                 otherVideos = new ArrayList<>(videos);
                 otherVideos.remove(video);
@@ -285,7 +284,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
             }
         });
     }
-
 
     private Bitmap decodeImage(String encodedImage) {
         if (encodedImage != null) {

@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.myyoutube.TokenService;
 import com.example.myyoutube.entities.Comment;
+import com.example.myyoutube.entities.User;
 import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.repositories.VideoRepository;
 
@@ -39,6 +40,11 @@ public class VideosViewModel extends ViewModel {
 
     public LiveData<List<Video>> get() {
         videosLiveData = videoRepository.getAllVideos();
+        return videosLiveData;
+    }
+
+    public LiveData<List<Video>> getSuggestedVideos(String email) {
+        videosLiveData = videoRepository.getSuggestedVideos(email);
         return videosLiveData;
     }
 

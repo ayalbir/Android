@@ -1,6 +1,5 @@
 package com.example.myyoutube.api;
 
-
 import com.example.myyoutube.entities.Video;
 import com.google.gson.JsonObject;
 
@@ -20,6 +19,8 @@ import retrofit2.http.Path;
 public interface VideoApiService {
     @GET("api/videos")
     Call<List<Video>> getVideos();
+    @GET("api/suggestedVideos/{email}")
+    Call<List<Video>> getSuggestedVideos(@Path("email") String email);
 
     @GET("api/users/{email}/videos")
     Call<ArrayList<JsonObject>> getUserVideos(@Path("email") String email, @Header("authorization") String token);
@@ -40,5 +41,5 @@ public interface VideoApiService {
     Call<JsonObject> dislikeVideo(@Path("email") String email, @Path("pid") String videoId, @Header("Authorization") String token);
 
     @PATCH("api/videos/{pid}/views")
-    Call<JsonObject> updateVideoViews(@Path("pid") String videoId);
+    Call<JsonObject> updateVideoViews(@Path("pid") String videoId, @Body JsonObject emailBody);
 }
