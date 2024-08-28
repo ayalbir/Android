@@ -18,14 +18,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myyoutube.screens.AddEditVideoActivity;
-import com.example.myyoutube.screens.MainActivity;
 import com.example.myyoutube.R;
-import com.example.myyoutube.screens.UserVideosActivity;
-import com.example.myyoutube.screens.VideoPlayerActivity;
 import com.example.myyoutube.entities.User;
 import com.example.myyoutube.entities.Video;
-import com.example.myyoutube.viewmodels.UserManager;
+import com.example.myyoutube.screens.AddEditVideoActivity;
+import com.example.myyoutube.screens.MainActivity;
+import com.example.myyoutube.screens.UserVideosActivity;
+import com.example.myyoutube.screens.VideoPlayerActivity;
+import com.example.myyoutube.viewmodels.UserViewModel;
 import com.example.myyoutube.viewmodels.VideosViewModel;
 
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
 
     private User currentUser = MainActivity.getCurrentUser();
     private VideosViewModel videosViewModel;
-    private UserManager userManager = UserManager.getInstance();
+    private UserViewModel userViewModel = UserViewModel.getInstance();
 
 
     static class VideoViewHolder extends RecyclerView.ViewHolder {
@@ -82,7 +82,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             Video video = videos.get(position);
             holder.tvTitle.setText(video.getTitle());
             holder.tvViews.setText(String.valueOf(video.getViews()));
-            User user = userManager.getUserByEmail(video.getEmail());
+            User user = userViewModel.getUserByEmail(video.getEmail());
             holder.tvChannel.setText(Objects.requireNonNull(user.getFirstName()));
             holder.tvTimeAgo.setText(video.getTimeAgo());
             if(video.getPic() == null){

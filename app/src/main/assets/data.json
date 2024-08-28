@@ -1,94 +1,184 @@
 {
   "Videos": [
     {
-      "channel": "Channel 1",
-      "title": "Sample Video 1",
-      "description": "This is a sample video 1.",
-      "duration": 120,
-      "thumbnail": "video1pic",
-      "channelEmail": "Elay@gmail.com",
-      "mp4file": "video1"
+      "_id": "",
+      "email": "elay@example.com",
+      "title": "cool",
+      "description": "Description for video 1"
     },
     {
-      "channel": "Channel 2",
-      "title": "Sample Video 2",
-      "channelEmail": "Dvir@gmail.com",
-      "description": "This is a sample video 2.",
-      "duration": 150,
-      "thumbnail": "video2pic",
-      "mp4file": "video2"
+      "_id": "",
+      "email": "ayal@example.com",
+      "title": "yay",
+      "description": "Description for video 2"
     },
     {
-      "channel": "Channel 3",
-      "title": "Sample Video 3",
-      "channelEmail": "Dvir@gmail.com",
-      "description": "This is a sample video 3.",
-      "duration": 200,
-      "thumbnail": "video3pic",
-      "mp4file": "video3"
+      "_id": "",
+      "email": "dvir@example.com",
+      "title": "wow",
+      "description": "Description for video 3"
     },
     {
-      "channel": "Channel 4",
-      "title": "Sample Video 4",
-      "channelEmail": "Ayal@gmail.com",
-      "description": "This is a sample video 4.",
-      "duration": 180,
-      "thumbnail": "video4pic",
-      "mp4file": "video4"
+      "_id": "",
+      "email": "elay@example.com",
+      "title": "neat",
+      "description": "Description for video 4"
     },
     {
-      "channel": "Channel 5",
-      "title": "Sample Video 5",
-      "channelEmail": "Ayal@gmail.com",
-      "description": "This is a sample video 5.",
-      "duration": 210,
-      "thumbnail": "video5pic",
-      "mp4file": "video5"
+      "_id": "",
+      "email": "ayal@example.com",
+      "title": "awesome",
+      "description": "Description for video 5"
     },
     {
-      "channel": "Channel 6",
-      "title": "Sample Video 6",
-      "channelEmail": "Elay@gmail.com",
-      "description": "This is a sample video 6.",
-      "duration": 170,
-      "thumbnail": "video6pic",
-      "mp4file": "video6"
+      "_id": "",
+      "email": "dvir@example.com",
+      "title": "Linear Algebra",
+      "description": "Description for video 6"
     },
     {
-      "channel": "Channel 7",
-      "title": "Sample Video 7",
-      "channelEmail": "Elay@gmail.com",
-      "description": "This is a sample video 7.",
-      "duration": 190,
-      "thumbnail": "video7pic",
-      "mp4file": "video7"
+      "_id": "",
+      "email": "elay@example.com",
+      "title": "yay",
+      "description": "Description for video 7"
     },
     {
-      "channel": "Channel 8",
-      "title": "Sample Video 8",
-      "channelEmail": "Ayal@gmail.com",
-      "description": "This is a sample video 8.",
-      "duration": 160,
-      "thumbnail": "video8pic",
-      "mp4file": "video8"
+      "_id": "",
+      "email": "ayal@example.com",
+      "title": "Physics",
+      "description": "Description for video 8"
     },
     {
-      "channel": "Channel 9",
-      "title": "Sample Video 9",
-      "channelEmail": "Elay@gmail.com",
-      "description": "This is a sample video 9.",
-      "duration": 220,
-      "thumbnail": "video9pic",
-      "mp4file": "video9"
+      "_id": "",
+      "email": "dvir@example.com",
+      "title": "Chemistry",
+      "description": "Description for video 9"
     },
     {
-      "channel": "Channel 10",
-      "title": "Sample Video 10",
-      "channelEmail": "Dvir@gmail.com",
-      "description": "This is a sample video 10.",
-      "duration": 140,
-      "thumbnail": "video10pic",
-      "mp4file": "video10"
+      "_id": "",
+      "email": "elay@example.com",
+      "title": "Biology",
+      "description": "Description for video 10"
+    },
+    {
+      "_id": "",
+      "email": "ayal@example.com",
+      "title": "History of the World War 2",
+      "description": "Description for video 11"
+    },
+    {
+      "_id": "",
+      "email": "dvir@example.com",
+      "title": "Geography",
+      "description": "Description for video 12"
+    },
+    {
+      "_id": "",
+      "email": "elay@example.com",
+      "title": "Economics",
+      "description": "Description for video 13"
+    },
+    {
+      "_id": "",
+      "email": "ayal@example.com",
+      "title": "Astronomy",
+      "description": "Description for video 14"
+    },
+    {
+      "_id": "",
+      "email": "dvir@example.com",
+      "title": "Art History",
+      "description": "Description for video 15"
+    },
+    {
+      "_id": "",
+      "email": "elay@example.com",
+      "title": "Music Theory",
+      "description": "Description for video 16"
+    },
+    {
+      "_id": "",
+      "email": "ayal@example.com",
+      "title": "Programming 101",
+      "description": "Description for video 17"
+    },
+    {
+      "_id": "",
+      "email": "dvir@example.com",
+      "title": "Data Science",
+      "description": "Description for video 18"
+    },
+    {
+      "_id": "",
+      "email": "elay@example.com",
+      "title": "Machine Learning",
+      "description": "Description for video 19"
+    },
+    {
+      "_id": "",
+      "email": "ayal@example.com",
+      "title": "Artificial Intelligence",
+      "description": "Description for video 20"
+    },
+    {
+      "_id": "",
+      "email": "dvir@example.com",
+      "title": "Blockchain",
+      "description": "Description for video 21"
+    },
+    {
+      "_id": "",
+      "email": "elay@example.com",
+      "title": "Cybersecurity",
+      "description": "Description for video 22"
+    },
+    {
+      "_id": "",
+      "email": "ayal@example.com",
+      "title": "Robotics",
+      "description": "Description for video 23"
+    },
+    {
+      "_id": "",
+      "email": "dvir@example.com",
+      "title": "Astronomy Advanced",
+      "description": "Description for video 24"
+    },
+    {
+      "_id": "",
+      "email": "elay@example.com",
+      "title": "Modern Art",
+      "description": "Description for video 25"
+    },
+    {
+      "_id": "",
+      "email": "ayal@example.com",
+      "title": "Classical Music",
+      "description": "Description for video 26"
+    },
+    {
+      "_id": "",
+      "email": "dvir@example.com",
+      "title": "Advanced Programming",
+      "description": "Description for video 27"
+    },
+    {
+      "_id": "",
+      "email": "elay@example.com",
+      "title": "Big Data",
+      "description": "Description for video 28"
+    },
+    {
+      "_id": "",
+      "email": "ayal@example.com",
+      "title": "Deep Learning",
+      "description": "Description for video 29"
+    },
+    {
+      "_id": "",
+      "email": "dvir@example.com",
+      "title": "AI in Practice",
+      "description": "Description for video 30"
     }
   ]
 }

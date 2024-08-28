@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.Layout;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -32,7 +31,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;
 import com.example.myyoutube.adapters.VideoListAdapter;
 import com.example.myyoutube.entities.Comment;
@@ -40,10 +38,9 @@ import com.example.myyoutube.entities.User;
 import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.login.logInScreen1;
 import com.example.myyoutube.viewmodels.CommentViewModel;
-import com.example.myyoutube.viewmodels.UserManager;
+import com.example.myyoutube.viewmodels.UserViewModel;
 import com.example.myyoutube.viewmodels.VideosViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -62,7 +59,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
     private RecyclerView rvOtherVideos;
     private User currentUser;
     private VideosViewModel videosViewModel;
-    private UserManager userManager = UserManager.getInstance();
+    private UserViewModel userViewModel = UserViewModel.getInstance();
     private CommentViewModel commentViewModel;
     private List<Comment> commentsList = new ArrayList<>();
 
@@ -126,13 +123,13 @@ public class VideoPlayerActivity extends AppCompatActivity {
         TextView likesView = findViewById(R.id.tvLikes);
         TextView timeAgoView = findViewById(R.id.tvTimeAgo);
         ImageView IVChannelPic = findViewById(R.id.IVChannelPic);
-        Bitmap channelPicBitmap = decodeImage(userManager.getUserByEmail(video.getEmail()).getProfileImage());
+        Bitmap channelPicBitmap = decodeImage(userViewModel.getUserByEmail(video.getEmail()).getProfileImage());
         IVChannelPic.setImageBitmap(channelPicBitmap);
 
         timeAgoView.setText(video.getTimeAgo());
 
         titleView.setText(video.getTitle());
-        channelNameView.setText(Objects.requireNonNull(userManager.getUserByEmail(video.getEmail())).getFirstName());
+        channelNameView.setText(Objects.requireNonNull(userViewModel.getUserByEmail(video.getEmail())).getFirstName());
         viewsView.setText("Views: " + video.getViews());
         likesView.setText("" + video.getLikes());
 

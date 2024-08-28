@@ -1,5 +1,6 @@
 package com.example.myyoutube.login;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -11,13 +12,10 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;
-import com.example.myyoutube.viewmodels.UserManager;
+import com.example.myyoutube.viewmodels.UserViewModel;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.Locale;
 
 public class signInScreen2 extends AppCompatActivity {
     //running
@@ -25,12 +23,12 @@ public class signInScreen2 extends AppCompatActivity {
     private EditText dayEditText, yearEditText;
     private Button nextButton;
     private TextView errorMsg;
-
+    @SuppressLint("NewApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_sign_in_screen2);
+
         monthSpinner = findViewById(R.id.spinner_month);
         genderSpinner = findViewById(R.id.spinner_gender);
         dayEditText = findViewById(R.id.edittext_day);
@@ -93,7 +91,7 @@ public class signInScreen2 extends AppCompatActivity {
                     intent.putExtra("name", name);
                     intent.putExtra("lastName", lastName);
                     intent.putExtra("gender", genderSpinner.getSelectedItem().toString());
-                    UserManager.setTempDate(birthDate);
+                    UserViewModel.setTempDate(birthDate);
                     startActivity(intent);
 
                 } catch (Exception e) {

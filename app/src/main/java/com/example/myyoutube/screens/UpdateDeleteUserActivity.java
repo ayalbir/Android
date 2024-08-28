@@ -14,11 +14,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.myyoutube.R;
 import com.example.myyoutube.entities.User;
-import com.example.myyoutube.login.logInScreen1;
-import com.example.myyoutube.viewmodels.UserManager;
+import com.example.myyoutube.viewmodels.UserViewModel;
 import com.example.myyoutube.viewmodels.VideosViewModel;
-
-import java.util.Objects;
 
 
 public class UpdateDeleteUserActivity extends AppCompatActivity {
@@ -27,7 +24,7 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
     private EditText etPassword;
     private ImageView ivProfileImage;
     private User currentUser;
-    private UserManager userManager = UserManager.getInstance();
+    private UserViewModel userViewModel = UserViewModel.getInstance();
     private VideosViewModel videosViewModel;
     String oldEmail;
 
@@ -47,7 +44,7 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
             startActivity(i);
         });
 
-        currentUser = UserManager.getConnectedUser();
+        currentUser = UserViewModel.getConnectedUser();
         oldEmail = currentUser.getEmail();
 
         if (currentUser != null) {
@@ -76,7 +73,7 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
         currentUser.setFirstName(newUserName);
         currentUser.setPassword(newPassword);
 
-        userManager.updateUser(oldEmail, currentUser);
+        userViewModel.updateUser(oldEmail, currentUser);
 
         Toast.makeText(this, "User updated successfully", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, MainActivity.class);
@@ -85,15 +82,15 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
     }
 
     private void deleteUser() {
-        userManager.clearConnectedUser();
-        userManager.deleteUser(currentUser.getEmail());
+        userViewModel.clearConnectedUser();
+        userViewModel.deleteUser(currentUser.getEmail());
         Toast.makeText(this, "User deleted successfully", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 
     private void signOut() {
-        userManager.clearConnectedUser();
+        userViewModel.clearConnectedUser();
         Toast.makeText(this, "Signing out", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);

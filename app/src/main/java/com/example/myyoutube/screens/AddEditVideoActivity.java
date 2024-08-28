@@ -15,14 +15,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.myyoutube.R;
-import com.example.myyoutube.entities.Comment;
 import com.example.myyoutube.entities.User;
 import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.viewmodels.VideosViewModel;

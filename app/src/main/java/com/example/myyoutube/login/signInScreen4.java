@@ -1,4 +1,5 @@
 package com.example.myyoutube.login;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -9,22 +10,23 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.myyoutube.R;
 import com.example.myyoutube.entities.User;
-import com.example.myyoutube.viewmodels.UserManager;
+import com.example.myyoutube.viewmodels.UserViewModel;
 public class signInScreen4 extends AppCompatActivity {
 
     private EditText emailInput;
     private Button nextButton;
     private TextView getGmail;
     private TextView errorMsg;
-    private UserManager userManager;
+    private UserViewModel userViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in_screen4);
-        userManager = UserManager.getInstance();
+        userViewModel = UserViewModel.getInstance();
         emailInput = findViewById(R.id.email_input);
         nextButton = findViewById(R.id.next_button);
         getGmail = findViewById(R.id.get_gmail);
@@ -41,7 +43,7 @@ public class signInScreen4 extends AppCompatActivity {
                 String email = emailInput.getText().toString().trim();
                 if (isValidEmail(email)) {
                     String password = getIntent().getStringExtra("password");
-                    User user = userManager.getUserByEmail(email);
+                    User user = userViewModel.getUserByEmail(email);
                     if (user != null) {
                         errorMsg.setText("Email already exists");
                         return;

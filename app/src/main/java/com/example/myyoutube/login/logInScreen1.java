@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,7 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.myyoutube.R;
 import com.example.myyoutube.entities.User;
 import com.example.myyoutube.screens.MainActivity;
-import com.example.myyoutube.viewmodels.UserManager;
+import com.example.myyoutube.viewmodels.UserViewModel;
 
 public class logInScreen1 extends AppCompatActivity {
     private EditText password;
@@ -24,7 +23,7 @@ public class logInScreen1 extends AppCompatActivity {
     private Button btn_login;
     private Button btn_create;
     private CheckBox showPasswordCheckBox;
-    private UserManager userManager;
+    private UserViewModel userViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,18 +35,18 @@ public class logInScreen1 extends AppCompatActivity {
         btn_login = findViewById(R.id.btn_login);
         btn_create = findViewById(R.id.btn_create);
         showPasswordCheckBox = findViewById(R.id.cb_show_password);
-        userManager = UserManager.getInstance();
+        userViewModel = UserViewModel.getInstance();
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String currentEmail = email.getText().toString().trim();
                 String currentPassword = password.getText().toString().trim();
-                User user = userManager.getUserByEmail(currentEmail);
+                User user = userViewModel.getUserByEmail(currentEmail);
 
                 if (user != null && (password.getText().toString().trim().equals(user.getPassword()))) {
                     Intent intent = new Intent(logInScreen1.this, MainActivity.class);
-                    UserManager.setConnectedUser(user);
-                    userManager.signIn(currentEmail, currentPassword);
+                    UserViewModel.setConnectedUser(user);
+                    userViewModel.signIn(currentEmail, currentPassword);
                     startActivity(intent);
                 }
                 else {

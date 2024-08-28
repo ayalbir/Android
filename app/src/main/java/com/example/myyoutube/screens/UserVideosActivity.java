@@ -20,7 +20,7 @@ import com.example.myyoutube.R;
 import com.example.myyoutube.adapters.VideoListAdapter;
 import com.example.myyoutube.entities.User;
 import com.example.myyoutube.entities.Video;
-import com.example.myyoutube.viewmodels.UserManager;
+import com.example.myyoutube.viewmodels.UserViewModel;
 import com.example.myyoutube.viewmodels.VideosViewModel;
 
 import java.util.List;
@@ -35,13 +35,13 @@ public class UserVideosActivity extends AppCompatActivity {
     private VideoListAdapter adapter;
     private VideosViewModel videosViewModel;
 
-    private UserManager userManager;
+    private UserViewModel userViewModel;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_videos);
         videosViewModel = new ViewModelProvider(this).get(VideosViewModel.class);
-        userManager = UserManager.getInstance();
+        userViewModel = UserViewModel.getInstance();
 
         // Return to main activity on button click
         findViewById(R.id.btnBackFromChannel).setOnClickListener(view -> {
@@ -51,7 +51,7 @@ public class UserVideosActivity extends AppCompatActivity {
         initViews();
 
         String userEmail = getIntent().getStringExtra("userEmail");
-        User user = userManager.getUserByEmail(userEmail);
+        User user = userViewModel.getUserByEmail(userEmail);
         if (user != null) {
             setChannelDetails(user);
             getUserVideos(userEmail);

@@ -1,12 +1,6 @@
 package com.example.myyoutube.entities;
 
-import androidx.annotation.NonNull;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-import androidx.room.TypeConverters;
-
-import com.example.myyoutube.Converters;
-import com.example.myyoutube.viewmodels.UserManager;
+import com.example.myyoutube.viewmodels.UserViewModel;
 
 import java.time.LocalDate;
 
@@ -21,7 +15,7 @@ public class Comment {
     private LocalDate createdAt;
 
     public Comment(String videoId, String _id,String text, String profilePicture, String email) {
-        this.createdAt = UserManager.getTempDate();
+        this.createdAt = UserViewModel.getTempDate();
         this.videoId = videoId;
         this._id = _id;
         this.text = text;

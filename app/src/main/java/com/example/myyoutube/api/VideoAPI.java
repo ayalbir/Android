@@ -2,24 +2,20 @@ package com.example.myyoutube.api;
 
 import android.util.Log;
 import android.widget.Toast;
-import androidx.lifecycle.MutableLiveData;
+
 import com.example.myyoutube.Converters;
 import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;
 import com.example.myyoutube.TokenService;
 import com.example.myyoutube.dao.VideoDao;
-import com.example.myyoutube.entities.Comment;
 import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.repositories.VideoRepository;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
@@ -70,7 +66,9 @@ public class VideoAPI {
                     List<Video> videos = response.body();
                     if (videos != null) {
                         new Thread(() -> {
-                           videoDao.clear();
+                            if (!videoDao.getAllVideos().isEmpty()) {
+                                videoDao.clear();
+                            }
                             for (Video video : videos) {
                                 videoDao.insert(video);
                             }

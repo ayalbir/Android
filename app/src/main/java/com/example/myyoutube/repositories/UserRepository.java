@@ -1,6 +1,5 @@
 package com.example.myyoutube.repositories;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.room.Room;
 
@@ -9,8 +8,7 @@ import com.example.myyoutube.Helper;
 import com.example.myyoutube.api.UserAPI;
 import com.example.myyoutube.dao.UserDao;
 import com.example.myyoutube.entities.User;
-import com.example.myyoutube.entities.Video;
-import com.example.myyoutube.viewmodels.UserManager;
+import com.example.myyoutube.viewmodels.UserViewModel;
 
 import java.util.List;
 
@@ -44,7 +42,7 @@ public class UserRepository {
 
     public void createUser(User user) {
         userAPI.createUser(user, messageLiveData);
-        userDao.insert(UserManager.getConnectedUser());
+        userDao.insert(UserViewModel.getConnectedUser());
     }
 
     public void getAllUsers() {
@@ -57,12 +55,12 @@ public class UserRepository {
 
     public void updateUser(String email, User user, String token) {
         userAPI.updateUser(email, user, token, messageLiveData);
-        userDao.update(UserManager.getConnectedUser());
+        userDao.update(UserViewModel.getConnectedUser());
     }
 
     public void deleteUser(String email, String token) {
         userAPI.deleteUser(email, token, messageLiveData);
-        userDao.delete(UserManager.getConnectedUser());
+        userDao.delete(UserViewModel.getConnectedUser());
     }
 
 }

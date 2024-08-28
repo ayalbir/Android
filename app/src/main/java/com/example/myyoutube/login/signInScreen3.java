@@ -13,9 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myyoutube.R;
 
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-
 public class signInScreen3 extends AppCompatActivity {
     private EditText password;
     private EditText confirm_password;
