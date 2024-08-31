@@ -20,7 +20,8 @@ import java.util.List;
 public class Converters {
     @TypeConverter
     public static List<Comment> fromStringToComments(String value) {
-        Type listType = new TypeToken<List<Comment>>() {}.getType();
+        Type listType = new TypeToken<List<Comment>>() {
+        }.getType();
         return new Gson().fromJson(value, listType);
     }
 
@@ -32,7 +33,8 @@ public class Converters {
 
     @TypeConverter
     public static List<String> fromStringToStringList(String value) {
-        Type listType = new TypeToken<List<String>>() {}.getType();
+        Type listType = new TypeToken<List<String>>() {
+        }.getType();
         return new Gson().fromJson(value, listType);
     }
 
@@ -95,6 +97,7 @@ public class Converters {
     public static String fromDate(LocalDate date) {
         return date == null ? null : date.toString();
     }
+
     private static void deleteAllFilesInDirectory(File directory) {
         if (directory != null && directory.isDirectory()) {
             File[] files = directory.listFiles();

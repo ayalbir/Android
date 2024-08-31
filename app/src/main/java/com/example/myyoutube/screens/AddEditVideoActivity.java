@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +21,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;
 import com.example.myyoutube.entities.User;
 import com.example.myyoutube.entities.Video;
@@ -44,6 +46,7 @@ public class AddEditVideoActivity extends AppCompatActivity {
     private boolean isEditMode = false;
     private boolean isVideoSelected = false, isImageSelected = false;
     private VideosViewModel videosViewModel;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,13 +54,14 @@ public class AddEditVideoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_edit_video);
         videosViewModel = new ViewModelProvider(this).get(VideosViewModel.class);
 
-        curretUser = MainActivity.getCurrentUser();
+        curretUser = Helper.getConnectedUser();
         etTitle = findViewById(R.id.etTitle);
         etDescription = findViewById(R.id.etDescription);
         Button btnSave = findViewById(R.id.btnSaveEditVideo);
         Button btnSelectImage = findViewById(R.id.btnSelectImage);
         Button btnSelectVideo = findViewById(R.id.btnChooseVid);
         ivThumbnail = findViewById(R.id.ivThumbnail);
+        progressBar = findViewById(R.id.progressBarVideo);
 
         checkAndRequestPermissions();
 
@@ -100,6 +104,9 @@ public class AddEditVideoActivity extends AppCompatActivity {
 
     private void saveVideo() {
         Toast.makeText(this, "Saving... It may take a couple of seconds", Toast.LENGTH_LONG).show();
+        // Show the progress bar when you start loading
+        progressBar.setVisibility(View.VISIBLE);
+
         if ((isImageSelected && isVideoSelected) || isEditMode) {
             if (video == null) {
                 video = new Video("", "", "", "", "", "", new ArrayList<>());
@@ -126,6 +133,8 @@ public class AddEditVideoActivity extends AppCompatActivity {
                 videosViewModel.add(video);
             }
 
+            // Show the progress bar when you start loading
+            progressBar.setVisibility(View.GONE);
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         } else if (!isImageSelected)

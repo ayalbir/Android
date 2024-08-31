@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;
 import com.example.myyoutube.entities.User;
 import com.example.myyoutube.viewmodels.UserViewModel;
@@ -19,13 +20,13 @@ import com.example.myyoutube.viewmodels.VideosViewModel;
 
 
 public class UpdateDeleteUserActivity extends AppCompatActivity {
+    private final UserViewModel userViewModel = UserViewModel.getInstance();
     String oldEmail;
     private EditText etUserName;
     private EditText etUserEmail;
     private EditText etPassword;
     private ImageView ivProfileImage;
     private User currentUser;
-    private final UserViewModel userViewModel = UserViewModel.getInstance();
     private VideosViewModel videosViewModel;
 
     @Override
@@ -44,7 +45,7 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
             startActivity(i);
         });
 
-        currentUser = UserViewModel.getConnectedUser();
+        currentUser = Helper.getConnectedUser();
         oldEmail = currentUser.getEmail();
 
         if (currentUser != null) {
@@ -82,7 +83,7 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
     }
 
     private void deleteUser() {
-        userViewModel.clearConnectedUser();
+        Helper.clearConnectedUser();
         userViewModel.deleteUser(currentUser.getEmail());
         Toast.makeText(this, "User deleted successfully", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, MainActivity.class);
@@ -90,7 +91,7 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
     }
 
     private void signOut() {
-        userViewModel.clearConnectedUser();
+        Helper.clearConnectedUser();
         Toast.makeText(this, "Signing out", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);

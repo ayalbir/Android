@@ -2,12 +2,12 @@ package com.example.myyoutube.viewmodels;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.example.myyoutube.TokenService;
 import com.example.myyoutube.entities.Comment;
-import com.example.myyoutube.entities.User;
 import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.repositories.VideoRepository;
 
@@ -22,13 +22,7 @@ public class VideosViewModel extends ViewModel {
 
     public VideosViewModel() {
         videoRepository = new VideoRepository();
-        videosLiveData = new LiveData<List<Video>>() {
-            @Override
-            public void observeForever(@NonNull Observer<? super List<Video>> observer) {
-                super.observeForever(observer);
-                get();
-            }
-        };
+        videosLiveData = new MutableLiveData<>();
     }
 
     public static VideosViewModel getInstance() {
@@ -42,6 +36,11 @@ public class VideosViewModel extends ViewModel {
         videosLiveData = videoRepository.getAllVideos();
         return videosLiveData;
     }
+
+    public List<Video> getVideosFromDao() {
+        return videoRepository.getVideoDao().getAllVideos();
+    }
+
 
     public LiveData<List<Video>> getSuggestedVideos(String email) {
         videosLiveData = videoRepository.getSuggestedVideos(email);

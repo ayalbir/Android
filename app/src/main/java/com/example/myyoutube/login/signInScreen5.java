@@ -67,7 +67,6 @@ public class signInScreen5 extends AppCompatActivity {
                 String encodedImage = encodeImage(bitmap);
                 assert email != null;
                 User user = new User(email, password, name, lastName, UserViewModel.getTempDate().toString(), gender, encodedImage);
-                UserViewModel.setConnectedUser(user);
                 userViewModel.createUser(user);
 
                 Intent intent = new Intent(signInScreen5.this, logInScreen1.class);

@@ -3,6 +3,9 @@ package com.example.myyoutube.api;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.room.Room;
+
+import com.example.myyoutube.AppDB;
 import com.example.myyoutube.Converters;
 import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;
@@ -10,7 +13,6 @@ import com.example.myyoutube.TokenService;
 import com.example.myyoutube.dao.VideoDao;
 import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.repositories.VideoRepository;
-import com.example.myyoutube.viewmodels.UserViewModel;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -28,15 +30,14 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class VideoAPI {
-    Retrofit retrofit;
-    VideoApiService webServiceAPI;
     private final VideoRepository.VideoListData videoListData;
     private final VideoDao videoDao;
+    Retrofit retrofit;
+    VideoApiService webServiceAPI;
 
     public VideoAPI(VideoRepository.VideoListData videos, VideoDao videoDao) {
 
         this.videoListData = videos;
-        this.videoDao = videoDao;
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(chain -> {
@@ -54,8 +55,10 @@ public class VideoAPI {
         retrofit = new Retrofit.Builder()
                 .baseUrl(Helper.context.getString(R.string.BaseUrl))
                 .addConverterFactory(GsonConverterFactory.create())
-                .client(httpClient.build()).build();
+                .client(httpClient.build())
+                .build();
 
+        this.videoDao = videoDao;
         this.webServiceAPI = retrofit.create(VideoApiService.class);
     }
 
@@ -88,7 +91,6 @@ public class VideoAPI {
             }
         });
     }
-
 
     public void addVideo(Video videoToAdd, String token) {
         try {

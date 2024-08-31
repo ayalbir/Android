@@ -27,6 +27,7 @@ public class CommentRepository {
     public LiveData<List<Comment>> get() {
         return commentsLiveData;
     }
+
     public void addComment(Comment comment, String token) {
         commentsAPI.addComment(comment, token);
     }
@@ -70,6 +71,7 @@ public class CommentRepository {
                 }
             }
         }
+
         public void updateComment(Comment comment) {
             List<Comment> comments = getValue();
             if (comments == null) return;
@@ -82,6 +84,7 @@ public class CommentRepository {
                 }
             }
         }
+
         public void removeComment(String id) {
             List<Comment> comments = getValue();
             if (comments == null) return;

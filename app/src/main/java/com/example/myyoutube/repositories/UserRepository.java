@@ -9,21 +9,20 @@ import com.example.myyoutube.Helper;
 import com.example.myyoutube.api.UserAPI;
 import com.example.myyoutube.dao.UserDao;
 import com.example.myyoutube.entities.User;
-import com.example.myyoutube.viewmodels.UserViewModel;
 
 import java.util.List;
 
 public class UserRepository {
 
     private final UserAPI userAPI;
-    private UserDao userDao;
-    private MutableLiveData<List<User>> usersListData;
     private final MutableLiveData<String> messageLiveData;
+    private UserDao userDao;
+    private final MutableLiveData<List<User>> usersListData;
     private AppDB db;
 
     public UserRepository() {
         new Thread(() -> {
-            db = Room.databaseBuilder(Helper.context, AppDB.class, "FootubeDB")
+            db = Room.databaseBuilder(Helper.context, AppDB.class, "Users")
                     .fallbackToDestructiveMigration()
                     .allowMainThreadQueries()
                     .build();
@@ -40,7 +39,7 @@ public class UserRepository {
 
     public void createUser(User user) {
         userAPI.createUser(user, messageLiveData);
-        userDao.insert(UserViewModel.getConnectedUser());
+        userDao.insert(Helper.getConnectedUser());
     }
 
     public LiveData<List<User>> get() {
@@ -63,7 +62,8 @@ public class UserRepository {
 
     public void deleteUser(String email, String token) {
         userAPI.deleteUser(email, token, messageLiveData);
-        userDao.delete(UserViewModel.getConnectedUser());
+        userDao.delete(Helper.getConnectedUser());
     }
+
 
 }

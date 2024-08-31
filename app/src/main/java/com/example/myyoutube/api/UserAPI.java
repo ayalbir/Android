@@ -10,15 +10,13 @@ import com.example.myyoutube.R;
 import com.example.myyoutube.TokenService;
 import com.example.myyoutube.dao.UserDao;
 import com.example.myyoutube.entities.User;
-import com.example.myyoutube.entities.Video;
-import com.example.myyoutube.viewmodels.UserViewModel;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
+import java.sql.Time;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
@@ -35,7 +33,7 @@ public class UserAPI {
     UserDao userDao;
 
     public UserAPI(UserDao userDao) {
-        this.userDao = userDao;
+        
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(chain -> {
@@ -53,12 +51,15 @@ public class UserAPI {
         retrofit = new Retrofit.Builder()
                 .baseUrl(Helper.context.getString(R.string.BaseUrl))
                 .addConverterFactory(GsonConverterFactory.create())
-                .client(httpClient.build()).build();
+                .client(httpClient.build())
+                .build();
 
+        this.userDao = userDao;
         userServiceAPI = retrofit.create(UserAPIService.class);
     }
 
     public void getAllUsers(MutableLiveData<List<User>> usersListData) {
+        Log.e("CurrentTime: ", String.valueOf(System.currentTimeMillis()));
         Call<List<User>> call = userServiceAPI.getAllUsers();
         call.enqueue(new Callback<List<User>>() {
             @Override
@@ -66,25 +67,26 @@ public class UserAPI {
                 if (response.isSuccessful()) {
                     List<User> users = response.body();
                     if (users != null && userDao != null) {
-                            if (!userDao.getAllUsers().isEmpty()) {
-                                userDao.clear();
-                            }
-                            for (User user : users) {
-                                userDao.insert(user);
-                            }
-                            usersListData.postValue(users);
+                        if (!userDao.getAllUsers().isEmpty()) {
+                            userDao.clear();
+                        }
+                        for (User user : users) {
+                            userDao.insert(user);
+                        }
+                        usersListData.postValue(users);
                     } else {
                         Log.e("VideoAPI", "Failed to fetch videos");
                     }
                 }
             }
+
             @Override
             public void onFailure(Call<List<User>> call, Throwable t) {
                 Log.e("UserAPI", t.getLocalizedMessage());
             }
-
         });
     }
+
     public void signIn(String email, String password) {
         JSONObject requestBodyJson = new JSONObject();
         try {
@@ -138,7 +140,7 @@ public class UserAPI {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
-                    UserViewModel.getConnectedUser().setId(response.body().get("_id").getAsString());
+                    Helper.getConnectedUser().setId(response.body().get("_id").getAsString());
                     messageLiveData.postValue("User created successfully");
                 } else {
                     messageLiveData.postValue("Failed to create user");

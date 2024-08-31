@@ -18,6 +18,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;
 import com.example.myyoutube.entities.User;
 import com.example.myyoutube.entities.Video;
@@ -36,15 +37,17 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
 
     private final LayoutInflater mInflater;
     private final Context mContext;
-    private final User currentUser = MainActivity.getCurrentUser();
+    private final User currentUser = Helper.getConnectedUser();
     private final VideosViewModel videosViewModel;
     private final UserViewModel userViewModel = UserViewModel.getInstance();
     private List<Video> videos;
     private List<Video> videosFull = new ArrayList<>();
+
     public VideoListAdapter(Context context, VideosViewModel videosViewModel) {
         this.mInflater = LayoutInflater.from(context);
         this.mContext = context;
         this.videosViewModel = videosViewModel;
+        this.videos = new ArrayList<>();
     }
 
     @NonNull

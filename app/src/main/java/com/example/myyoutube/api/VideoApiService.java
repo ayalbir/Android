@@ -19,6 +19,7 @@ import retrofit2.http.Path;
 public interface VideoApiService {
     @GET("api/videos")
     Call<List<Video>> getVideos();
+
     @GET("api/suggestedVideos/{email}")
     Call<List<Video>> getSuggestedVideos(@Path("email") String email);
 
