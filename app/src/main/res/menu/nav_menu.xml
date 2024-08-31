@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:theme="@style/Theme.MyYoutube"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:showIn= "navigation_view">
+    android:theme="@style/Theme.MyYoutube"
+    tools:showIn="navigation_view">
 
-    <group
-        android:checkableBehavior="single">
+    <group android:checkableBehavior="single">
 
 
         <item

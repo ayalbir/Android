@@ -16,8 +16,8 @@ public class UserRepository {
 
     private final UserAPI userAPI;
     private final MutableLiveData<String> messageLiveData;
-    private UserDao userDao;
     private final MutableLiveData<List<User>> usersListData;
+    private UserDao userDao;
     private AppDB db;
 
     public UserRepository() {

@@ -11,8 +11,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <ImageView
             android:layout_width="400dp"
@@ -34,63 +34,63 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/enter_your_birthday_and_gender"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="16dp"
+        android:text="@string/enter_your_birthday_and_gender" />
 
     <!-- Birthday input fields -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="16dp">
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
 
         <Spinner
             android:id="@+id/spinner_month"
-            android:prompt="@string/month_prompt"
-            android:padding="20dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:entries="@array/months_array"
+            android:padding="20dp"
+            android:prompt="@string/month_prompt"
             tools:ignore="HardcodedText" />
 
         <EditText
             android:id="@+id/edittext_day"
-            android:padding="20dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="@string/day"
-            android:inputType="number" />
+            android:inputType="number"
+            android:padding="20dp" />
 
         <EditText
             android:id="@+id/edittext_year"
-            android:prompt="@string/year_prompt"
-            android:padding="20dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="@string/year"
-            android:inputType="number" />
+            android:inputType="number"
+            android:padding="20dp"
+            android:prompt="@string/year_prompt" />
     </LinearLayout>
 
     <!-- Gender input field -->
     <Spinner
         android:id="@+id/spinner_gender"
-        android:padding="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:entries="@array/gender_array"
         android:hint="@string/gender"
-        android:entries="@array/gender_array" />
+        android:padding="20dp" />
 
     <!-- Why we ask for birthday and gender text -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="@string/why_we_ask_for_birthday_and_gender"
-        android:textColor="#0078D7"
-        android:layout_marginTop="8dp"/>
+        android:textColor="#0078D7" />
 
     <TextView
         android:id="@+id/tvErrorMsg"
@@ -98,7 +98,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:text=""
-        android:textColor="#FF0000"/>
+        android:textColor="#FF0000" />
 
     <LinearLayout
         android:layout_width="match_parent"

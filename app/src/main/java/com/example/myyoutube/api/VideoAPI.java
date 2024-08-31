@@ -3,9 +3,6 @@ package com.example.myyoutube.api;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.room.Room;
-
-import com.example.myyoutube.AppDB;
 import com.example.myyoutube.Converters;
 import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;

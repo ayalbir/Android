@@ -25,7 +25,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -33,7 +32,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;
 import com.example.myyoutube.adapters.VideoListAdapter;
-import com.example.myyoutube.dao.VideoDao;
 import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.login.logInScreen1;
 import com.example.myyoutube.viewmodels.UserViewModel;
@@ -50,13 +48,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final int REQUEST_CODE_ADD_VIDEO = 1;
     public static final int REQUEST_CODE_EDIT_VIDEO = 2;
     public static boolean firstTime = true;
+    SwipeRefreshLayout swipeRefreshLayout;
     private DrawerLayout drawerLayout;
     private SearchView searchView;
     private VideoListAdapter adapter;
     private VideosViewModel videosViewModel;
     private ProgressBar progressBar;
     private NavigationView navigationView;
-    SwipeRefreshLayout swipeRefreshLayout;
 
     @SuppressLint("SetTextI18n")
     @Override

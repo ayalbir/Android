@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:theme="@style/Theme.MyYoutube"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:theme="@style/Theme.MyYoutube">
 
     <EditText
         android:id="@+id/etComment"

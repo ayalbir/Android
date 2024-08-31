@@ -16,7 +16,6 @@ import com.google.gson.JsonParser;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.sql.Time;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
@@ -33,7 +32,7 @@ public class UserAPI {
     UserDao userDao;
 
     public UserAPI(UserDao userDao) {
-        
+
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(chain -> {

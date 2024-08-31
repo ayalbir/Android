@@ -2,9 +2,9 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:theme="@style/Theme.MyYoutube"
+    android:layout_height="match_parent"
     android:background="@color/background"
-    android:layout_height="match_parent">
+    android:theme="@style/Theme.MyYoutube">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,9 +19,9 @@
 
             <ImageButton
                 android:id="@+id/btnRet"
-                android:background="@null"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@null"
                 app:srcCompat="@drawable/back" />
 
             <View
@@ -44,7 +44,6 @@
                 android:layout_weight="1" />
 
         </LinearLayout>
-
 
 
         <EditText
@@ -101,8 +100,8 @@
             android:layout_gravity="center"
             android:layout_marginBottom="16dp"
             android:scaleType="centerCrop"
-            android:visibility="gone"
-            android:src="@drawable/login" />
+            android:src="@drawable/login"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/btnUpdateUser"
@@ -112,6 +111,7 @@
             android:padding="12dp"
             android:text="@string/update_user"
             android:textColor="@android:color/white" />
+
         <Button
             android:id="@+id/btnSighOut"
             android:layout_width="wrap_content"
