@@ -261,7 +261,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
     }
 
     private void fetchRecommendedVideos() {
-        videosViewModel.getSuggestedVideos(currentUser.getEmail()).observe(this, videos -> {
+        videosViewModel.getSuggestedVideos().observe(this, videos -> {
             if (videos != null && video != null) {
                 otherVideos = new ArrayList<>(videos);
                 otherVideos.remove(video);  // Remove the current video from the list of recommended videos
@@ -270,21 +270,8 @@ public class VideoPlayerActivity extends AppCompatActivity {
                 rvOtherVideos.setAdapter(videoListAdapter);
             }
         });
-
-        refreshRecommendedVideos();
     }
 
-    private void refreshRecommendedVideos() {
-        videosViewModel.getSuggestedVideos(currentUser.getEmail());
-        videosViewModel.getSuggestedVideos(currentUser.getEmail()).observe(this, videos -> {
-            if (videos != null) {
-                otherVideos = new ArrayList<>(videos);
-                otherVideos.remove(video);
-                videoListAdapter.setVideos(otherVideos);
-                videoListAdapter.notifyDataSetChanged();
-            }
-        });
-    }
 
     private Bitmap decodeImage(String encodedImage) {
         if (encodedImage != null) {

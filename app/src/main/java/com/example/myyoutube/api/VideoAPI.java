@@ -212,8 +212,13 @@ public class VideoAPI {
 
     public void updateVideoViews(String videoId) {
         JsonObject emailBody = new JsonObject();
-        //emailBody.addProperty("email", UserViewModel.getConnectedUser().getEmail());
-        emailBody.addProperty("email", "dvir@example.com");
+        String email;
+        if(Helper.getConnectedUser() == null){
+            email = "";
+        }
+        else
+            email = Helper.getConnectedUser().getEmail();
+        emailBody.addProperty("email", email);
         Call<JsonObject> call = webServiceAPI.updateVideoViews(videoId, emailBody);
         call.enqueue(new Callback<JsonObject>() {
             @Override
@@ -228,7 +233,13 @@ public class VideoAPI {
         });
     }
 
-    public void getSuggestedVideos(String email) {
+    public void getSuggestedVideos() {
+        String email;
+        if(Helper.getConnectedUser() == null){
+            email = "";
+        }
+        else
+            email = Helper.getConnectedUser().getEmail();
         // Make the Retrofit POST call
         Call<List<Video>> call = webServiceAPI.getSuggestedVideos(email);
         call.enqueue(new Callback<List<Video>>() {

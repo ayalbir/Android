@@ -33,8 +33,8 @@ public class VideoRepository {
         return videoListData;
     }
 
-    public LiveData<List<Video>> getSuggestedVideos(String email) {
-        videoAPI.getSuggestedVideos(email);
+    public LiveData<List<Video>> getSuggestedVideos() {
+        videoAPI.getSuggestedVideos();
         return videoListData;
     }
 

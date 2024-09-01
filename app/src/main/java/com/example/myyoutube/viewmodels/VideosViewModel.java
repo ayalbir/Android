@@ -40,8 +40,8 @@ public class VideosViewModel extends ViewModel {
     }
 
 
-    public LiveData<List<Video>> getSuggestedVideos(String email) {
-        videosLiveData = videoRepository.getSuggestedVideos(email);
+    public LiveData<List<Video>> getSuggestedVideos() {
+        videosLiveData = videoRepository.getSuggestedVideos();
         return videosLiveData;
     }
 
