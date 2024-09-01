@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void initUtility() {
         try {
             Field field = CursorWindow.class.getDeclaredField("sCursorWindowSize");

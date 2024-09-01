@@ -20,11 +20,11 @@ public interface VideoApiService {
     @GET("api/videos")
     Call<List<Video>> getVideos();
 
-    @GET("api/suggestedVideos/{email}")
-    Call<List<Video>> getSuggestedVideos(@Path("email") String email);
+    @GET("api/suggestedVideos/{email}/{videoId}")
+    Call<List<Video>> getSuggestedVideos(@Path("email") String email, @Path("videoId") String videoID);
 
     @GET("api/users/{email}/videos")
-    Call<ArrayList<JsonObject>> getUserVideos(@Path("email") String email, @Header("authorization") String token);
+    Call<List<Video>> getUserVideos(@Path("email") String email);
 
     @POST("api/users/{email}/videos")
     Call<JsonObject> createVideo(@Path("email") String email, @Body Object jsonVideo, @Header("authorization") String token);
@@ -34,6 +34,9 @@ public interface VideoApiService {
 
     @DELETE("api/users/{email}/videos/{vid}")
     Call<JsonObject> deleteVideo(@Path("email") String email, @Path("vid") String videoId, @Header("authorization") String token);
+
+    @DELETE("api/videos/{email}")
+    Call<JsonObject> deleteVideosByEmail(@Path("email") String email, @Header("authorization") String token);
 
     @PATCH("api/users/{email}/videos/{pid}/likes")
     Call<JsonObject> likeVideo(@Path("email") String email, @Path("pid") String videoId, @Header("Authorization") String token);

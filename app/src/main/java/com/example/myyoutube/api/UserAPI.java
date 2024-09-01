@@ -58,7 +58,6 @@ public class UserAPI {
     }
 
     public void getAllUsers(MutableLiveData<List<User>> usersListData) {
-        Log.e("CurrentTime: ", String.valueOf(System.currentTimeMillis()));
         Call<List<User>> call = userServiceAPI.getAllUsers();
         call.enqueue(new Callback<List<User>>() {
             @Override
@@ -74,7 +73,7 @@ public class UserAPI {
                         }
                         usersListData.postValue(users);
                     } else {
-                        Log.e("VideoAPI", "Failed to fetch videos");
+                        Log.e("VideoAPI", "Failed to fetch users");
                     }
                 }
             }
@@ -194,6 +193,8 @@ public class UserAPI {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
+                    userDao.deleteByEmail(email);
+                    Helper.clearConnectedUser();
                     messageLiveData.postValue("User deleted successfully");
 
                 } else {

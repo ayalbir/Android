@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.myyoutube.Helper;
 import com.example.myyoutube.TokenService;
 import com.example.myyoutube.entities.Comment;
 import com.example.myyoutube.entities.Video;
@@ -39,10 +40,21 @@ public class VideosViewModel extends ViewModel {
         return videoRepository.getVideoDao().getAllVideos();
     }
 
+    public void clearVideoDao() {
+         videoRepository.clearVideoDao();
+    }
 
-    public LiveData<List<Video>> getSuggestedVideos() {
-        videosLiveData = videoRepository.getSuggestedVideos();
+    public LiveData<List<Video>> getSuggestedVideos(String videoId) {
+        videosLiveData = videoRepository.getSuggestedVideos(videoId);
         return videosLiveData;
+    }
+
+    public LiveData<List<Video>> getVideosByUserEmail(String email) {
+        return videoRepository.getVideosByUserEmail(email);
+    }
+
+    public List<Video> getVideosByEmailFromDao(String email) {
+        return videoRepository.getVideoDao().getVideosByUserEmail(email);
     }
 
     public void add(Video video) {
@@ -56,6 +68,11 @@ public class VideosViewModel extends ViewModel {
     public void delete(Video video) {
         videoRepository.deleteVideo(video, token);
     }
+
+    public void deleteVideosByEmail() {
+        videoRepository.deleteVideosByEmail(Helper.getConnectedUser().getEmail(), token);
+    }
+
 
     public Video getVideoById(String id) {
         return videoRepository.getVideoById(id);
@@ -75,23 +92,6 @@ public class VideosViewModel extends ViewModel {
         }
     }
 
-    public List<Video> getVideosByUserEmail(String email) {
-        return videoRepository.getVideoDao().getVideosByUserEmail(email);
-    }
-
-    public void removeVideosByUser(String email) {
-        List<Video> videosToRemove = new ArrayList<>();
-
-        for (Video video : videosLiveData.getValue()) {
-            if (video.getEmail().equals(email)) {
-                videosToRemove.add(video);
-            }
-        }
-
-        for (Video video : videosToRemove) {
-            videoRepository.deleteVideo(video, TokenService.getInstance().getToken());
-        }
-    }
 
     public void likeVideo(Video video) {
         videoRepository.likeVideo(video.getEmail(), video.getId(), token);

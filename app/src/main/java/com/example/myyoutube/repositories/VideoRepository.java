@@ -33,14 +33,24 @@ public class VideoRepository {
         return videoListData;
     }
 
-    public LiveData<List<Video>> getSuggestedVideos() {
-        videoAPI.getSuggestedVideos();
+    public LiveData<List<Video>> getSuggestedVideos(String videoId) {
+        videoAPI.getSuggestedVideos(videoId);
+        return videoListData;
+    }
+
+    public LiveData<List<Video>> getVideosByUserEmail(String email) {
+        videoAPI.getVideosByUserEmail(email);
         return videoListData;
     }
 
     public VideoDao getVideoDao() {
         return videoDao;
     }
+
+    public void clearVideoDao() {
+        videoDao.clear();
+    }
+
 
     public void addVideo(final Video video, String token) {
         videoAPI.addVideo(video, token);
@@ -53,6 +63,10 @@ public class VideoRepository {
     public void deleteVideo(final Video video, String token) {
         videoAPI.deleteVideo(video, token);
     }
+    public void deleteVideosByEmail(String email, String token) {
+        videoAPI.deleteVideosByEmail(email, token);
+    }
+
 
     public Video getVideoById(String id) {
         return videoDao.getVideoById(id);

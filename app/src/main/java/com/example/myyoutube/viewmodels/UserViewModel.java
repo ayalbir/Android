@@ -15,11 +15,9 @@ public class UserViewModel extends ViewModel {
     public static LocalDate tempDate;
     private static UserViewModel instance;
     private final UserRepository userRepository;
-    private final VideosViewModel videosViewModel;
 
     public UserViewModel() {
         this.userRepository = new UserRepository();
-        videosViewModel = VideosViewModel.getInstance();
     }
 
     public static UserViewModel getInstance() {
@@ -56,7 +54,6 @@ public class UserViewModel extends ViewModel {
 
     public void deleteUser(String email) {
         userRepository.deleteUser(email, TokenService.getInstance().getToken());
-        videosViewModel.removeVideosByUser(email);
     }
 
     public void getUsersFromDao() {

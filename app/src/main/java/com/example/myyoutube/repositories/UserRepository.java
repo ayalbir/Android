@@ -9,6 +9,7 @@ import com.example.myyoutube.Helper;
 import com.example.myyoutube.api.UserAPI;
 import com.example.myyoutube.dao.UserDao;
 import com.example.myyoutube.entities.User;
+import com.example.myyoutube.viewmodels.VideosViewModel;
 
 import java.util.List;
 
@@ -17,20 +18,20 @@ public class UserRepository {
     private final UserAPI userAPI;
     private final MutableLiveData<String> messageLiveData;
     private final MutableLiveData<List<User>> usersListData;
-    private UserDao userDao;
-    private AppDB db;
+    private final UserDao userDao;
+
+    private VideosViewModel videosViewModel;
 
     public UserRepository() {
-        new Thread(() -> {
-            db = Room.databaseBuilder(Helper.context, AppDB.class, "Users")
-                    .fallbackToDestructiveMigration()
-                    .allowMainThreadQueries()
-                    .build();
+        AppDB db = Room.databaseBuilder(Helper.context, AppDB.class, "Users")
+                .fallbackToDestructiveMigration()
+                .allowMainThreadQueries()
+                .build();
             userDao = db.userDao();
-        }).start();
         usersListData = new MutableLiveData<>();
         userAPI = new UserAPI(userDao);
         messageLiveData = new MutableLiveData<>();
+        videosViewModel = VideosViewModel.getInstance();
     }
 
     public void signIn(String email, String password) {
@@ -61,9 +62,13 @@ public class UserRepository {
     }
 
     public void deleteUser(String email, String token) {
+        videosViewModel.clearVideoDao();
         userAPI.deleteUser(email, token, messageLiveData);
-        userDao.delete(Helper.getConnectedUser());
+        messageLiveData.observeForever(message -> {
+            if ("User deleted successfully".equals(message)) {
+                videosViewModel.get();
+            }
+        });
     }
-
 
 }

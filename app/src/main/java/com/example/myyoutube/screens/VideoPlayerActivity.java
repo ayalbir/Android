@@ -261,17 +261,15 @@ public class VideoPlayerActivity extends AppCompatActivity {
     }
 
     private void fetchRecommendedVideos() {
-        videosViewModel.getSuggestedVideos().observe(this, videos -> {
+        videosViewModel.getSuggestedVideos(video.getId()).observe(this, videos -> {
             if (videos != null && video != null) {
-                otherVideos = new ArrayList<>(videos);
-                otherVideos.remove(video);  // Remove the current video from the list of recommended videos
                 videoListAdapter = new VideoListAdapter(this, videosViewModel);
+                otherVideos = new ArrayList<>(videos);
                 videoListAdapter.setVideos(otherVideos);
                 rvOtherVideos.setAdapter(videoListAdapter);
             }
         });
     }
-
 
     private Bitmap decodeImage(String encodedImage) {
         if (encodedImage != null) {

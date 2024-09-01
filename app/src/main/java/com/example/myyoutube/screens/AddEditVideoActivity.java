@@ -104,8 +104,7 @@ public class AddEditVideoActivity extends AppCompatActivity {
 
     private void saveVideo() {
         Toast.makeText(this, "Saving... It may take a couple of seconds", Toast.LENGTH_LONG).show();
-        // Show the progress bar when you start loading
-        progressBar.setVisibility(View.VISIBLE);
+
 
         if ((isImageSelected && isVideoSelected) || isEditMode) {
             if (video == null) {
@@ -116,6 +115,9 @@ public class AddEditVideoActivity extends AppCompatActivity {
             video.setEmail(curretUser.getEmail());
 
             if (!isEditMode) {
+                // Show the progress bar
+                progressBar.setVisibility(View.VISIBLE);
+
                 // Compress the bitmap and encode it
                 Bitmap bitmap = ((BitmapDrawable) ivThumbnail.getDrawable()).getBitmap();
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -125,6 +127,8 @@ public class AddEditVideoActivity extends AppCompatActivity {
 
                 String encodedVideo = encodeVideo(videoUri);
                 video.setUrl(encodedVideo != null ? encodedVideo : "");
+                progressBar.setVisibility(View.GONE);
+
             }
 
             if (isEditMode) {
@@ -133,8 +137,6 @@ public class AddEditVideoActivity extends AppCompatActivity {
                 videosViewModel.add(video);
             }
 
-            // Show the progress bar when you start loading
-            progressBar.setVisibility(View.GONE);
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         } else if (!isImageSelected)

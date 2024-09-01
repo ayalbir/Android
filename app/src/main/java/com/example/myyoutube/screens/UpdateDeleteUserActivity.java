@@ -83,8 +83,8 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
     }
 
     private void deleteUser() {
-        Helper.clearConnectedUser();
         userViewModel.deleteUser(currentUser.getEmail());
+        Helper.clearConnectedUser();
         Toast.makeText(this, "User deleted successfully", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
