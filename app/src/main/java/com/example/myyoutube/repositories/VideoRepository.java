@@ -63,6 +63,7 @@ public class VideoRepository {
     public void deleteVideo(final Video video, String token) {
         videoAPI.deleteVideo(video, token);
     }
+
     public void deleteVideosByEmail(String email, String token) {
         videoAPI.deleteVideosByEmail(email, token);
     }

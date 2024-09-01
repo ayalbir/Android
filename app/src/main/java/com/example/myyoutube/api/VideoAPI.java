@@ -182,16 +182,17 @@ public class VideoAPI {
         });
     }
 
-    public void deleteVideosByEmail(String email,String token) {
-        Call<JsonObject> call = webServiceAPI.deleteVideosByEmail(email,"Bearer " + token);
+    public void deleteVideosByEmail(String email, String token) {
+        Call<JsonObject> call = webServiceAPI.deleteVideosByEmail(email, "Bearer " + token);
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
-                   videoDao.clear();
+                    videoDao.clear();
                     Toast.makeText(Helper.context, "Video deleted", Toast.LENGTH_SHORT).show();
                 }
             }
+
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 Log.e("VideoAPI", t.getLocalizedMessage());
@@ -230,10 +231,9 @@ public class VideoAPI {
     public void updateVideoViews(String videoId) {
         JsonObject emailBody = new JsonObject();
         String email;
-        if(Helper.getConnectedUser() == null){
+        if (Helper.getConnectedUser() == null) {
             email = "";
-        }
-        else
+        } else
             email = Helper.getConnectedUser().getEmail();
         emailBody.addProperty("email", email);
         Call<JsonObject> call = webServiceAPI.updateVideoViews(videoId, emailBody);
@@ -252,10 +252,9 @@ public class VideoAPI {
 
     public void getSuggestedVideos(String videoId) {
         String email;
-        if(Helper.getConnectedUser() == null){
+        if (Helper.getConnectedUser() == null) {
             email = "";
-        }
-        else
+        } else
             email = Helper.getConnectedUser().getEmail();
         // Make the Retrofit POST call
         Call<List<Video>> call = webServiceAPI.getSuggestedVideos(email, videoId);
@@ -275,6 +274,7 @@ public class VideoAPI {
                     Log.e("VideoAPI", "Failed to fetch videos: " + response.errorBody());
                 }
             }
+
             @Override
             public void onFailure(Call<List<Video>> call, Throwable t) {
                 Log.e("VideoAPI", "API call failed: " + t.getLocalizedMessage());
@@ -301,6 +301,7 @@ public class VideoAPI {
                     Log.e("VideoAPI", "Failed to fetch videos: " + response.errorBody());
                 }
             }
+
             @Override
             public void onFailure(Call<List<Video>> call, Throwable t) {
                 Log.e("VideoAPI", "API call failed: " + t.getLocalizedMessage());

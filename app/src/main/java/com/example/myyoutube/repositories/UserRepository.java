@@ -27,7 +27,7 @@ public class UserRepository {
                 .fallbackToDestructiveMigration()
                 .allowMainThreadQueries()
                 .build();
-            userDao = db.userDao();
+        userDao = db.userDao();
         usersListData = new MutableLiveData<>();
         userAPI = new UserAPI(userDao);
         messageLiveData = new MutableLiveData<>();

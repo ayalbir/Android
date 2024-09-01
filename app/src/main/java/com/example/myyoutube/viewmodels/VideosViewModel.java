@@ -10,7 +10,6 @@ import com.example.myyoutube.entities.Comment;
 import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.repositories.VideoRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class VideosViewModel extends ViewModel {
@@ -41,7 +40,7 @@ public class VideosViewModel extends ViewModel {
     }
 
     public void clearVideoDao() {
-         videoRepository.clearVideoDao();
+        videoRepository.clearVideoDao();
     }
 
     public LiveData<List<Video>> getSuggestedVideos(String videoId) {
