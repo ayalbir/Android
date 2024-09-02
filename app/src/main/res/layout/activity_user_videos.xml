@@ -73,15 +73,15 @@
             android:id="@+id/searchView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:queryHint="Search videos"
+            android:layout_margin="8dp"
             android:iconifiedByDefault="false"
-            android:layout_margin="8dp"/>
+            android:queryHint="Search videos" />
 
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="0dp"/>
+            android:padding="0dp" />
     </LinearLayout>
 </ScrollView>

@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +21,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;
 import com.example.myyoutube.entities.User;
 import com.example.myyoutube.entities.Video;
@@ -44,6 +46,7 @@ public class AddEditVideoActivity extends AppCompatActivity {
     private boolean isEditMode = false;
     private boolean isVideoSelected = false, isImageSelected = false;
     private VideosViewModel videosViewModel;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,13 +54,14 @@ public class AddEditVideoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_edit_video);
         videosViewModel = new ViewModelProvider(this).get(VideosViewModel.class);
 
-        curretUser = MainActivity.getCurrentUser();
+        curretUser = Helper.getConnectedUser();
         etTitle = findViewById(R.id.etTitle);
         etDescription = findViewById(R.id.etDescription);
         Button btnSave = findViewById(R.id.btnSaveEditVideo);
         Button btnSelectImage = findViewById(R.id.btnSelectImage);
         Button btnSelectVideo = findViewById(R.id.btnChooseVid);
         ivThumbnail = findViewById(R.id.ivThumbnail);
+        progressBar = findViewById(R.id.progressBarVideo);
 
         checkAndRequestPermissions();
 
@@ -99,8 +103,8 @@ public class AddEditVideoActivity extends AppCompatActivity {
     }
 
     private void saveVideo() {
-        Toast.makeText(this, "Saving... It may take a couple of seconds", Toast.LENGTH_LONG).show();
         if ((isImageSelected && isVideoSelected) || isEditMode) {
+            Toast.makeText(this, "Saving... It may take a couple of seconds", Toast.LENGTH_SHORT).show();
             if (video == null) {
                 video = new Video("", "", "", "", "", "", new ArrayList<>());
             }
@@ -108,7 +112,10 @@ public class AddEditVideoActivity extends AppCompatActivity {
             video.setDescription(Objects.requireNonNull(etDescription.getText()).toString());
             video.setEmail(curretUser.getEmail());
 
-            if (!isEditMode) {
+
+                // Show the progress bar
+                progressBar.setVisibility(View.VISIBLE);
+
                 // Compress the bitmap and encode it
                 Bitmap bitmap = ((BitmapDrawable) ivThumbnail.getDrawable()).getBitmap();
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -118,7 +125,9 @@ public class AddEditVideoActivity extends AppCompatActivity {
 
                 String encodedVideo = encodeVideo(videoUri);
                 video.setUrl(encodedVideo != null ? encodedVideo : "");
-            }
+                progressBar.setVisibility(View.GONE);
+
+
 
             if (isEditMode) {
                 videosViewModel.update(video);
@@ -147,11 +156,6 @@ public class AddEditVideoActivity extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
         intent.setType("video/*");
         startActivityForResult(intent, PICK_VIDEO_REQUEST);
-    }
-
-    private void openCamera() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, REQUEST_CAMERA);
     }
 
     private void checkAndRequestPermissions() {

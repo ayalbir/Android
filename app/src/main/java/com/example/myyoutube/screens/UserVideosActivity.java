@@ -1,6 +1,7 @@
 // UserVideosActivity.java
 package com.example.myyoutube.screens;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -35,14 +36,12 @@ public class UserVideosActivity extends AppCompatActivity {
     private VideoListAdapter adapter;
     private VideosViewModel videosViewModel;
 
-    private UserViewModel userViewModel;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_videos);
         videosViewModel = new ViewModelProvider(this).get(VideosViewModel.class);
-        userViewModel = UserViewModel.getInstance();
+        UserViewModel userViewModel = UserViewModel.getInstance();
 
         // Return to main activity on button click
         findViewById(R.id.btnBackFromChannel).setOnClickListener(view -> {
@@ -77,9 +76,21 @@ public class UserVideosActivity extends AppCompatActivity {
         tvChannelHeaderEmail.setText(user.getEmail());
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void getUserVideos(String email) {
-        List<Video> userVideos = videosViewModel.getVideosByUserEmail(email);
+        List<Video> userVideos = videosViewModel.getVideosByEmailFromDao(email);
+        if (userVideos.size() > 10) {
+            userVideos = userVideos.subList(0, 10);
+        }
         setupRecyclerView(userVideos);
+        videosViewModel.getVideosByUserEmail(email).observe(this, videos -> {
+            videos.removeIf(v -> !v.getEmail().equals(email));
+            if (videos.size() > 10) {
+                videos = videos.subList(0, 10);
+            }
+            adapter.setVideos(videos);
+            adapter.notifyDataSetChanged();
+        });
     }
 
     private void setupRecyclerView(List<Video> userVideos) {

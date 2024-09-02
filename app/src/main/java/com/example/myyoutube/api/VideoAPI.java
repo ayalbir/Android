@@ -27,15 +27,14 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class VideoAPI {
-    Retrofit retrofit;
-    VideoApiService webServiceAPI;
     private final VideoRepository.VideoListData videoListData;
     private final VideoDao videoDao;
+    Retrofit retrofit;
+    VideoApiService webServiceAPI;
 
     public VideoAPI(VideoRepository.VideoListData videos, VideoDao videoDao) {
 
         this.videoListData = videos;
-        this.videoDao = videoDao;
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(chain -> {
@@ -53,8 +52,10 @@ public class VideoAPI {
         retrofit = new Retrofit.Builder()
                 .baseUrl(Helper.context.getString(R.string.BaseUrl))
                 .addConverterFactory(GsonConverterFactory.create())
-                .client(httpClient.build()).build();
+                .client(httpClient.build())
+                .build();
 
+        this.videoDao = videoDao;
         this.webServiceAPI = retrofit.create(VideoApiService.class);
     }
 
@@ -76,6 +77,7 @@ public class VideoAPI {
                             videoListData.postValue(videos);
                         }).start();
                     } else {
+                        Toast.makeText(Helper.context,"Failed to fetch videos", Toast.LENGTH_SHORT).show();
                         Log.e("VideoAPI", "Failed to fetch videos");
                     }
                 }
@@ -87,7 +89,6 @@ public class VideoAPI {
             }
         });
     }
-
 
     public void addVideo(Video videoToAdd, String token) {
         try {
@@ -104,6 +105,7 @@ public class VideoAPI {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     if (response.isSuccessful()) {
+                        Toast.makeText(Helper.context, "Video added successfully", Toast.LENGTH_SHORT).show();
                         new Thread(() -> {
                             videoToAdd.setId(response.body().get("_id").getAsString());
                             videoDao.insert(videoToAdd);
@@ -142,11 +144,10 @@ public class VideoAPI {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
-                    JsonObject jsonObject = response.body();
                     try {
                         new Thread(() -> videoDao.update(videoToEdit)).start();
                         videoListData.updateVideo(videoToEdit);
-                        Toast.makeText(Helper.context, "Video updated", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Helper.context, "Video updated successfully", Toast.LENGTH_SHORT).show();
                     } catch (Exception e) {
                         Toast.makeText(Helper.context, "Video cannot be updated due to validation failure.", Toast.LENGTH_SHORT).show();
                     }
@@ -171,8 +172,32 @@ public class VideoAPI {
                     Converters.deleteFileFromStorage(videoToRemove.getPic());
                     new Thread(() -> videoDao.delete(videoToRemove)).start();
                     videoListData.removeVideo(videoToRemove);
+                    Toast.makeText(Helper.context, "Video deleted successfully", Toast.LENGTH_SHORT).show();
+                }
+                else
+                    Toast.makeText(Helper.context, "Video cannot be deleted due to validation failure.", Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.e("VideoAPI", t.getLocalizedMessage());
+            }
+        });
+    }
+
+    public void deleteVideosByEmail(String email, String token) {
+        Call<JsonObject> call = webServiceAPI.deleteVideosByEmail(email, "Bearer " + token);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    videoDao.clear();
                     Toast.makeText(Helper.context, "Video deleted", Toast.LENGTH_SHORT).show();
                 }
+                else
+                    Toast.makeText(Helper.context, "Video cannot be deleted due to validation failure.", Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
@@ -211,7 +236,14 @@ public class VideoAPI {
     }
 
     public void updateVideoViews(String videoId) {
-        Call<JsonObject> call = webServiceAPI.updateVideoViews(videoId);
+        JsonObject emailBody = new JsonObject();
+        String email;
+        if (Helper.getConnectedUser() == null) {
+            email = "";
+        } else
+            email = Helper.getConnectedUser().getEmail();
+        emailBody.addProperty("email", email);
+        Call<JsonObject> call = webServiceAPI.updateVideoViews(videoId, emailBody);
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -224,4 +256,66 @@ public class VideoAPI {
             }
         });
     }
+
+    public void getSuggestedVideos(String videoId) {
+        String email;
+        if (Helper.getConnectedUser() == null) {
+            email = "";
+        } else
+            email = Helper.getConnectedUser().getEmail();
+        // Make the Retrofit POST call
+        Call<List<Video>> call = webServiceAPI.getSuggestedVideos(email, videoId);
+        call.enqueue(new Callback<List<Video>>() {
+            @Override
+            public void onResponse(Call<List<Video>> call, Response<List<Video>> response) {
+                if (response.isSuccessful()) {
+                    List<Video> videos = response.body();
+                    if (videos != null) {
+                        new Thread(() -> {
+                            videoListData.postValue(videos);
+                        }).start();
+                    } else {
+                        Toast.makeText(Helper.context,"Failed to fetch videos", Toast.LENGTH_SHORT).show();
+                        Log.e("VideoAPI", "Failed to fetch videos");
+                    }
+                } else {
+                    Log.e("VideoAPI", "Failed to fetch videos: " + response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Video>> call, Throwable t) {
+                Log.e("VideoAPI", "API call failed: " + t.getLocalizedMessage());
+            }
+        });
+    }
+
+    public void getVideosByUserEmail(String email) {
+        // Make the Retrofit POST call
+        Call<List<Video>> call = webServiceAPI.getUserVideos(email);
+        call.enqueue(new Callback<List<Video>>() {
+            @Override
+            public void onResponse(Call<List<Video>> call, Response<List<Video>> response) {
+                if (response.isSuccessful()) {
+                    List<Video> videos = response.body();
+                    if (videos != null) {
+                        new Thread(() -> {
+                            videoListData.postValue(videos);
+                        }).start();
+                    } else {
+                        Log.e("VideoAPI", "Failed to fetch videos: response body is null");
+                    }
+                } else {
+                    Log.e("VideoAPI", "Failed to fetch videos: " + response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Video>> call, Throwable t) {
+                Log.e("VideoAPI", "API call failed: " + t.getLocalizedMessage());
+            }
+        });
+    }
+
+
 }

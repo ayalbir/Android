@@ -26,9 +26,9 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CommentsAPI {
+    private final CommentRepository.CommentListData commentListData;
     Retrofit retrofit;
     CommentsAPIService commentsAPIService;
-    private final CommentRepository.CommentListData commentListData;
 
     public CommentsAPI(CommentRepository.CommentListData commentListData) {
 

@@ -17,10 +17,9 @@ public class VideoRepository {
     private final VideoAPI videoAPI;
     private final VideoDao videoDao;
     private final VideoListData videoListData;
-    private final AppDB db;
 
     public VideoRepository() {
-        db = Room.databaseBuilder(Helper.context, AppDB.class, "FootubeDB")
+        AppDB db = Room.databaseBuilder(Helper.context, AppDB.class, "Videos")
                 .fallbackToDestructiveMigration()
                 .allowMainThreadQueries()
                 .build();
@@ -34,9 +33,24 @@ public class VideoRepository {
         return videoListData;
     }
 
+    public LiveData<List<Video>> getSuggestedVideos(String videoId) {
+        videoAPI.getSuggestedVideos(videoId);
+        return videoListData;
+    }
+
+    public LiveData<List<Video>> getVideosByUserEmail(String email) {
+        videoAPI.getVideosByUserEmail(email);
+        return videoListData;
+    }
+
     public VideoDao getVideoDao() {
         return videoDao;
     }
+
+    public void clearVideoDao() {
+        videoDao.clear();
+    }
+
 
     public void addVideo(final Video video, String token) {
         videoAPI.addVideo(video, token);
@@ -44,14 +58,36 @@ public class VideoRepository {
 
     public void updateVideo(final Video video, String token) {
         videoAPI.editVideo(video, token);
+        getAllVideos();
     }
 
     public void deleteVideo(final Video video, String token) {
         videoAPI.deleteVideo(video, token);
+        getAllVideos();
     }
+
+    public void deleteVideosByEmail(String email, String token) {
+        videoAPI.deleteVideosByEmail(email, token);
+    }
+
 
     public Video getVideoById(String id) {
         return videoDao.getVideoById(id);
+    }
+
+    public void likeVideo(String email, String videoId, String token) {
+        videoAPI.likeVideo(email, videoId, token);
+        getAllVideos();
+    }
+
+    public void disLikeVideo(String email, String videoId, String token) {
+        videoAPI.dislikeVideo(email, videoId, token);
+        getAllVideos();
+    }
+
+    public void updateViews(String videoId) {
+        videoAPI.updateVideoViews(videoId);
+        getAllVideos();
     }
 
     public class VideoListData extends MutableLiveData<List<Video>> {
@@ -87,6 +123,7 @@ public class VideoRepository {
                 }
             }
         }
+
         public void removeVideo(Video video) {
             List<Video> tempVideos = getValue();
             if (tempVideos == null)
@@ -94,6 +131,7 @@ public class VideoRepository {
             tempVideos.remove(video);
             postValue(tempVideos);
         }
+
         public void addVideo(Video newVideo) {
             List<Video> tempVideos = getValue();
             if (tempVideos == null)
@@ -101,18 +139,5 @@ public class VideoRepository {
             tempVideos.add(0, newVideo);
             postValue(tempVideos);
         }
-    }
-
-    public void likeVideo(String email, String videoId, String token){
-        videoAPI.likeVideo(email, videoId, token);
-        getAllVideos();
-    }
-    public void disLikeVideo(String email, String videoId, String token){
-        videoAPI.dislikeVideo(email, videoId, token);
-        getAllVideos();
-    }
-    public void updateViews(String videoId){
-        videoAPI.updateVideoViews(videoId);
-        getAllVideos();
     }
 }

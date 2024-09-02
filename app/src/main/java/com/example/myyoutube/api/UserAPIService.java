@@ -3,7 +3,6 @@ package com.example.myyoutube.api;
 import com.example.myyoutube.entities.User;
 import com.google.gson.JsonObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;

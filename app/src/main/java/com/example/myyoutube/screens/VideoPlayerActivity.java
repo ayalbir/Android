@@ -31,6 +31,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;
 import com.example.myyoutube.adapters.VideoListAdapter;
 import com.example.myyoutube.entities.Comment;
@@ -51,6 +52,8 @@ import java.util.Objects;
 
 public class VideoPlayerActivity extends AppCompatActivity {
 
+    private final UserViewModel userViewModel = UserViewModel.getInstance();
+    private final List<Comment> commentsList = new ArrayList<>();
     private Video video;
     private CommentsAdapter commentsAdapter;
     private VideoListAdapter videoListAdapter;
@@ -59,9 +62,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
     private RecyclerView rvOtherVideos;
     private User currentUser;
     private VideosViewModel videosViewModel;
-    private final UserViewModel userViewModel = UserViewModel.getInstance();
     private CommentViewModel commentViewModel;
-    private final List<Comment> commentsList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +77,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
         profilePictureItem.setIcon(R.drawable.login);
         profilePictureItem.setTitle("Login");
 
-        currentUser = MainActivity.getCurrentUser();
+        currentUser = Helper.getConnectedUser();
         if (currentUser != null) {
             profilePictureItem.setIcon(R.drawable.settings);
             profilePictureItem.setTitle("Account");
@@ -244,48 +245,31 @@ public class VideoPlayerActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
             } else if (id == R.id.nav_login) {
+                Intent intent;
                 if (currentUser != null) {
-                    Intent intent = new Intent(VideoPlayerActivity.this, UpdateDeleteUserActivity.class);
+                    intent = new Intent(VideoPlayerActivity.this, UpdateDeleteUserActivity.class);
                     intent.putExtra("userEmail", currentUser.getEmail());
-                    startActivity(intent);
                 } else {
-                    Intent intent = new Intent(VideoPlayerActivity.this, logInScreen1.class);
-                    startActivity(intent);
+                    intent = new Intent(VideoPlayerActivity.this, logInScreen1.class);
                 }
+                startActivity(intent);
             }
             return false;
         });
 
         bottomNavigationView.getMenu().setGroupCheckable(0, false, true);
-
     }
 
     private void fetchRecommendedVideos() {
-        videosViewModel.get().observe(this, videos -> {
+        videosViewModel.getSuggestedVideos(video.getId()).observe(this, videos -> {
             if (videos != null && video != null) {
-                otherVideos = new ArrayList<>(videos);
-                otherVideos.remove(video);  // Remove the current video from the list of recommended videos
                 videoListAdapter = new VideoListAdapter(this, videosViewModel);
+                otherVideos = new ArrayList<>(videos);
                 videoListAdapter.setVideos(otherVideos);
                 rvOtherVideos.setAdapter(videoListAdapter);
             }
         });
-
-        refreshRecommendedVideos();
     }
-
-    private void refreshRecommendedVideos() {
-        videosViewModel.get();
-        videosViewModel.get().observe(this, videos -> {
-            if (videos != null) {
-                otherVideos = new ArrayList<>(videos);
-                otherVideos.remove(video);
-                videoListAdapter.setVideos(otherVideos);
-                videoListAdapter.notifyDataSetChanged();
-            }
-        });
-    }
-
 
     private Bitmap decodeImage(String encodedImage) {
         if (encodedImage != null) {

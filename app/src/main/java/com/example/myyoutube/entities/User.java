@@ -7,8 +7,6 @@ import androidx.room.TypeConverters;
 
 import com.example.myyoutube.Converters;
 
-import java.time.LocalDate;
-
 
 @Entity(tableName = "users")
 @TypeConverters({Converters.class})

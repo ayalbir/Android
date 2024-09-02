@@ -12,19 +12,12 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class UserViewModel extends ViewModel {
-    public static User connectedUser;
     public static LocalDate tempDate;
     private static UserViewModel instance;
     private final UserRepository userRepository;
-    private final VideosViewModel videosViewModel;
-    public boolean firstTime;
 
     public UserViewModel() {
         this.userRepository = new UserRepository();
-        connectedUser = null;
-        videosViewModel = VideosViewModel.getInstance();
-        firstTime = true;
-        get();
     }
 
     public static UserViewModel getInstance() {
@@ -34,13 +27,6 @@ public class UserViewModel extends ViewModel {
         return instance;
     }
 
-    public static User getConnectedUser() {
-        return connectedUser;
-    }
-
-    public static void setConnectedUser(User user) {
-        connectedUser = user;
-    }
 
     public static LocalDate getTempDate() {
         return tempDate;
@@ -48,10 +34,6 @@ public class UserViewModel extends ViewModel {
 
     public static void setTempDate(LocalDate tempDate) {
         UserViewModel.tempDate = tempDate;
-    }
-
-    public void clearConnectedUser() {
-        connectedUser = null;
     }
 
     public void signIn(String email, String password) {
@@ -72,11 +54,6 @@ public class UserViewModel extends ViewModel {
 
     public void deleteUser(String email) {
         userRepository.deleteUser(email, TokenService.getInstance().getToken());
-        videosViewModel.removeVideosByUser(email);
-    }
-
-    public boolean isFirstTime() {
-        return firstTime;
     }
 
     public void getUsersFromDao() {
@@ -84,7 +61,6 @@ public class UserViewModel extends ViewModel {
     }
 
     public LiveData<List<User>> get() {
-        firstTime = false;
         return userRepository.get();
     }
 }

@@ -1,16 +1,16 @@
 package com.example.myyoutube.viewmodels;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.myyoutube.Helper;
 import com.example.myyoutube.TokenService;
+import com.example.myyoutube.dao.VideoDao;
 import com.example.myyoutube.entities.Comment;
 import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.repositories.VideoRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class VideosViewModel extends ViewModel {
@@ -21,13 +21,7 @@ public class VideosViewModel extends ViewModel {
 
     public VideosViewModel() {
         videoRepository = new VideoRepository();
-        videosLiveData = new LiveData<List<Video>>() {
-            @Override
-            public void observeForever(@NonNull Observer<? super List<Video>> observer) {
-                super.observeForever(observer);
-                get();
-            }
-        };
+        videosLiveData = new MutableLiveData<>();
     }
 
     public static VideosViewModel getInstance() {
@@ -42,6 +36,30 @@ public class VideosViewModel extends ViewModel {
         return videosLiveData;
     }
 
+    public VideoDao getVideoDao(){
+        return videoRepository.getVideoDao();
+    }
+    public List<Video> getVideosFromDao() {
+        return videoRepository.getVideoDao().getAllVideos();
+    }
+
+    public void clearVideoDao() {
+        videoRepository.clearVideoDao();
+    }
+
+    public LiveData<List<Video>> getSuggestedVideos(String videoId) {
+        videosLiveData = videoRepository.getSuggestedVideos(videoId);
+        return videosLiveData;
+    }
+
+    public LiveData<List<Video>> getVideosByUserEmail(String email) {
+        return videoRepository.getVideosByUserEmail(email);
+    }
+
+    public List<Video> getVideosByEmailFromDao(String email) {
+        return videoRepository.getVideoDao().getVideosByUserEmail(email);
+    }
+
     public void add(Video video) {
         videoRepository.addVideo(video, token);
     }
@@ -54,40 +72,12 @@ public class VideosViewModel extends ViewModel {
         videoRepository.deleteVideo(video, token);
     }
 
+    public void deleteVideosByEmail() {
+        videoRepository.deleteVideosByEmail(Helper.getConnectedUser().getEmail(), token);
+    }
+
     public Video getVideoById(String id) {
         return videoRepository.getVideoById(id);
-    }
-
-    public void updateCommentsEmail(String oldEmail, String newEmail) {
-        List<Video> videos = videosLiveData.getValue();
-        if (videos != null) {
-            for (Video video : videos) {
-                for (Comment comment : video.getComments()) {
-                    if (comment.getEmail().equalsIgnoreCase(oldEmail)) {
-                        comment.setEmail(newEmail);
-                    }
-                }
-                update(video);
-            }
-        }
-    }
-
-    public List<Video> getVideosByUserEmail(String email) {
-        return videoRepository.getVideoDao().getVideosByUserEmail(email);
-    }
-
-    public void removeVideosByUser(String email) {
-        List<Video> videosToRemove = new ArrayList<>();
-
-        for (Video video : videosLiveData.getValue()) {
-            if (video.getEmail().equals(email)) {
-                videosToRemove.add(video);
-            }
-        }
-
-        for (Video video : videosToRemove) {
-            videoRepository.deleteVideo(video, TokenService.getInstance().getToken());
-        }
     }
 
     public void likeVideo(Video video) {

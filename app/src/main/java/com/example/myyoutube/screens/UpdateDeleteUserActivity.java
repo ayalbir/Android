@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;
 import com.example.myyoutube.entities.User;
 import com.example.myyoutube.viewmodels.UserViewModel;
@@ -19,13 +20,12 @@ import com.example.myyoutube.viewmodels.VideosViewModel;
 
 
 public class UpdateDeleteUserActivity extends AppCompatActivity {
+    private final UserViewModel userViewModel = UserViewModel.getInstance();
     String oldEmail;
     private EditText etUserName;
-    private EditText etUserEmail;
     private EditText etPassword;
     private ImageView ivProfileImage;
     private User currentUser;
-    private final UserViewModel userViewModel = UserViewModel.getInstance();
     private VideosViewModel videosViewModel;
 
     @Override
@@ -36,7 +36,6 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
         videosViewModel = new ViewModelProvider(this).get(VideosViewModel.class);
 
         etUserName = findViewById(R.id.etUserName);
-        etUserEmail = findViewById(R.id.etUserEmail);
         etPassword = findViewById(R.id.etPassword);
         ivProfileImage = findViewById(R.id.ivProfileImage);
         findViewById(R.id.btnRet).setOnClickListener(v -> {
@@ -44,12 +43,11 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
             startActivity(i);
         });
 
-        currentUser = UserViewModel.getConnectedUser();
-        oldEmail = currentUser.getEmail();
+        currentUser = Helper.getConnectedUser();
 
         if (currentUser != null) {
+            oldEmail = currentUser.getEmail();
             etUserName.setText(currentUser.getFirstName());
-            etUserEmail.setText(currentUser.getEmail());
             etPassword.setText(currentUser.getPassword());
             // Decode and set the profile image
             String profileImageBase64 = currentUser.getProfileImage();
@@ -65,14 +63,11 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
 
     private void updateUser() {
         String newUserName = etUserName.getText().toString();
-        String newUserEmail = etUserEmail.getText().toString();
         String newPassword = etPassword.getText().toString();
-//            videosViewModel.updateCommentsEmail(oldEmail, newUserEmail);
 
-        currentUser.setEmail(newUserEmail);
         currentUser.setFirstName(newUserName);
         currentUser.setPassword(newPassword);
-
+        Helper.setConnectedUser(currentUser);
         userViewModel.updateUser(oldEmail, currentUser);
 
         Toast.makeText(this, "User updated successfully", Toast.LENGTH_SHORT).show();
@@ -82,15 +77,15 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
     }
 
     private void deleteUser() {
-        userViewModel.clearConnectedUser();
         userViewModel.deleteUser(currentUser.getEmail());
+        Helper.clearConnectedUser();
         Toast.makeText(this, "User deleted successfully", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 
     private void signOut() {
-        userViewModel.clearConnectedUser();
+        Helper.clearConnectedUser();
         Toast.makeText(this, "Signing out", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);

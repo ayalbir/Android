@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;
 import com.example.myyoutube.entities.User;
 import com.example.myyoutube.screens.MainActivity;
@@ -45,7 +46,7 @@ public class logInScreen1 extends AppCompatActivity {
 
                 if (user != null && (password.getText().toString().trim().equals(user.getPassword()))) {
                     Intent intent = new Intent(logInScreen1.this, MainActivity.class);
-                    UserViewModel.setConnectedUser(user);
+                    Helper.setConnectedUser(user);
                     userViewModel.signIn(currentEmail, currentPassword);
                     startActivity(intent);
                 } else {

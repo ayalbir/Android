@@ -13,6 +13,7 @@ import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 
@@ -24,56 +25,66 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.myyoutube.AppDB;
+import com.example.myyoutube.Helper;
 import com.example.myyoutube.R;
 import com.example.myyoutube.adapters.VideoListAdapter;
-import com.example.myyoutube.dao.VideoDao;
-import com.example.myyoutube.entities.User;
 import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.login.logInScreen1;
 import com.example.myyoutube.viewmodels.UserViewModel;
 import com.example.myyoutube.viewmodels.VideosViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 
 import java.lang.reflect.Field;
 import java.util.List;
 
 @SuppressLint("NotifyDataSetChanged")
-
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public static final int REQUEST_CODE_ADD_VIDEO = 1;
     public static final int REQUEST_CODE_EDIT_VIDEO = 2;
-    public static List<Video> videos;
-    public static List<User> users;
     public static boolean firstTime = true;
-    private static User currentUser;
-    private UserViewModel userViewModel;
+    SwipeRefreshLayout swipeRefreshLayout;
     private DrawerLayout drawerLayout;
     private SearchView searchView;
     private VideoListAdapter adapter;
-    private VideoDao videoDao;
     private VideosViewModel videosViewModel;
-    private SwipeRefreshLayout swipeRefreshLayout;
-
-    public static User getCurrentUser() {
-        return currentUser;
-    }
+    private ProgressBar progressBar;
+    private NavigationView navigationView;
 
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(activity_main);
+        initUtility();
+
+        videosViewModel = VideosViewModel.getInstance();
+
+        if (firstTime) {
+            UserViewModel userViewModel = UserViewModel.getInstance();
+            firstTime = false;
+            userViewModel.get().observe(this, usersList -> {
+                if (usersList != null) {
+                    // Users fetched successfully, now proceed to load videos
+                    setupViewModelAndUI();
+                }
+            });
+        } else {
+            setupViewModelAndUI();
+        }
+
+        if (savedInstanceState == null) {
+            navigationView.setCheckedItem(R.id.nav_home);
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void initUtility() {
         try {
             Field field = CursorWindow.class.getDeclaredField("sCursorWindowSize");
             field.setAccessible(true);
@@ -82,106 +93,63 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             e.printStackTrace();
         }
 
+        progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
 
+        navigationView = findViewById(R.id.nav_view);
+        CardView cardView = navigationView.getHeaderView(0).findViewById(R.id.cardview);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         MenuItem profilePictureItem = bottomNavigationView.getMenu().findItem(R.id.nav_login);
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        CardView cardView = navigationView.getHeaderView(0).findViewById(R.id.cardview);
+
         profilePictureItem.setIcon(R.drawable.login);
         profilePictureItem.setTitle("Login");
         cardView.setVisibility(View.INVISIBLE);
-        if (UserViewModel.getConnectedUser() != null) {
-            currentUser = UserViewModel.getConnectedUser();
-        }
-        if (getCurrentUser() != null) {
-            assert currentUser != null;
-            Bitmap bitmap = decodeImage(currentUser.getProfileImage());
+
+        if (Helper.getConnectedUser() != null) {
+            Bitmap bitmap = decodeImage(Helper.getConnectedUser().getProfileImage());
             cardView.setVisibility(View.VISIBLE);
             ImageView navHeaderImageView = navigationView.getHeaderView(0).findViewById(R.id.IVHeaderProfilePic);
             TextView navHeaderTextView = navigationView.getHeaderView(0).findViewById(R.id.TVWelcomeMenu);
             if (bitmap != null) {
                 navHeaderImageView.setImageBitmap(bitmap);
             }
-            navHeaderTextView.setText("Hello " + currentUser.getFirstName());
+            navHeaderTextView.setText("Hello " + Helper.getConnectedUser().getFirstName());
             profilePictureItem.setIcon(R.drawable.settings);
             profilePictureItem.setTitle("Account");
         }
-
-        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
-        if(userViewModel.isFirstTime()){
-            userViewModel.get().observe(this, usersList -> {
-                if (usersList != null) {
-                    // Users fetched successfully, now proceed to load videos
-                    videosViewModel = new ViewModelProvider(MainActivity.this).get(VideosViewModel.class);
-                    setupRecyclerViewDB();
-                    initUI();
-                    setupToolbarAndDrawer();
-                    setupSearchView();
-                    setupNightModeSwitch();
-                    setupBottomNavigationView();
-                }
-            });
-        }
-        else{
-            videosViewModel = new ViewModelProvider(MainActivity.this).get(VideosViewModel.class);
-            setupRecyclerViewDB();
-            initUI();
-            setupToolbarAndDrawer();
-            setupSearchView();
-            setupNightModeSwitch();
-            setupBottomNavigationView();
-        }
-
-        if (savedInstanceState == null) {
-            navigationView = findViewById(R.id.nav_view);
-            navigationView.setCheckedItem(R.id.nav_home);
-        }
-    }
-
-    private void initUI() {
         searchView = findViewById(R.id.searchView);
         drawerLayout = findViewById(R.id.drawer_layout);
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
+    }
+
+    private void setupViewModelAndUI() {
+        setupRecyclerViewDB();
+        setupToolbarAndDrawer();
+        setupSearchView();
+        setupNightModeSwitch();
+        setupBottomNavigationView();
+        progressBar.setVisibility(View.GONE);
     }
 
     private void setupRecyclerViewDB() {
         RecyclerView videoList = findViewById(R.id.videoList);
         adapter = new VideoListAdapter(this, videosViewModel);
-        videos = videosViewModel.get().getValue();
-        if (videos != null) {
-            adapter.setVideos(videos);
-        }
-
-        videosViewModel.get().observe(this, new Observer<List<Video>>() {
-            @Override
-            public void onChanged(List<Video> videos) {
-                adapter.setVideos(videos);
-                adapter.notifyDataSetChanged();
-            }
-        });
-
+        List<Video> v = videosViewModel.getVideosFromDao();
+        adapter.setVideos(v);
         videoList.setAdapter(adapter);
         videoList.setLayoutManager(new LinearLayoutManager(this));
-
-        AppDB db = Room.databaseBuilder(getApplicationContext(),
-                        AppDB.class, "VideoDB")
-                .allowMainThreadQueries()
-                .build();
-        videoDao = db.videoDao();
-        swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
+        videosViewModel.get().observe(this, videos -> {
+            adapter.setVideos(videos);
+            if (videos != null && !videos.isEmpty())
+                swipeRefreshLayout.setRefreshing(false);
+            adapter.notifyDataSetChanged();
+        });
         swipeRefreshLayout.setOnRefreshListener(this::refreshVideos);
-        refreshVideos();
     }
 
-    private void refreshVideos() {
-        if(videosViewModel != null){
+    public void refreshVideos() {
+        if (videosViewModel != null) {
             videosViewModel.get();
-            videosViewModel.get().observe(this, videos -> {
-                if (videos != null && adapter != null) {
-                    adapter.setVideos(videos);
-                    adapter.notifyDataSetChanged();
-                    swipeRefreshLayout.setRefreshing(false);
-                }
-            });
         }
     }
 
@@ -189,7 +157,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_nav, R.string.close_nav);
@@ -213,9 +180,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-
     private void setupNightModeSwitch() {
-        NavigationView navigationView = findViewById(R.id.nav_view);
         MenuItem btnNight = navigationView.getMenu().findItem(R.id.nav_switch_night);
 
         btnNight.setOnMenuItemClickListener(item -> {
@@ -235,33 +200,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void setupBottomNavigationView() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setBackgroundColor(getResources().getColor(R.color.custom_red));
-        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
-                if (id == R.id.nav_add_video) {
-                    if (getCurrentUser() != null) {
-                        Intent addIntent = new Intent(MainActivity.this, AddEditVideoActivity.class);
-                        startActivityForResult(addIntent, REQUEST_CODE_ADD_VIDEO);
-                    } else {
-                        Intent addIntent = new Intent(MainActivity.this, logInScreen1.class);
-                        startActivity(addIntent);
-                    }
-                    return true;
-                } else if (id == R.id.nav_login) {
-                    if (currentUser != null && currentUser.getEmail() != null) {
-                        Intent intent = new Intent(MainActivity.this, UpdateDeleteUserActivity.class);
-                        intent.putExtra("userEmail", currentUser.getEmail());
-                        startActivity(intent);
-                    } else {
-                        currentUser = null;
-                        Intent intent = new Intent(MainActivity.this, logInScreen1.class);
-                        startActivity(intent);
-                    }
-
-                }
-                return false;
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_add_video) {
+                Intent addIntent = (Helper.getConnectedUser() != null)
+                        ? new Intent(MainActivity.this, AddEditVideoActivity.class)
+                        : new Intent(MainActivity.this, logInScreen1.class);
+                startActivityForResult(addIntent, REQUEST_CODE_ADD_VIDEO);
+                return true;
+            } else if (id == R.id.nav_login) {
+                Intent intent = (Helper.getConnectedUser() != null && Helper.getConnectedUser().getEmail() != null)
+                        ? new Intent(MainActivity.this, UpdateDeleteUserActivity.class)
+                        .putExtra("userEmail", Helper.getConnectedUser().getEmail())
+                        : new Intent(MainActivity.this, logInScreen1.class);
+                startActivity(intent);
             }
+            return false;
         });
     }
 

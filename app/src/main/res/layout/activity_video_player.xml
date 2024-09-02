@@ -78,9 +78,9 @@
 
                 <LinearLayout
                     android:id="@+id/ChannelLayoutVideoPlayerScreen"
-                    android:clickable="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:clickable="true"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:paddingTop="5dp">

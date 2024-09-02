@@ -10,9 +10,9 @@ import com.example.myyoutube.repositories.CommentRepository;
 import java.util.List;
 
 public class CommentViewModel extends ViewModel {
+    private final String token;
     private CommentRepository commentRepository;
     private LiveData<List<Comment>> commentsLiveData;
-    private final String token;
 
     public CommentViewModel() {
         token = TokenService.getInstance().getToken();
