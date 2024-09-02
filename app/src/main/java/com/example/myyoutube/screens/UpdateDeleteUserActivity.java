@@ -23,7 +23,6 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
     private final UserViewModel userViewModel = UserViewModel.getInstance();
     String oldEmail;
     private EditText etUserName;
-    private EditText etUserEmail;
     private EditText etPassword;
     private ImageView ivProfileImage;
     private User currentUser;
@@ -37,7 +36,6 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
         videosViewModel = new ViewModelProvider(this).get(VideosViewModel.class);
 
         etUserName = findViewById(R.id.etUserName);
-        etUserEmail = findViewById(R.id.etUserEmail);
         etPassword = findViewById(R.id.etPassword);
         ivProfileImage = findViewById(R.id.ivProfileImage);
         findViewById(R.id.btnRet).setOnClickListener(v -> {
@@ -46,11 +44,10 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
         });
 
         currentUser = Helper.getConnectedUser();
-        oldEmail = currentUser.getEmail();
 
         if (currentUser != null) {
+            oldEmail = currentUser.getEmail();
             etUserName.setText(currentUser.getFirstName());
-            etUserEmail.setText(currentUser.getEmail());
             etPassword.setText(currentUser.getPassword());
             // Decode and set the profile image
             String profileImageBase64 = currentUser.getProfileImage();
@@ -66,14 +63,11 @@ public class UpdateDeleteUserActivity extends AppCompatActivity {
 
     private void updateUser() {
         String newUserName = etUserName.getText().toString();
-        String newUserEmail = etUserEmail.getText().toString();
         String newPassword = etPassword.getText().toString();
-//            videosViewModel.updateCommentsEmail(oldEmail, newUserEmail);
 
-        currentUser.setEmail(newUserEmail);
         currentUser.setFirstName(newUserName);
         currentUser.setPassword(newPassword);
-
+        Helper.setConnectedUser(currentUser);
         userViewModel.updateUser(oldEmail, currentUser);
 
         Toast.makeText(this, "User updated successfully", Toast.LENGTH_SHORT).show();

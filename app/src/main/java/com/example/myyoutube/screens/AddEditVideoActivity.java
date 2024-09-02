@@ -103,10 +103,8 @@ public class AddEditVideoActivity extends AppCompatActivity {
     }
 
     private void saveVideo() {
-        Toast.makeText(this, "Saving... It may take a couple of seconds", Toast.LENGTH_LONG).show();
-
-
         if ((isImageSelected && isVideoSelected) || isEditMode) {
+            Toast.makeText(this, "Saving... It may take a couple of seconds", Toast.LENGTH_SHORT).show();
             if (video == null) {
                 video = new Video("", "", "", "", "", "", new ArrayList<>());
             }

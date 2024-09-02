@@ -77,6 +77,7 @@ public class VideoAPI {
                             videoListData.postValue(videos);
                         }).start();
                     } else {
+                        Toast.makeText(Helper.context,"Failed to fetch videos", Toast.LENGTH_SHORT).show();
                         Log.e("VideoAPI", "Failed to fetch videos");
                     }
                 }
@@ -104,6 +105,7 @@ public class VideoAPI {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     if (response.isSuccessful()) {
+                        Toast.makeText(Helper.context, "Video added successfully", Toast.LENGTH_SHORT).show();
                         new Thread(() -> {
                             videoToAdd.setId(response.body().get("_id").getAsString());
                             videoDao.insert(videoToAdd);
@@ -142,11 +144,10 @@ public class VideoAPI {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
-                    JsonObject jsonObject = response.body();
                     try {
                         new Thread(() -> videoDao.update(videoToEdit)).start();
                         videoListData.updateVideo(videoToEdit);
-                        Toast.makeText(Helper.context, "Video updated", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Helper.context, "Video updated successfully", Toast.LENGTH_SHORT).show();
                     } catch (Exception e) {
                         Toast.makeText(Helper.context, "Video cannot be updated due to validation failure.", Toast.LENGTH_SHORT).show();
                     }
@@ -171,8 +172,11 @@ public class VideoAPI {
                     Converters.deleteFileFromStorage(videoToRemove.getPic());
                     new Thread(() -> videoDao.delete(videoToRemove)).start();
                     videoListData.removeVideo(videoToRemove);
-                    Toast.makeText(Helper.context, "Video deleted", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Helper.context, "Video deleted successfully", Toast.LENGTH_SHORT).show();
                 }
+                else
+                    Toast.makeText(Helper.context, "Video cannot be deleted due to validation failure.", Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
@@ -191,6 +195,9 @@ public class VideoAPI {
                     videoDao.clear();
                     Toast.makeText(Helper.context, "Video deleted", Toast.LENGTH_SHORT).show();
                 }
+                else
+                    Toast.makeText(Helper.context, "Video cannot be deleted due to validation failure.", Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
@@ -268,7 +275,8 @@ public class VideoAPI {
                             videoListData.postValue(videos);
                         }).start();
                     } else {
-                        Log.e("VideoAPI", "Failed to fetch videos: response body is null");
+                        Toast.makeText(Helper.context,"Failed to fetch videos", Toast.LENGTH_SHORT).show();
+                        Log.e("VideoAPI", "Failed to fetch videos");
                     }
                 } else {
                     Log.e("VideoAPI", "Failed to fetch videos: " + response.errorBody());

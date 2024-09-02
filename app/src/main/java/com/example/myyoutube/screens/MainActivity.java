@@ -243,6 +243,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        refreshVideos();
+    }
+
+    @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
         super.onPointerCaptureChanged(hasCapture);
     }
