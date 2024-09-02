@@ -41,7 +41,6 @@ public class UserRepository {
 
     public void createUser(User user) {
         userAPI.createUser(user, messageLiveData);
-        userDao.insert(Helper.getConnectedUser());
     }
 
     public LiveData<List<User>> get() {

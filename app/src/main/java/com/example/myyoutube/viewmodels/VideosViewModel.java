@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.myyoutube.Helper;
 import com.example.myyoutube.TokenService;
+import com.example.myyoutube.dao.VideoDao;
 import com.example.myyoutube.entities.Comment;
 import com.example.myyoutube.entities.Video;
 import com.example.myyoutube.repositories.VideoRepository;
@@ -35,6 +36,9 @@ public class VideosViewModel extends ViewModel {
         return videosLiveData;
     }
 
+    public VideoDao getVideoDao(){
+        return videoRepository.getVideoDao();
+    }
     public List<Video> getVideosFromDao() {
         return videoRepository.getVideoDao().getAllVideos();
     }
@@ -72,25 +76,9 @@ public class VideosViewModel extends ViewModel {
         videoRepository.deleteVideosByEmail(Helper.getConnectedUser().getEmail(), token);
     }
 
-
     public Video getVideoById(String id) {
         return videoRepository.getVideoById(id);
     }
-
-    public void updateCommentsEmail(String oldEmail, String newEmail) {
-        List<Video> videos = videosLiveData.getValue();
-        if (videos != null) {
-            for (Video video : videos) {
-                for (Comment comment : video.getComments()) {
-                    if (comment.getEmail().equalsIgnoreCase(oldEmail)) {
-                        comment.setEmail(newEmail);
-                    }
-                }
-                update(video);
-            }
-        }
-    }
-
 
     public void likeVideo(Video video) {
         videoRepository.likeVideo(video.getEmail(), video.getId(), token);

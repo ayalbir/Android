@@ -112,7 +112,7 @@ public class AddEditVideoActivity extends AppCompatActivity {
             video.setDescription(Objects.requireNonNull(etDescription.getText()).toString());
             video.setEmail(curretUser.getEmail());
 
-            if (!isEditMode) {
+
                 // Show the progress bar
                 progressBar.setVisibility(View.VISIBLE);
 
@@ -127,7 +127,7 @@ public class AddEditVideoActivity extends AppCompatActivity {
                 video.setUrl(encodedVideo != null ? encodedVideo : "");
                 progressBar.setVisibility(View.GONE);
 
-            }
+
 
             if (isEditMode) {
                 videosViewModel.update(video);
@@ -156,11 +156,6 @@ public class AddEditVideoActivity extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
         intent.setType("video/*");
         startActivityForResult(intent, PICK_VIDEO_REQUEST);
-    }
-
-    private void openCamera() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, REQUEST_CAMERA);
     }
 
     private void checkAndRequestPermissions() {

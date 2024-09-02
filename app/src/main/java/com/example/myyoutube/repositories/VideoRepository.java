@@ -58,10 +58,12 @@ public class VideoRepository {
 
     public void updateVideo(final Video video, String token) {
         videoAPI.editVideo(video, token);
+        getAllVideos();
     }
 
     public void deleteVideo(final Video video, String token) {
         videoAPI.deleteVideo(video, token);
+        getAllVideos();
     }
 
     public void deleteVideosByEmail(String email, String token) {

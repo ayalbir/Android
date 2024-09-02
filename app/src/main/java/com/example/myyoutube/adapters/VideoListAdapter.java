@@ -64,6 +64,9 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             holder.tvTitle.setText(video.getTitle());
             holder.tvViews.setText(String.valueOf(video.getViews()));
             User user = userViewModel.getUserByEmail(video.getEmail());
+            if(user == null){
+                user = new User("","","","","","","");
+            }
             holder.tvChannel.setText(Objects.requireNonNull(user.getFirstName()));
             holder.tvTimeAgo.setText(video.getTimeAgo());
             if (video.getPic() == null) {
